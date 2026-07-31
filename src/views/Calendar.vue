@@ -18,9 +18,55 @@ const goalStore = useGoalStore()
 const journalStore = useJournalStore()
 
 const todayStr = () => new Date().toISOString().slice(0, 10)
-const viewYear = ref(new Date().getFullYear())
-const viewMonth = ref(new Date().getMonth())
-const selectedDate = ref(todayStr())
+const viewMode = ref<'month' | 'week'>('month')
+
+// ---- 周视图 ----
+const weekStart = ref(getWeekStart(new Date()))
+function getWeekStart(d: Date): Date { const s = new Date(d); s.setDate(s.getDate() - s.getDay()); s.setHours(0,0,0,0); return s }
+function prevWeek() { weekStart.value = new Date(weekStart.value.getTime() - 7 * 86400000) }
+function nextWeek() { weekStart.value = new Date(weekStart.value.getTime() + 7 * 86400000) }
+function goThisWeek() { weekStart.value = getWeekStart(new Date()) }
+
+const weekDays = computed(() => {
+  const days: { date: string; day: number; month: number; label: string; isToday: boolean }[] = []
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(weekStart.value.getTime() + i * 86400000)
+    const dateStr = d.toISOString().slice(0, 10)
+    days.push({
+      date: dateStr, day: d.getDate(), month: d.getMonth() + 1,
+      label: ['日','一','二','三','四','五','六'][d.getDay()],
+      isToday: dateStr === todayStr(),
+    })
+  }
+  return days
+})
+
+function weekDayTasks(date: string) {
+  const planIds = new Set(goalStore.allTaskIdsByDate(date))
+  return taskStore.tasks.filter((t) =>
+    t.scheduledDate === date || t.completedAt?.slice(0,10) === date || planIds.has(t.id)
+  )
+}
+function weekDayHabits(date: string) {
+  return habitStore.habits.filter((h) => (h.completedDates || []).includes(date))
+}
+function weekDayFocus(date: string): number {
+  return Math.round(focusStore.sessions
+    .filter((s) => s.createdAt.slice(0,10) === date && s.status === 'completed')
+    .reduce((sum, s) => sum + s.duration, 0) / 60)
+}
+
+function selectDate(date: string) {
+  selectedDate.value = date
+  // 切换到对应月份
+  const d = new Date(date)
+  selectedDate.value = date
+  // 切换到对应月份
+  const d = new Date(date)
+  viewYear.value = d.getFullYear()
+  viewMonth.value = d.getMonth()
+}
+
 const showCreate = ref(false)
 
 const monthLabel = computed(() => `${viewYear.value}年${viewMonth.value + 1}月`)
@@ -96,11 +142,17 @@ function addTaskForDate() { showCreate.value = true }
   <div class="space-y-4 pb-20 md:pb-0">
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold text-text-primary">📅 日历</h1>
-      <button class="text-xs text-accent hover:underline" @click="router.push('/')">← 返回今天</button>
+      <div class="flex items-center gap-2">
+        <div class="flex rounded-lg bg-card-hover border border-border overflow-hidden">
+          <button class="px-3 py-1 text-xs transition-colors" :class="viewMode==='month'?'bg-accent text-white':'text-text-secondary'" @click="viewMode='month'">月</button>
+          <button class="px-3 py-1 text-xs transition-colors" :class="viewMode==='week'?'bg-accent text-white':'text-text-secondary'" @click="viewMode='week'">周</button>
+        </div>
+        <button class="text-xs text-accent hover:underline" @click="router.push('/')">← 返回今天</button>
+      </div>
     </div>
 
-    <!-- 紧凑月历（~250px 高） -->
-    <div class="bg-card border border-border rounded-2xl p-4">
+    <!-- 月视图 -->
+    <div v-if="viewMode === 'month'" class="bg-card border border-border rounded-2xl p-4">
       <div class="flex items-center justify-between mb-3">
         <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="prevMonth">←</button>
         <span class="text-sm font-semibold text-text-primary">{{ monthLabel }}</span>
@@ -143,6 +195,46 @@ function addTaskForDate() { showCreate.value = true }
         <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>习惯</span>
         <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>专注</span>
         <span class="ml-auto flex items-center gap-1"><span class="w-2 h-2 rounded-full ring-1 ring-accent/30 bg-accent/10"></span>今天</span>
+      </div>
+    </div>
+
+    <!-- 周视图 -->
+    <div v-if="viewMode === 'week'" class="bg-card border border-border rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-4">
+        <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="prevWeek">←</button>
+        <span class="text-sm font-semibold text-text-primary">{{ weekDays[0]?.month }}月{{ weekDays[0]?.day }}日 - {{ weekDays[6]?.month }}月{{ weekDays[6]?.day }}日</span>
+        <div class="flex items-center gap-1">
+          <button class="text-xs text-accent hover:underline" @click="goThisWeek">本周</button>
+          <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="nextWeek">→</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-7 gap-2">
+        <div v-for="d in weekDays" :key="d.date" class="min-h-[200px] rounded-xl p-2 cursor-pointer transition-colors"
+          :class="[d.isToday ? 'bg-accent/5 ring-1 ring-accent/30' : 'hover:bg-card-hover', selectedDate === d.date ? 'ring-2 ring-accent' : '']"
+          @click="selectDate(d.date)">
+          <div class="text-center mb-2">
+            <p class="text-xs text-text-muted">{{ d.label }}</p>
+            <p class="text-lg font-bold" :class="d.isToday ? 'text-accent' : 'text-text-primary'">{{ d.day }}</p>
+          </div>
+
+          <!-- 任务 -->
+          <div v-if="weekDayTasks(d.date).length > 0" class="space-y-0.5 mb-1.5">
+            <div v-for="t in weekDayTasks(d.date).slice(0, 3)" :key="t.id" class="flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full shrink-0" :class="t.status==='done'?'bg-green-400':'bg-blue-400'"></span>
+              <span class="text-[10px] truncate" :class="t.status==='done'?'text-text-muted line-through':'text-text-secondary'">{{ t.title }}</span>
+            </div>
+            <p v-if="weekDayTasks(d.date).length > 3" class="text-[10px] text-text-muted pl-2">+{{ weekDayTasks(d.date).length - 3 }} 项</p>
+          </div>
+
+          <!-- 习惯 -->
+          <div v-if="weekDayHabits(d.date).length > 0" class="flex flex-wrap gap-0.5">
+            <span v-for="h in weekDayHabits(d.date)" :key="h.id" class="text-[10px] px-1 py-0.5 rounded bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">{{ h.name.slice(0,4) }}</span>
+          </div>
+
+          <!-- 专注 -->
+          <p v-if="weekDayFocus(d.date) > 0" class="text-[10px] text-text-muted mt-1">🍅 {{ weekDayFocus(d.date) }}m</p>
+        </div>
       </div>
     </div>
 
