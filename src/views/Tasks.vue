@@ -86,14 +86,14 @@ function formatDue(dateStr: string): { text: string; urgent: boolean } {
   return { text: dateStr, urgent: false }
 }
 
-const taskCount = computed(() => sortedTasks.length)
+const taskCount = computed(() => store.filteredTasks.length)
 
 // ---- 排序 ----
 type SortMode = 'due' | 'created' | 'default'
 const sortMode = ref<SortMode>('due')
 
 const sortedTasks = computed(() => {
-  const tasks = [...sortedTasks]
+  const tasks = [...store.filteredTasks]
   if (sortMode.value === 'due') {
     return tasks.sort((a, b) => {
       if (!a.dueDate && !b.dueDate) return 0

@@ -177,13 +177,14 @@ function addQuestionToGoal(q: FeedQuestion) {
   goalStore.addGoal({
     id: goalId,
     title: q.question,
+    description: `[${q.category}] ${q.answer}`,
     category: '学习',
     priority: 'medium',
     status: 'active',
+    startDate: today,
     deadline: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
     progress: 0,
-    createdAt: today,
-  } as any)
+  })
   // 创建关联任务
   taskStore.addTask({
     id: taskId,
