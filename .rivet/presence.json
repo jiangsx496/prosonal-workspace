@@ -1,0 +1,15 @@
+[
+  {
+    "sessionId": "a5d5b0bb-782e-42f3-9114-ba5d20f1e2f8",
+    "starDomain": "tianquan",
+    "objective": "(active)",
+    "updatedAt": 1785482076656,
+    "cognitiveState": {
+      "vigor": 0.642938,
+      "stability": 0.9600000000000001,
+      "season": "genesis",
+      "convergencePrecision": 0.6350046303673303,
+      "outputEfficiency": 0.000015966783897804747
+    }
+  }
+]

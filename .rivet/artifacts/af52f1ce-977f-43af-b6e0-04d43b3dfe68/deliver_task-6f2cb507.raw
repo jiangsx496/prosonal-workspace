@@ -1,0 +1,195 @@
+Delivery Gate: GREEN
+Task: af52f1ce-977f-43af-b6e0-04d43b3dfe68
+
+Owned files (11):
+  .rivet/scratch/repro-cleanup.ts
+  .rivet/scratch/repro-goal-cascade.ts
+  .rivet/scratch/repro-lifecycle.mjs
+  .rivet/scratch/repro-lifecycle.ts
+  src/services/dataCleanup.ts
+  (+6 more)
+
+Co-owned files (0):
+  (none)
+
+Historical owned files (0):
+  (none)
+
+External files (0):
+  (none)
+
+Verifications: 8
+  Latest: 0 pass 0 fail 0 skip — npx vue-tsc --noEmit 2>&1; echo "---EXIT: $?---"
+
+⚠️ 零测试交付：8 个源文件变更但零测试文件：.rivet/scratch/repro-cleanup.ts, .rivet/scratch/repro-goal-cascade.ts, .rivet/scratch/repro-lifecycle.mjs, .rivet/scratch/repro-lifecycle.ts, src/services/dataCleanup.ts, src/stores/daily.ts, src/stores/goals.ts, src/stores/tasks.ts。为核心行为补测试文件（__tests__/*.test.ts 或同名 *.test.*）后自动放行。
+  交付报告中不要宣称"已验证"——这批源文件没有任何测试背书。
+
+⚠️ 渲染未验证：UI 文件已修改（src/views/Goals.vue, src/views/Settings.vue），但未见 browser_debug/computer_use 视觉验证。交付前用 browser_debug open → navigate → screenshot 检查渲染结果。
+
+Attribution: 11 owned file(s) verified. Ready to deliver.
+
+--- Recovery Journal ---
+  Files restored during this session (edit failure → restore):
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 12:31:49)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 12:32:16)
+  ⚠️  src/views/GoalDetail.vue (edit, ~0 lines lost at 12:32:35)
+  ⚠️  src/views/GoalDetail.vue (edit, ~0 lines lost at 12:32:55)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 12:33:27)
+  ⚠️  src/services/scheduler.ts (write, ~0 lines lost at 12:39:56)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 12:40:12)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 12:40:20)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 12:40:44)
+  ⚠️  src/mock/goals.ts (edit, ~0 lines lost at 12:54:19)
+  ⚠️  src/stores/goals.ts (edit, ~0 lines lost at 12:54:25)
+  ⚠️  src/stores/goals.ts (edit, ~0 lines lost at 12:54:35)
+  ⚠️  src/stores/goals.ts (edit, ~0 lines lost at 12:54:44)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 12:55:24)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 12:55:43)
+  ⚠️  src/views/GoalDetail.vue (edit, ~0 lines lost at 12:55:59)
+  ⚠️  src/views/GoalDetail.vue (edit, ~0 lines lost at 12:56:06)
+  ⚠️  src/views/GoalDetail.vue (edit, ~0 lines lost at 12:56:15)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 12:56:21)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 12:56:29)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 12:56:36)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 12:56:49)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:00:16)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:00:53)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:03:10)
+  ⚠️  src/stores/goals.ts (edit, ~0 lines lost at 13:25:52)
+  ⚠️  src/stores/goals.ts (edit, ~0 lines lost at 13:26:27)
+  ⚠️  src/stores/goals.ts (edit, ~0 lines lost at 13:26:36)
+  ⚠️  src/views/GoalDetail.vue (edit, ~0 lines lost at 13:26:54)
+  ⚠️  src/views/GoalDetail.vue (edit, ~0 lines lost at 13:27:02)
+  ⚠️  src/views/GoalDetail.vue (edit, ~0 lines lost at 13:27:13)
+  ⚠️  src/services/scheduler.ts (edit, ~0 lines lost at 13:27:24)
+  ⚠️  src/services/scheduler.ts (edit, ~0 lines lost at 13:27:33)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:27:46)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:27:57)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:40:24)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:40:36)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:40:49)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:48:04)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:53:18)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:53:58)
+  ⚠️  src/stores/focus.ts (write, ~0 lines lost at 13:58:14)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:58:25)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:58:35)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 13:58:48)
+  ⚠️  src/router/index.ts (edit, ~0 lines lost at 14:04:59)
+  ⚠️  src/components/Sidebar.vue (edit, ~0 lines lost at 14:05:08)
+  ⚠️  src/views/Calendar.vue (edit, ~0 lines lost at 14:06:39)
+  ⚠️  src/views/Calendar.vue (edit, ~0 lines lost at 14:06:54)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 14:09:30)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 14:09:37)
+  ⚠️  src/components/Sidebar.vue (edit, ~0 lines lost at 14:09:40)
+  ⚠️  src/router/index.ts (edit, ~0 lines lost at 14:09:46)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 14:13:52)
+  ⚠️  src/views/Execute.vue (edit, ~0 lines lost at 14:14:00)
+  ⚠️  src/components/CalendarWidget.vue (edit, ~0 lines lost at 14:14:08)
+  ⚠️  src/components/CalendarWidget.vue (edit, ~0 lines lost at 14:14:15)
+  ⚠️  src/components/CalendarWidget.vue (edit, ~0 lines lost at 14:14:18)
+  ⚠️  src/components/CalendarWidget.vue (edit, ~0 lines lost at 14:14:25)
+  ⚠️  src/views/Calendar.vue (write, ~0 lines lost at 14:20:40)
+  ⚠️  src/components/TaskModal.vue (edit, ~0 lines lost at 14:20:56)
+  ⚠️  src/components/TaskModal.vue (edit, ~0 lines lost at 14:21:12)
+  ⚠️  src/router/index.ts (edit, ~0 lines lost at 14:21:27)
+  ⚠️  src/components/Sidebar.vue (edit, ~0 lines lost at 14:21:32)
+  ⚠️  src/components/CalendarWidget.vue (write, ~0 lines lost at 14:21:51)
+  ⚠️  src/views/Calendar.vue (write, ~0 lines lost at 14:26:52)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 14:30:06)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 14:30:24)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 14:33:34)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 14:33:57)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 14:34:09)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 14:38:54)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 14:39:10)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 14:45:00)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 14:45:07)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 14:45:15)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 14:45:24)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 14:45:35)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 14:45:40)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 14:45:56)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 14:46:08)
+  ⚠️  src/stores/imports.ts (edit, ~0 lines lost at 14:46:16)
+  ⚠️  src/stores/imports.ts (edit, ~0 lines lost at 14:46:27)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 14:46:35)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 14:46:43)
+  ⚠️  src/views/Tasks.vue (edit, ~0 lines lost at 14:46:51)
+  ⚠️  src/views/Tasks.vue (edit, ~0 lines lost at 14:47:04)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 14:49:45)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 14:51:04)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:06:10)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:06:18)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:06:34)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:07:17)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:07:44)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:07:55)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:20:04)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:21:09)
+  ⚠️  src/services/planParser.ts (write, ~0 lines lost at 03:26:02)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:26:14)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:26:21)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:26:27)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:26:51)
+  ⚠️  src/views/Settings.vue (edit, ~0 lines lost at 03:43:39)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:43:59)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:44:09)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:44:27)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:44:32)
+  ⚠️  src/views/Inbox.vue (edit, ~0 lines lost at 03:44:41)
+  ⚠️  src/views/Inbox.vue (write, ~0 lines lost at 04:11:26)
+  ⚠️  .rivet/plans/draft-1785334540489.md (write, ~0 lines lost at 14:19:36)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:20:29)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:20:33)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:20:38)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:20:44)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:20:49)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:20:54)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:20:56)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:21:01)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:21:05)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:21:19)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:21:24)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:21:30)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:21:34)
+  ⚠️  src/stores/daily.ts (edit, ~0 lines lost at 14:21:37)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:21:39)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:21:44)
+  ⚠️  src/stores/daily.ts (edit, ~0 lines lost at 14:21:44)
+  ⚠️  .rivet/plans/draft-1785334540489.md (edit, ~0 lines lost at 14:21:49)
+  ⚠️  .rivet/scratch/repro-lifecycle.ts (edit, ~0 lines lost at 14:22:56)
+  ⚠️  src/stores/tasks.ts (edit, ~0 lines lost at 14:23:09)
+  ⚠️  src/stores/tasks.ts (edit, ~0 lines lost at 14:23:16)
+  ⚠️  .rivet/scratch/repro-lifecycle.ts (write, ~0 lines lost at 14:23:40)
+  ⚠️  src/stores/goals.ts (edit, ~0 lines lost at 14:24:04)
+  ⚠️  src/stores/goals.ts (edit, ~0 lines lost at 14:24:09)
+  ⚠️  src/stores/goals.ts (edit, ~0 lines lost at 14:24:16)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 14:24:29)
+  ⚠️  src/views/Goals.vue (edit, ~0 lines lost at 14:24:36)
+  ⚠️  .rivet/scratch/repro-goal-cascade.ts (write, ~0 lines lost at 14:25:03)
+  ⚠️  src/views/Settings.vue (edit, ~0 lines lost at 14:25:35)
+  ⚠️  src/views/Settings.vue (edit, ~0 lines lost at 14:25:40)
+  ⚠️  tsconfig.app.json (edit, ~0 lines lost at 14:26:08)
+  ⚠️  tsconfig.app.json (edit, ~0 lines lost at 14:26:10)
+
+  ⚠️  Verify no intended changes were lost in these recoveries.
+  If all recovered changes have been re-applied, this warning will clear on next deliver_task.
+
+<atomic-commit-reminder>
+提交前只确认本次一个逻辑单元：
+1. 是否只包含当前任务文件？
+2. 是否混入外部/他人改动？
+3. 测试与 typecheck 是否对应本逻辑单元？
+4. commit message 是否描述一个原子变更？
+</atomic-commit-reminder>
+
+  ❌ Commit cohesion gate: 11 owned files across 5 areas (., .rivet/scratch, src/services, src/stores, src/views).
+  If this truly is one logical unit, re-run with force=true to override.
+  Suggested split by area:
+    deliver_task commit=true message="描述" files=["tsconfig.app.json"]
+    deliver_task commit=true message="描述" files=[".rivet/scratch/repro-cleanup.ts", ".rivet/scratch/repro-goal-cascade.ts", ".rivet/scratch/repro-lifecycle.mjs", ".rivet/scratch/repro-lifecycle.ts"]
+    deliver_task commit=true message="描述" files=["src/services/dataCleanup.ts"]
+    deliver_task commit=true message="描述" files=["src/stores/daily.ts", "src/stores/goals.ts", "src/stores/tasks.ts"]
+    deliver_task commit=true message="描述" files=["src/views/Goals.vue", "src/views/Settings.vue"]
+── 试炼（deliver_task）
