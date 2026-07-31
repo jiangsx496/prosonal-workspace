@@ -24,22 +24,23 @@ export const useHabitStore = defineStore('habits', () => {
   watch(habits, (val) => save(val), { deep: true })
 
   const activeHabits = computed(() => habits.value.filter((h) => h.active))
-  const today = todayStr()
 
-  const doneCount = computed(() =>
-    habits.value.filter((h) => h.active && h.completedDates.includes(today)).length
-  )
+  const doneCount = computed(() => {
+    const t = todayStr()
+    return habits.value.filter((h) => h.active && h.completedDates.includes(t)).length
+  })
 
   function isDone(h: Habit): boolean {
-    return h.completedDates.includes(today)
+    return h.completedDates.includes(todayStr())
   }
 
   function toggle(id: string) {
     const h = habits.value.find((h) => h.id === id)
     if (!h) return
-    const idx = h.completedDates.indexOf(today)
+    const t = todayStr()
+    const idx = h.completedDates.indexOf(t)
     if (idx >= 0) h.completedDates.splice(idx, 1)
-    else h.completedDates.push(today)
+    else h.completedDates.push(t)
     calcStreak(h)
   }
 
@@ -66,17 +67,24 @@ export const useHabitStore = defineStore('habits', () => {
 
   type HeatmapDay = { date: string; completed: boolean; isToday: boolean; isFuture: boolean }
 
-  /** 返回最近 5 周（周日~周六）打卡热力图数据 */
+  /** 返回最近 5 周（周日~周六）打卡热力图，最后一格覆盖到今天 */
   function getHeatmap(id: string): HeatmapDay[][] {
+    const todayDate = todayStr()
     const h = habits.value.find((h) => h.id === id)
     const completedSet = new Set(h?.completedDates || [])
-    // 从今天往回推 34 天 + 对齐到周日 = 5 整周
+
+    // 以今天所在周的周六为终点，确保今天在网格内
     const end = new Date()
     end.setHours(0, 0, 0, 0)
+    const endDay = end.getDay()
+    end.setDate(end.getDate() + (6 - endDay))
+
+    // 往前推 34 天再对齐到周日 = 5 整周起点
     const start = new Date(end.getTime() - 34 * 86400000)
-    const startDay = start.getDay()
-    let current = new Date(start.getTime() - startDay * 86400000)
+    start.setDate(start.getDate() - start.getDay())
+
     const weeks: HeatmapDay[][] = []
+    const current = new Date(start)
     for (let w = 0; w < 5; w++) {
       const week: HeatmapDay[] = []
       for (let d = 0; d < 7; d++) {
@@ -84,10 +92,10 @@ export const useHabitStore = defineStore('habits', () => {
         week.push({
           date: dateStr,
           completed: completedSet.has(dateStr),
-          isToday: dateStr === today,
-          isFuture: dateStr > today,
+          isToday: dateStr === todayDate,
+          isFuture: dateStr > todayDate,
         })
-        current = new Date(current.getTime() + 86400000)
+        current.setDate(current.getDate() + 1)
       }
       weeks.push(week)
     }
