@@ -13,7 +13,7 @@ const selectAll = ref(false)
 
 function toggleSelectAll() {
   if (selectAll.value) {
-    selectedIds.value = new Set(store.filteredTasks.map((t) => t.id))
+    selectedIds.value = new Set(sortedTasks.map((t) => t.id))
   } else {
     selectedIds.value.clear()
   }
@@ -86,7 +86,27 @@ function formatDue(dateStr: string): { text: string; urgent: boolean } {
   return { text: dateStr, urgent: false }
 }
 
-const taskCount = computed(() => store.filteredTasks.length)
+const taskCount = computed(() => sortedTasks.length)
+
+// ---- 排序 ----
+type SortMode = 'due' | 'created' | 'default'
+const sortMode = ref<SortMode>('due')
+
+const sortedTasks = computed(() => {
+  const tasks = [...sortedTasks]
+  if (sortMode.value === 'due') {
+    return tasks.sort((a, b) => {
+      if (!a.dueDate && !b.dueDate) return 0
+      if (!a.dueDate) return 1
+      if (!b.dueDate) return -1
+      return a.dueDate.localeCompare(b.dueDate)
+    })
+  }
+  if (sortMode.value === 'created') {
+    return tasks.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
+  }
+  return tasks
+})
 </script>
 
 <template>
@@ -96,14 +116,22 @@ const taskCount = computed(() => store.filteredTasks.length)
       <button class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors" @click="openCreate">+ 新建任务</button>
     </div>
 
-    <div class="flex gap-2 flex-wrap">
-      <button v-for="f in filters" :key="f.key" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-        :class="store.filter===f.key ? 'bg-accent/10 text-accent' : 'text-text-muted hover:text-text-secondary hover:bg-card-hover'"
-        @click="store.setFilter(f.key)">{{ f.label }}</button>
+    <div class="flex items-center gap-2 flex-wrap">
+      <div class="flex gap-2 flex-wrap">
+        <button v-for="f in filters" :key="f.key" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+          :class="store.filter===f.key ? 'bg-accent/10 text-accent' : 'text-text-muted hover:text-text-secondary hover:bg-card-hover'"
+          @click="store.setFilter(f.key)">{{ f.label }}</button>
+      </div>
+      <span class="text-border mx-1">|</span>
+      <span class="text-[10px] text-text-muted">排序:</span>
+      <button v-for="m in [{k:'due'as SortMode,l:'截止日'},{k:'created'as SortMode,l:'创建日'},{k:'default'as SortMode,l:'默认'}]" :key="m.k"
+        class="px-2 py-1 rounded text-[10px] transition-colors"
+        :class="sortMode===m.k ? 'bg-accent/10 text-accent font-medium' : 'text-text-muted hover:text-text-secondary'"
+        @click="sortMode=m.k">{{ m.l }}</button>
     </div>
 
     <!-- 批量操作栏 -->
-    <div v-if="store.filteredTasks.length > 0" class="flex items-center gap-3 flex-wrap">
+    <div v-if="sortedTasks.length > 0" class="flex items-center gap-3 flex-wrap">
       <label class="flex items-center gap-2 cursor-pointer text-xs text-text-secondary">
         <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" class="rounded" />
         <span>全选</span>
@@ -116,8 +144,8 @@ const taskCount = computed(() => store.filteredTasks.length)
       </template>
     </div>
 
-    <div v-if="store.filteredTasks.length > 0" class="space-y-2">
-      <div v-for="task in store.filteredTasks" :key="task.id" class="bg-card border border-border rounded-xl p-4 hover:shadow-sm transition-shadow group">
+    <div v-if="sortedTasks.length > 0" class="space-y-2">
+      <div v-for="task in sortedTasks" :key="task.id" class="bg-card border border-border rounded-xl p-4 hover:shadow-sm transition-shadow group">
         <div class="flex items-start gap-3">
           <input
             type="checkbox"

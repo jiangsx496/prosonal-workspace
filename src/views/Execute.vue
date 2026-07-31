@@ -146,7 +146,6 @@ function toggleAndTrack(taskId: string) { taskStore.toggleTask(taskId) }
 /** 把面试题加入今日计划 */
 function addQuestionToTasks(q: FeedQuestion) {
   const today = new Date().toISOString().slice(0, 10)
-  // 避免重复添加
   const exists = taskStore.tasks.some((t) => t.title === q.question && t.scheduledDate === today)
   if (exists) return
   const id = taskStore.generateId()
@@ -167,6 +166,42 @@ function addQuestionToTasks(q: FeedQuestion) {
     createdAt: today,
   })
   dailyStore.addTaskToToday(id)
+}
+
+/** 把面试题创建为学习目标 */
+function addQuestionToGoal(q: FeedQuestion) {
+  const today = new Date().toISOString().slice(0, 10)
+  const goalId = goalStore.generateId()
+  const taskId = taskStore.generateId()
+  // 创建学习目标
+  goalStore.addGoal({
+    id: goalId,
+    title: q.question,
+    category: '学习',
+    priority: 'medium',
+    status: 'active',
+    deadline: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
+    progress: 0,
+    createdAt: today,
+  } as any)
+  // 创建关联任务
+  taskStore.addTask({
+    id: taskId,
+    title: `学习：${q.question}`,
+    description: `[${q.category}] ${q.answer}`,
+    project: '',
+    goalId,
+    category: 'study',
+    priority: 'medium',
+    status: 'backlog',
+    source: 'manual',
+    dueDate: today,
+    scheduledDate: today,
+    deferCount: 0,
+    estimatedMinutes: 20,
+    createdAt: today,
+  })
+  dailyStore.addTaskToToday(taskId)
 }
 
 function deferUnfinished() {
@@ -313,10 +348,16 @@ function goalName(goalId: string | null): string {
             >
               <summary class="text-sm text-text-primary cursor-pointer select-none flex items-center justify-between gap-2">
                 <span class="flex-1">{{ q.question }}</span>
-                <button
-                  class="text-xs text-accent hover:underline shrink-0"
-                  @click.stop.prevent="addQuestionToTasks(q)"
-                >+ 加入计划</button>
+                <div class="flex items-center gap-1 shrink-0">
+                  <button
+                    class="text-xs text-accent hover:underline shrink-0"
+                    @click.stop.prevent="addQuestionToTasks(q)"
+                  >+ 计划</button>
+                  <button
+                    class="text-xs text-orange-500 hover:underline shrink-0"
+                    @click.stop.prevent="addQuestionToGoal(q)"
+                  >→ 目标</button>
+                </div>
               </summary>
               <div class="mt-2 pl-3 border-l-2 border-accent/30">
                 <p class="text-xs text-text-muted whitespace-pre-wrap">{{ q.answer }}</p>
