@@ -162,9 +162,24 @@ export async function fetchDailyFeed(today: string, force: boolean = false): Pro
   const seen = new Set(baseQuestions.map((q) => q.question))
   const questions = [...baseQuestions, ...aiQuestions.filter((q) => !seen.has(q.question))]
 
+  // repos：API 成功用新数据，失败则从缓存保留旧的（避免网络波动清空已展示的内容）
+  let finalRepos: FeedRepo[]
+  if (repos.status === 'fulfilled') {
+    finalRepos = repos.value
+  } else {
+    finalRepos = []
+    try {
+      const cached = localStorage.getItem(cacheKey)
+      if (cached) {
+        const old = JSON.parse(cached) as DailyFeed
+        if (old.repos?.length) finalRepos = old.repos
+      }
+    } catch { /* ignore */ }
+  }
+
   const feed: DailyFeed = {
     date: today,
-    repos: repos.status === 'fulfilled' ? repos.value : [],
+    repos: finalRepos,
     questions,
     fetchedAt: new Date().toISOString(),
   }
