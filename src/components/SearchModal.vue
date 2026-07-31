@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { searchAll } from '@/services/search'
+import { useSearch } from '@/services/search'
 import type { SearchResult } from '@/services/search'
+
+const { search } = useSearch()
 
 const props = defineProps<{ show: boolean }>()
 const emit = defineEmits<{ close: [] }>()
@@ -24,7 +26,7 @@ watch(() => props.show, async (v) => {
 })
 
 watch(query, (q) => {
-  results.value = q.trim() ? searchAll(q.trim()) : []
+  results.value = q.trim() ? search(q.trim()) : []
   selectedIdx.value = 0
 })
 
