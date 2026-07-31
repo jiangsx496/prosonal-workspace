@@ -19,6 +19,9 @@ const journalStore = useJournalStore()
 
 const todayStr = () => new Date().toISOString().slice(0, 10)
 const viewMode = ref<'month' | 'week'>('month')
+const viewYear = ref(new Date().getFullYear())
+const viewMonth = ref(new Date().getMonth())
+const selectedDate = ref(todayStr())
 
 // ---- 周视图 ----
 const weekStart = ref(getWeekStart(new Date()))
