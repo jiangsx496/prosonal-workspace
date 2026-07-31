@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { getAIConfig, setAIConfig } from '@/services/ai'
 import { cleanupOrphanData } from '@/services/dataCleanup'
+import { exportAllData, importAllData, downloadJson } from '@/services/dataExport'
 
 const theme = ref('light')
 const language = ref('zh-CN')
@@ -34,6 +35,49 @@ function runCleanup() {
     cleanupRunning.value = false
     setTimeout(() => { cleanupMsg.value = '' }, 3000)
   }
+}
+
+// ---- 数据导出/导入 ----
+const exportMsg = ref('')
+const importMsg = ref('')
+
+function handleExport() {
+  try {
+    const result = exportAllData()
+    if (result.keyCount === 0) {
+      exportMsg.value = '暂无数据可导出'
+      setTimeout(() => { exportMsg.value = '' }, 2000)
+      return
+    }
+    downloadJson(`personal-workspace-backup-${new Date().toISOString().slice(0, 10)}.json`, result.json)
+    exportMsg.value = `✓ 已导出 ${result.keyCount} 项数据`
+  } catch {
+    exportMsg.value = '导出失败'
+  }
+  setTimeout(() => { exportMsg.value = '' }, 2000)
+}
+
+function handleImport() {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = '.json'
+  input.onchange = async () => {
+    const file = input.files?.[0]
+    if (!file) return
+    try {
+      const text = await file.text()
+      const { success, errors } = importAllData(text)
+      if (errors.length > 0) {
+        importMsg.value = `⚠ 导入完成：${success} 项成功，${errors.length} 项失败（${errors[0]}）`
+      } else {
+        importMsg.value = `✓ 已导入 ${success} 项数据，刷新页面生效`
+      }
+    } catch {
+      importMsg.value = '导入失败，请检查文件格式'
+    }
+    setTimeout(() => { importMsg.value = '' }, 4000)
+  }
+  input.click()
 }
 
 const presetEndpoints = [
@@ -143,14 +187,33 @@ function applyPreset(endpoint: string) {
         <span class="text-base">🧹</span>
         <h3 class="text-sm font-semibold text-text-primary">数据管理</h3>
       </div>
-      <p class="text-xs text-text-muted">清理孤儿任务关联和无效日历引用，保持数据一致性。</p>
-      <div class="flex items-center gap-3">
+      <p class="text-xs text-text-muted">导出备份到本地文件，或从备份恢复数据。清理功能用于修复数据不一致。</p>
+
+      <!-- 导出/导入 -->
+      <div class="flex items-center gap-3 flex-wrap">
         <button
-          class="px-4 py-2 rounded-lg bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 transition-colors disabled:opacity-50"
-          :disabled="cleanupRunning"
-          @click="runCleanup"
-        >{{ cleanupRunning ? '清理中...' : '清理无效数据' }}</button>
-        <span v-if="cleanupMsg" class="text-xs text-text-secondary">{{ cleanupMsg }}</span>
+          class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors"
+          @click="handleExport"
+        >📥 导出数据</button>
+        <button
+          class="px-4 py-2 rounded-lg border border-accent text-accent text-sm font-medium hover:bg-accent/5 transition-colors"
+          @click="handleImport"
+        >📤 导入数据</button>
+        <span v-if="exportMsg" class="text-xs text-green-600">{{ exportMsg }}</span>
+        <span v-if="importMsg" class="text-xs text-amber-600">{{ importMsg }}</span>
+      </div>
+
+      <!-- 清理 -->
+      <div class="pt-3 border-t border-border">
+        <p class="text-xs text-text-muted mb-3">清理孤儿任务关联和无效日历引用，保持数据一致性。</p>
+        <div class="flex items-center gap-3">
+          <button
+            class="px-4 py-2 rounded-lg bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 transition-colors disabled:opacity-50"
+            :disabled="cleanupRunning"
+            @click="runCleanup"
+          >{{ cleanupRunning ? '清理中...' : '清理无效数据' }}</button>
+          <span v-if="cleanupMsg" class="text-xs text-text-secondary">{{ cleanupMsg }}</span>
+        </div>
       </div>
     </div>
 
