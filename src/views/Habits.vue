@@ -56,6 +56,24 @@ function submit() {
               :class="store.isDone(h)?'bg-green-100 text-green-700':'bg-accent/10 text-accent hover:bg-accent/20'"
               @click="store.toggle(h.id)">{{ store.isDone(h)?'✅ 已完成':'打卡' }}</button>
           </div>
+
+          <!-- 月度打卡热力图 -->
+          <div class="mt-3 pt-3 border-t border-border">
+            <div class="flex gap-0.5 justify-center">
+              <div v-for="(week, wi) in store.getHeatmap(h.id)" :key="wi" class="flex flex-col gap-0.5">
+                <div
+                  v-for="(day, di) in week" :key="di"
+                  class="w-3 h-3 rounded-sm"
+                  :class="day.isFuture ? 'bg-transparent' : day.completed ? (day.isToday ? 'bg-green-500 ring-1 ring-green-300' : 'bg-green-400') : 'bg-gray-200'"
+                  :title="day.date + (day.completed ? ' ✅' : '')"
+                ></div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between mt-1.5 text-[10px] text-text-muted/60">
+              <span>{{ store.getHeatmap(h.id)[0]?.[0]?.date?.slice(5) || '' }}</span>
+              <span>{{ store.getHeatmap(h.id)[4]?.[6]?.date?.slice(5) || '' }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

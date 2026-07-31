@@ -64,6 +64,36 @@ export const useHabitStore = defineStore('habits', () => {
     return h.completedDates.filter((d) => d >= start).length
   }
 
+  type HeatmapDay = { date: string; completed: boolean; isToday: boolean; isFuture: boolean }
+
+  /** 返回最近 5 周（周日~周六）打卡热力图数据 */
+  function getHeatmap(id: string): HeatmapDay[][] {
+    const h = habits.value.find((h) => h.id === id)
+    const completedSet = new Set(h?.completedDates || [])
+    // 从今天往回推 34 天 + 对齐到周日 = 5 整周
+    const end = new Date()
+    end.setHours(0, 0, 0, 0)
+    const start = new Date(end.getTime() - 34 * 86400000)
+    const startDay = start.getDay()
+    let current = new Date(start.getTime() - startDay * 86400000)
+    const weeks: HeatmapDay[][] = []
+    for (let w = 0; w < 5; w++) {
+      const week: HeatmapDay[] = []
+      for (let d = 0; d < 7; d++) {
+        const dateStr = current.toISOString().slice(0, 10)
+        week.push({
+          date: dateStr,
+          completed: completedSet.has(dateStr),
+          isToday: dateStr === today,
+          isFuture: dateStr > today,
+        })
+        current = new Date(current.getTime() + 86400000)
+      }
+      weeks.push(week)
+    }
+    return weeks
+  }
+
   function addHabit(habit: Habit) { habits.value.unshift(habit) }
   function updateHabit(id: string, patch: Partial<Habit>) {
     const idx = habits.value.findIndex((h) => h.id === id)
@@ -74,7 +104,7 @@ export const useHabitStore = defineStore('habits', () => {
 
   return {
     habits, activeHabits, doneCount, isDone, toggle, calcStreak,
-    weeklyCount, addHabit, updateHabit, removeHabit, generateId,
+    weeklyCount, getHeatmap, addHabit, updateHabit, removeHabit, generateId,
     habitCategoryMeta,
   }
 })

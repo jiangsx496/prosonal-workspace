@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useAppStore, type Theme } from '@/stores/app'
 import { getAIConfig, setAIConfig } from '@/services/ai'
 import { cleanupOrphanData } from '@/services/dataCleanup'
 import { exportAllData, importAllData, downloadJson } from '@/services/dataExport'
 
-const theme = ref('light')
+const appStore = useAppStore()
+const theme = ref<Theme>(appStore.theme)
+watch(theme, (val) => { appStore.theme = val })
 const language = ref('zh-CN')
 
 // ---- AI 配置 ----
