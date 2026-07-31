@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSearch } from '@/services/search'
 import type { SearchResult } from '@/services/search'
 
 const { search } = useSearch()
 
-const props = defineProps<{ show: boolean }>()
 const emit = defineEmits<{ close: [] }>()
 
 const router = useRouter()
@@ -15,14 +14,10 @@ const results = ref<SearchResult[]>([])
 const inputRef = ref<HTMLInputElement | null>(null)
 const selectedIdx = ref(0)
 
-watch(() => props.show, async (v) => {
-  if (v) {
-    query.value = ''
-    results.value = []
-    selectedIdx.value = 0
-    await nextTick()
-    inputRef.value?.focus()
-  }
+// 挂载时自动聚焦
+onMounted(async () => {
+  await nextTick()
+  inputRef.value?.focus()
 })
 
 watch(query, (q) => {
@@ -56,7 +51,7 @@ function onKeydown(e: KeyboardEvent) {
 
 <template>
   <Teleport to="body">
-    <div v-if="show" class="fixed inset-0 z-[60] flex items-start justify-center pt-[15vh]" @click.self="emit('close')">
+    <div class="fixed inset-0 z-[60] flex items-start justify-center pt-[15vh]" @click.self="emit('close')">
       <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
       <div class="relative w-full max-w-lg mx-4 bg-card border border-border rounded-2xl shadow-2xl overflow-hidden">
         <div class="flex items-center gap-3 px-4 py-3 border-b border-border">
@@ -82,7 +77,7 @@ function onKeydown(e: KeyboardEvent) {
             <span class="text-sm shrink-0 mt-0.5">{{ typeIcon[r.type] }}</span>
             <div class="flex-1 min-w-0">
               <p class="text-sm text-text-primary truncate">{{ r.title }}</p>
-              <p v-if="r.desc" class="text-xs text-text-muted truncate mt-0.5">{{ r.desc }}</p>
+              <p v-if="r.subtitle" class="text-xs text-text-muted truncate mt-0.5">{{ r.subtitle }}</p>
             </div>
             <span class="text-[10px] text-text-muted bg-card-hover px-1.5 py-0.5 rounded shrink-0">{{ typeLabel[r.type] }}</span>
           </div>
