@@ -60,9 +60,6 @@ function selectDate(date: string) {
   selectedDate.value = date
   // 切换到对应月份
   const d = new Date(date)
-  selectedDate.value = date
-  // 切换到对应月份
-  const d = new Date(date)
   viewYear.value = d.getFullYear()
   viewMonth.value = d.getMonth()
 }
