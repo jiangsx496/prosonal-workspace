@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useInboxStore } from '@/stores/inbox'
+import { useTaskStore } from '@/stores/tasks'
+import { useDailyStore } from '@/stores/daily'
 import { usePlanDraftStore } from '@/stores/planDraft'
 import { parsePlan } from '@/services/aiParser'
 import { extractFile } from '@/services/importer'
@@ -8,6 +10,8 @@ import { hasAIConfig, aiParseToPlanDraft } from '@/services/ai'
 import { flattenTasks } from '@/types/planDraft'
 
 const inbox = useInboxStore()
+const taskStore = useTaskStore()
+const dailyStore = useDailyStore()
 const draftStore = usePlanDraftStore()
 
 const tab = ref<'pending' | 'processed'>('pending')
@@ -49,6 +53,30 @@ async function startAIPlanning() {
   } finally {
     analyzing.value = false
   }
+}
+
+// ---- 已处理条目转为任务 ----
+function convertToTask(content: string, itemId: string) {
+  const today = new Date().toISOString().slice(0, 10)
+  const taskId = taskStore.generateId()
+  taskStore.addTask({
+    id: taskId,
+    title: content.slice(0, 60),
+    description: content,
+    project: '',
+    goalId: null,
+    category: 'work',
+    priority: 'medium',
+    status: 'backlog',
+    source: 'manual',
+    dueDate: today,
+    scheduledDate: today,
+    deferCount: 0,
+    estimatedMinutes: 30,
+    createdAt: today,
+  })
+  dailyStore.addTaskToToday(taskId)
+  inbox.removeItem(itemId)
 }
 
 // ---- 文件上传 ----
@@ -231,6 +259,7 @@ function clearDraft() {
         </div>
         <div class="flex items-center gap-1 shrink-0">
           <button v-if="!item.processed" class="w-6 h-6 rounded flex items-center justify-center text-text-muted hover:text-green-500 transition-colors" @click="inbox.markProcessed(item.id)" title="标记已处理">✓</button>
+          <button v-if="item.processed" class="px-2 py-1 rounded text-xs text-accent hover:bg-accent/10 transition-colors" @click="convertToTask(item.content, item.id)" title="转为今日任务">→ 任务</button>
           <button class="w-6 h-6 rounded flex items-center justify-center text-text-muted opacity-0 group-hover:opacity-100 hover:text-red-500 transition-all" @click="inbox.removeItem(item.id)" title="删除">✕</button>
         </div>
       </div>
