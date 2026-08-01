@@ -168,27 +168,19 @@ function addQuestionToTasks(q: FeedQuestion) {
   dailyStore.addTaskToToday(id)
 }
 
-/** 把面试题创建为学习目标 */
-function addQuestionToGoal(q: FeedQuestion) {
+// ---- 面试题挂目标 ----
+const goalPickQuestion = ref<FeedQuestion | null>(null)
+const goalPickVisible = ref(false)
+
+/** 把面试题作为任务挂到已有目标下 */
+function addQuestionToGoal(goalId: string) {
+  const q = goalPickQuestion.value
+  if (!q) return
   const today = new Date().toISOString().slice(0, 10)
-  const goalId = goalStore.generateId()
   const taskId = taskStore.generateId()
-  // 创建学习目标
-  goalStore.addGoal({
-    id: goalId,
-    title: q.question,
-    description: `[${q.category}] ${q.answer}`,
-    category: '学习',
-    priority: 'medium',
-    status: 'active',
-    startDate: today,
-    deadline: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
-    progress: 0,
-  })
-  // 创建关联任务
   taskStore.addTask({
     id: taskId,
-    title: `学习：${q.question}`,
+    title: q.question,
     description: `[${q.category}] ${q.answer}`,
     project: '',
     goalId,
@@ -203,6 +195,16 @@ function addQuestionToGoal(q: FeedQuestion) {
     createdAt: today,
   })
   dailyStore.addTaskToToday(taskId)
+  goalPickQuestion.value = null
+}
+
+function openGoalPicker(q: FeedQuestion) {
+  if (goalPickQuestion.value === q && goalPickVisible.value) {
+    goalPickVisible.value = false
+    return
+  }
+  goalPickQuestion.value = q
+  goalPickVisible.value = true
 }
 
 function deferUnfinished() {
@@ -354,10 +356,29 @@ function goalName(goalId: string | null): string {
                     class="text-xs text-accent hover:underline shrink-0"
                     @click.stop.prevent="addQuestionToTasks(q)"
                   >+ 计划</button>
-                  <button
-                    class="text-xs text-orange-500 hover:underline shrink-0"
-                    @click.stop.prevent="addQuestionToGoal(q)"
-                  >→ 目标</button>
+                  <div class="relative">
+                    <button
+                      class="text-xs text-orange-500 hover:underline shrink-0"
+                      @click.stop.prevent="openGoalPicker(q)"
+                    >→ 目标</button>
+                    <!-- 目标选择下拉 -->
+                    <div
+                      v-if="goalPickVisible && goalPickQuestion === q"
+                      class="absolute right-0 top-full mt-1 w-48 bg-card border border-border rounded-xl shadow-xl z-50 py-1 max-h-48 overflow-y-auto"
+                      @click.stop
+                    >
+                      <p class="px-3 py-1.5 text-[10px] text-text-muted">选择目标</p>
+                      <button
+                        v-for="g in goalStore.sortedActiveGoals"
+                        :key="g.id"
+                        class="w-full text-left px-3 py-1.5 text-xs text-text-primary hover:bg-card-hover transition-colors truncate"
+                        @click="addQuestionToGoal(g.id); goalPickVisible = false"
+                      >{{ goalStore.goalIcon(g.category) }} {{ g.title }}</button>
+                      <div v-if="goalStore.sortedActiveGoals.length === 0" class="px-3 py-2 text-[10px] text-text-muted">
+                        暂无活跃目标，请先创建
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </summary>
               <div class="mt-2 pl-3 border-l-2 border-accent/30">
