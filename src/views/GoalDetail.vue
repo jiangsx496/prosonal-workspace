@@ -15,6 +15,18 @@ const dailyStore = useDailyStore()
 const goalId = computed(() => route.params.id as string)
 const goal = computed(() => goalStore.goals.find((g) => g.id === goalId.value))
 
+// ---- 完成 & 删除 ----
+function handleComplete() {
+  if (!goal.value) return
+  goalStore.completeGoal(goal.value.id)
+}
+function handleDelete() {
+  if (!goal.value) return
+  if (!confirm(`确定删除目标「${goal.value.title}」及其关联任务？`)) return
+  goalStore.deleteGoal(goal.value.id)
+  router.push('/goals')
+}
+
 const goalTasks = computed(() => taskStore.tasks.filter((t) => t.goalId === goalId.value))
 const doneTasks = computed(() => goalTasks.value.filter((t) => t.status === 'done'))
 const undoneTasks = computed(() => goalTasks.value.filter((t) => t.status !== 'done'))
@@ -89,8 +101,19 @@ function scheduleSelected() {
         <div class="flex items-center gap-2">
           <span class="text-2xl">{{ goalStore.goalIcon(goal.category) }}</span>
           <h1 class="text-2xl font-bold text-text-primary">{{ goal.title }}</h1>
+          <span v-if="goal.status==='completed'" class="text-xs px-2 py-0.5 rounded bg-green-100 text-green-700">已完成</span>
         </div>
         <p class="text-xs text-text-muted mt-1">{{ goal.description }}</p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button v-if="goal.status !== 'completed'"
+          class="px-3 py-1.5 rounded-lg bg-green-50 text-green-700 text-xs font-medium hover:bg-green-100 transition-colors"
+          @click="handleComplete"
+        >✓ 完成</button>
+        <button
+          class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
+          @click="handleDelete"
+        >🗑 删除</button>
       </div>
     </div>
 

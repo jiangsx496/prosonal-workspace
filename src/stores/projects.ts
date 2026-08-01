@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, watch, computed } from 'vue'
+import { useTaskStore } from '@/stores/tasks'
 
 export interface Project {
   id: string
@@ -51,6 +52,13 @@ export const useProjectStore = defineStore('projects', () => {
   }
 
   function remove(id: string) {
+    // 清理关联任务的 project 字段引用
+    const taskStore = useTaskStore()
+    taskStore.tasks.forEach((t) => {
+      if (t.project === projects.value.find((p) => p.id === id)?.name) {
+        taskStore.updateTask(t.id, { project: '' })
+      }
+    })
     projects.value = projects.value.filter((p) => p.id !== id)
   }
 
