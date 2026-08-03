@@ -4,6 +4,7 @@ import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import SearchModal from '@/components/SearchModal.vue'
+import Icon from '@/components/Icon.vue'
 
 const store = useAppStore()
 const route = useRoute()
@@ -23,14 +24,14 @@ onMounted(() => window.addEventListener('keydown', onKeydown))
 onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
 const navItems = [
-  { path: '/', name: 'execute', label: '今天', icon: '📊' },
-  { path: '/inbox', name: 'inbox', label: '收集', icon: '📥' },
-  { path: '/goals', name: 'goals', label: '目标', icon: '🎯' },
-  { path: '/resources', name: 'resources', label: '资源', icon: '🗂️' },
-  { path: '/review', name: 'review', label: '复盘', icon: '🔄' },
-  { path: '/dashboard', name: 'dashboard', label: '看板', icon: '📊' },
-  { path: '/interview', name: 'interview', label: '面试题库', icon: '📚' },
-  { path: '/calendar', name: 'calendar', label: '日历', icon: '📅' },
+  { path: '/', name: 'execute', label: '今天', icon: 'today' },
+  { path: '/inbox', name: 'inbox', label: '收集', icon: 'inbox' },
+  { path: '/goals', name: 'goals', label: '目标', icon: 'target' },
+  { path: '/resources', name: 'resources', label: '资源', icon: 'folder' },
+  { path: '/review', name: 'review', label: '复盘', icon: 'refresh' },
+  { path: '/dashboard', name: 'dashboard', label: '看板', icon: 'chart' },
+  { path: '/interview', name: 'interview', label: '题库', icon: 'book' },
+  { path: '/calendar', name: 'calendar', label: '日历', icon: 'calendar' },
 ]
 
 const isActive = computed(() => (name: string) => route.name === name)
@@ -42,8 +43,8 @@ const isActive = computed(() => (name: string) => route.name === name)
     :class="{ 'w-16': store.sidebarCollapsed }"
   >
     <div class="flex items-center h-14 px-4 border-b border-border">
-      <span class="text-xl font-bold text-accent tracking-tight">
-        <template v-if="!store.sidebarCollapsed">WS</template>
+      <span class="text-sm font-bold text-text-primary tracking-tight">
+        <template v-if="!store.sidebarCollapsed">Workspace</template>
         <template v-else>W</template>
       </span>
     </div>
@@ -51,10 +52,10 @@ const isActive = computed(() => (name: string) => route.name === name)
     <!-- 全局搜索 -->
     <div class="px-2 pb-1">
       <button
-        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-muted hover:bg-card-hover hover:text-text-primary transition-colors"
+        class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-text-muted hover:bg-card-hover hover:text-text-primary transition-colors"
         @click="showSearch = true"
       >
-        <span class="text-lg flex-shrink-0">🔍</span>
+        <Icon name="search" :size="18" />
         <span v-if="!store.sidebarCollapsed" class="truncate">搜索...</span>
         <kbd v-if="!store.sidebarCollapsed" class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-card-hover border border-border text-text-muted">⌘K</kbd>
       </button>
@@ -65,14 +66,14 @@ const isActive = computed(() => (name: string) => route.name === name)
         v-for="item in navItems"
         :key="item.name"
         :to="item.path"
-        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"
+        class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors"
         :class="
           isActive(item.name)
-            ? 'bg-accent/10 text-accent'
+            ? 'bg-accent/8 text-accent font-medium'
             : 'text-text-secondary hover:bg-card-hover hover:text-text-primary'
         "
       >
-        <span class="text-lg flex-shrink-0">{{ item.icon }}</span>
+        <Icon :name="item.icon" :size="18" />
         <span v-if="!store.sidebarCollapsed" class="truncate">{{ item.label }}</span>
       </router-link>
     </nav>
@@ -82,7 +83,7 @@ const isActive = computed(() => (name: string) => route.name === name)
         class="w-full flex items-center justify-center p-2 rounded-lg text-text-muted hover:bg-card-hover hover:text-text-primary transition-colors"
         @click="store.toggleSidebar()"
       >
-        <span class="text-sm">{{ store.sidebarCollapsed ? '▶' : '◀' }}</span>
+        <Icon :name="store.sidebarCollapsed ? 'chevronRight' : 'chevronLeft'" :size="16" />
       </button>
     </div>
 

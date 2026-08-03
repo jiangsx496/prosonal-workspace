@@ -17,6 +17,7 @@ import FocusScreen from '@/components/FocusScreen.vue'
 import MotivationBanner from '@/components/MotivationBanner.vue'
 import { generateDailyPlan, sortTasksByPriority } from '@/services/scheduler'
 import { todayLocal } from '@/utils/date'
+import Icon from '@/components/Icon.vue'
 
 const taskStore = useTaskStore()
 const habitStore = useHabitStore()
@@ -280,54 +281,53 @@ onUnmounted(() => {
     <!-- 动态激励横幅 -->
     <MotivationBanner />
     <!-- ========== 1. 今日状态 ========== -->
-    <div class="bg-card border border-border rounded-2xl p-6 md:p-8">
+    <div class="bg-card border border-border rounded-xl p-5 md:p-6">
       <div class="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <p class="text-4xl md:text-5xl font-light text-text-primary tracking-tight tabular-nums">{{ timeDisplay }}</p>
-          <p class="text-2xl md:text-3xl font-semibold text-text-primary mt-2">{{ greeting.emoji }} {{ greeting.text }} Richard</p>
-          <p class="text-sm text-text-muted mt-1">今天是 {{ now.month }}月{{ now.day }}日 {{ now.weekday }} · {{ taskStore.pendingCount }} 项待办 · {{ habitStore.doneCount }}/{{ habitStore.activeHabits.length }} 习惯</p>
+          <p class="text-3xl md:text-4xl font-light text-text-primary tracking-tight tabular-nums">{{ timeDisplay }}</p>
+          <p class="text-lg md:text-xl font-medium text-text-primary mt-1">{{ greeting.text }}</p>
+          <p class="text-sm text-text-muted mt-1">{{ now.month }}月{{ now.day }}日 {{ now.weekday }} · {{ taskStore.pendingCount }} 项待办 · {{ habitStore.doneCount }}/{{ habitStore.activeHabits.length }} 习惯</p>
         </div>
         <div v-if="todayTotal > 0" class="flex flex-col items-end gap-1">
-          <span class="text-3xl font-bold" :class="progressPct===100?'text-green-500':'text-accent'">{{ progressPct }}%</span>
+          <span class="text-2xl font-semibold tabular-nums" :class="progressPct===100?'text-green-500':'text-accent'">{{ progressPct }}%</span>
           <span class="text-xs text-text-muted">{{ todayDone }}/{{ todayTotal }} 完成</span>
         </div>
       </div>
-      <div class="mt-4 h-2 bg-card-hover rounded-full overflow-hidden">
-        <div class="h-full rounded-full transition-all duration-700" :style="{width:progressPct+'%',backgroundColor:progressPct===100?'#16a34a':'#4f46e5'}"></div>
+      <div class="mt-4 h-1.5 bg-card-hover rounded-full overflow-hidden">
+        <div class="h-full rounded-full transition-all duration-700" :style="{width:progressPct+'%',backgroundColor:progressPct===100?'#16a34a':'var(--color-accent)'}"></div>
       </div>
       <div class="mt-3 flex justify-end gap-2">
-        <button class="px-3 py-1.5 rounded-lg bg-accent/10 text-accent text-xs font-medium hover:bg-accent/20 transition-colors disabled:opacity-50" :disabled="generating" @click="runScheduler">{{ generating ? '生成中...' : '🤖 生成今日计划' }}</button>
-        <button class="px-3 py-1.5 rounded-lg bg-green-50 text-green-700 text-xs font-medium hover:bg-green-100 transition-colors" @click="openEndDay">🌙 结束今天</button>
+        <button class="px-3 py-1.5 rounded-lg bg-card-hover text-text-secondary text-xs font-medium hover:text-text-primary transition-colors disabled:opacity-50" :disabled="generating" @click="runScheduler">{{ generating ? '生成中...' : '生成今日计划' }}</button>
+        <button class="px-3 py-1.5 rounded-lg text-text-secondary text-xs font-medium hover:bg-card-hover transition-colors" @click="openEndDay">结束今天</button>
       </div>
       <!-- 时间入口：折叠日历 -->
       <CalendarWidget />
     </div>
 
     <!-- ========== 2. 当前行动 + 专注计时 ========== -->
-    <div class="bg-gradient-to-r from-accent/10 to-blue-50 border border-accent/20 rounded-2xl p-5">
-      <div class="flex items-center gap-4 mb-3">
-        <span class="text-3xl shrink-0">{{ nextAction.icon }}</span>
-        <div class="flex-1 min-w-0">
-          <p class="text-xs text-text-muted uppercase tracking-wide">{{ nextAction.label }}</p>
-          <p class="text-base font-medium text-text-primary truncate">{{ nextAction.text }}</p>
-          <p v-if="nextAction.goalId && goalName(nextAction.goalId)" class="text-xs text-accent/70 mt-0.5">🎯 {{ goalName(nextAction.goalId) }}</p>
-        </div>
-        <button
-          v-if="focusStore.isIdle"
-          class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors shrink-0"
-          @click="showFocusScreen = true"
-        >🍅 开始专注</button>
+    <div class="bg-card border border-border rounded-xl p-5 flex items-center gap-4">
+      <div class="w-1 h-10 rounded-full shrink-0" :class="nextAction.icon==='🎉' ? 'bg-green-400' : 'bg-accent'"></div>
+      <div class="flex-1 min-w-0">
+        <p class="text-xs text-text-muted">{{ nextAction.label }}</p>
+        <p class="text-base font-medium text-text-primary truncate">{{ nextAction.text }}</p>
+        <p v-if="nextAction.goalId && goalName(nextAction.goalId)" class="text-xs text-text-muted mt-0.5 truncate">{{ goalName(nextAction.goalId) }}</p>
       </div>
-      <div class="flex items-center gap-2 mt-2 text-xs text-text-muted">
-        <span>🍅 今日专注：{{ focusStore.formatFocusTime() }}</span>
-        <span v-if="focusStore.todaySessions.length > 0">· {{ focusStore.todaySessions.length }} 次</span>
-      </div>
+      <button
+        v-if="focusStore.isIdle"
+        class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors shrink-0 flex items-center gap-1.5"
+        @click="showFocusScreen = true"
+      ><Icon name="play" :size="14" /> 专注</button>
+      <div v-else-if="focusStore.running" class="text-sm text-text-muted tabular-nums">{{ focusStore.formatFocusTime() }}</div>
+      <div class="ml-2 text-xs text-text-muted tabular-nums">{{ focusStore.formatFocusTime() }}</div>
     </div>
 
     <!-- ========== 3. 今日任务 ========== -->
     <div class="bg-card border border-border rounded-xl p-5">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-sm font-semibold text-text-primary">📋 今日任务</h3>
+        <div class="flex items-center gap-2">
+          <Icon name="list" :size="16" class="text-text-muted" />
+          <h3 class="text-sm font-medium text-text-primary">今日任务</h3>
+        </div>
         <span class="text-xs text-text-muted">{{ todayDone }}/{{ todayTotal }}</span>
       </div>
       <div v-if="todayTasks.length > 0" class="space-y-1">
@@ -347,19 +347,22 @@ onUnmounted(() => {
         <button class="text-xs text-accent hover:underline" @click="showCreate=true">+ 添加第一个任务</button>
       </div>
       <div v-if="todayTasks.length>0" class="mt-3 pt-3 border-t border-border">
-        <button class="text-xs text-text-muted hover:text-amber-500 transition-colors" @click="deferUnfinished">📥 将未完成的标记为延期</button>
+        <button class="text-xs text-text-muted hover:text-amber-500 transition-colors" @click="deferUnfinished">将未完成的标记为延期</button>
       </div>
     </div>
 
     <!-- ========== 3.5 每日精选 ========== -->
     <div class="bg-card border border-border rounded-xl p-5">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-sm font-semibold text-text-primary">📰 每日精选</h3>
+        <div class="flex items-center gap-2">
+          <Icon name="sparkles" :size="16" class="text-text-muted" />
+          <h3 class="text-sm font-medium text-text-primary">每日精选</h3>
+        </div>
         <button
           class="text-xs text-text-muted hover:text-accent transition-colors disabled:opacity-50"
           :disabled="feedStore.loading"
           @click="feedStore.loadToday(true)"
-        >{{ feedStore.loading ? '刷新中...' : '🔄 刷新' }}</button>
+        >{{ feedStore.loading ? '刷新中...' : '刷新' }}</button>
       </div>
 
       <div v-if="feedStore.loading && !feedStore.hasFeed" class="py-6 text-center text-xs text-text-muted">
@@ -373,7 +376,7 @@ onUnmounted(() => {
       <div v-else-if="feedStore.hasFeed" class="space-y-4">
         <!-- GitHub 热门仓库 -->
         <div v-if="feedStore.todayRepos.length > 0">
-          <p class="text-xs font-medium text-text-secondary mb-2">🔥 GitHub 热门</p>
+          <p class="text-xs font-medium text-text-secondary mb-2">GitHub 热门</p>
           <div class="space-y-1.5">
             <a
               v-for="repo in feedStore.todayRepos"
@@ -395,7 +398,7 @@ onUnmounted(() => {
         <!-- 每日面试题 -->
         <div v-if="feedStore.todayQuestions.length > 0">
           <div class="flex items-center justify-between mb-2">
-            <p class="text-xs font-medium text-text-secondary">📚 每日面试题</p>
+            <p class="text-xs font-medium text-text-secondary">每日面试题</p>
             <router-link to="/interview" class="text-xs text-accent hover:underline">题库 →</router-link>
           </div>
           <div class="space-y-1.5">
@@ -458,7 +461,10 @@ onUnmounted(() => {
     <!-- ========== 4. 今日习惯 ========== -->
     <div class="bg-card border border-border rounded-xl p-5">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-sm font-semibold text-text-primary">🔥 今日习惯</h3>
+        <div class="flex items-center gap-2">
+          <Icon name="flame" :size="16" class="text-text-muted" />
+          <h3 class="text-sm font-medium text-text-primary">今日习惯</h3>
+        </div>
         <span class="text-xs text-text-muted">{{ habitStore.doneCount }}/{{ habitStore.activeHabits.length }}</span>
       </div>
       <div class="space-y-2">
@@ -482,7 +488,10 @@ onUnmounted(() => {
     <div class="grid gap-5 lg:grid-cols-2">
       <!-- 当前目标 -->
       <div class="bg-card border border-border rounded-xl p-5">
-        <h3 class="text-sm font-semibold text-text-primary mb-4">🎯 当前目标</h3>
+        <div class="flex items-center gap-2 mb-4">
+          <Icon name="target" :size="16" class="text-text-muted" />
+          <h3 class="text-sm font-medium text-text-primary">当前目标</h3>
+        </div>
         <div v-if="goalStore.sortedActiveGoals.length > 0" class="space-y-3">
           <GoalCard
             v-for="(g, idx) in goalStore.sortedActiveGoals.slice(0, 3)"
@@ -498,7 +507,10 @@ onUnmounted(() => {
       </div>
       <!-- 今日总结 -->
       <div class="bg-card border border-border rounded-xl p-5">
-        <h3 class="text-sm font-semibold text-text-primary mb-3">✏️ 今日总结</h3>
+        <div class="flex items-center gap-2 mb-3">
+          <Icon name="edit" :size="16" class="text-text-muted" />
+          <h3 class="text-sm font-medium text-text-primary">今日总结</h3>
+        </div>
         <textarea
           :value="dailyStore.todayPlan.summary"
           @input="dailyStore.updateSummary(($event.target as HTMLTextAreaElement).value)"
@@ -511,7 +523,7 @@ onUnmounted(() => {
 
     <!-- ========== 6. 日历 ========== -->
     <!-- ========== 6. 浮动按钮 ========== -->
-    <button class="fixed bottom-20 right-6 md:bottom-8 md:right-8 w-12 h-12 rounded-full bg-accent text-white text-xl shadow-lg hover:bg-accent-hover hover:shadow-xl transition-all z-40 flex items-center justify-center" @click="showCreate=true" title="快速创建任务">+</button>
+    <button class="fixed bottom-20 right-6 md:bottom-8 md:right-8 w-11 h-11 rounded-full bg-accent text-white shadow-lg hover:bg-accent-hover hover:shadow-xl transition-all z-40 flex items-center justify-center" @click="showCreate=true" title="快速创建任务"><Icon name="plus" :size="20" /></button>
     <TaskModal :visible="showCreate" @close="showCreate=false" />
     <FocusScreen :visible="showFocusScreen" @close="showFocusScreen=false" />
 

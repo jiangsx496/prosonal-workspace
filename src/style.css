@@ -3,31 +3,31 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-bg: #f8fafc;
-  --color-sidebar: #f8fafc;
+  --color-bg: #fafafa;
+  --color-sidebar: #fafafa;
   --color-card: #ffffff;
-  --color-card-hover: #f1f5f9;
-  --color-accent: #4f46e5;
-  --color-accent-hover: #6366f1;
-  --color-text-primary: #1e293b;
-  --color-text-secondary: #475569;
-  --color-text-muted: #94a3b8;
-  --color-border: #e2e8f0;
+  --color-card-hover: #f5f5f5;
+  --color-accent: #5b5bd6;
+  --color-accent-hover: #4a4ac6;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #666666;
+  --color-text-muted: #999999;
+  --color-border: #ebebeb;
 }
 
 .dark {
-  --color-bg: #0f172a;
-  --color-sidebar: #0f172a;
-  --color-card: #1e293b;
-  --color-card-hover: #334155;
-  --color-text-primary: #f8fafc;
-  --color-text-secondary: #cbd5e1;
-  --color-text-muted: #94a3b8;
-  --color-border: #475569;
+  --color-bg: #0a0a0a;
+  --color-sidebar: #0a0a0a;
+  --color-card: #141414;
+  --color-card-hover: #1e1e1e;
+  --color-text-primary: #ededed;
+  --color-text-secondary: #a3a3a3;
+  --color-text-muted: #666666;
+  --color-border: #262626;
 }
 
 .dark * {
-  scrollbar-color: #475569 transparent;
+  scrollbar-color: #333333 transparent;
 }
 
 .theme-focus-dark {
@@ -66,11 +66,13 @@
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: #d4d4d4 transparent;
 }
 
 body {
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, 'Noto Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
