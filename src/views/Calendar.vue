@@ -142,7 +142,7 @@ function addTaskForDate() { showCreate.value = true }
 <template>
   <div class="space-y-4 pb-20 md:pb-0">
     <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-text-primary">📅 日历</h1>
+      <h1 class="text-2xl font-bold text-text-primary">日历</h1>
       <div class="flex items-center gap-2">
         <div class="flex rounded-lg bg-card-hover border border-border overflow-hidden">
           <button class="px-3 py-1 text-xs transition-colors" :class="viewMode==='month'?'bg-accent text-white':'text-text-secondary'" @click="viewMode='month'">月</button>
@@ -153,10 +153,10 @@ function addTaskForDate() { showCreate.value = true }
     </div>
 
     <!-- 月视图 -->
-    <div v-if="viewMode === 'month'" class="bg-card border border-border rounded-2xl p-4">
+    <div v-if="viewMode === 'month'" class="bg-card border border-border rounded-xl p-4">
       <div class="flex items-center justify-between mb-3">
         <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="prevMonth">←</button>
-        <span class="text-sm font-semibold text-text-primary">{{ monthLabel }}</span>
+        <span class="text-sm font-medium text-text-primary">{{ monthLabel }}</span>
         <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="nextMonth">→</button>
       </div>
 
@@ -200,10 +200,10 @@ function addTaskForDate() { showCreate.value = true }
     </div>
 
     <!-- 周视图 -->
-    <div v-if="viewMode === 'week'" class="bg-card border border-border rounded-2xl p-4">
+    <div v-if="viewMode === 'week'" class="bg-card border border-border rounded-xl p-4">
       <div class="flex items-center justify-between mb-4">
         <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="prevWeek">←</button>
-        <span class="text-sm font-semibold text-text-primary">{{ weekDays[0]?.month }}月{{ weekDays[0]?.day }}日 - {{ weekDays[6]?.month }}月{{ weekDays[6]?.day }}日</span>
+        <span class="text-sm font-medium text-text-primary">{{ weekDays[0]?.month }}月{{ weekDays[0]?.day }}日 - {{ weekDays[6]?.month }}月{{ weekDays[6]?.day }}日</span>
         <div class="flex items-center gap-1">
           <button class="text-xs text-accent hover:underline" @click="goThisWeek">本周</button>
           <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="nextWeek">→</button>
@@ -235,17 +235,17 @@ function addTaskForDate() { showCreate.value = true }
           </div>
 
           <!-- 专注 -->
-          <p v-if="weekDayFocus(d.date) > 0" class="text-[10px] text-text-muted mt-1">🍅 {{ weekDayFocus(d.date) }}m</p>
+          <p v-if="weekDayFocus(d.date) > 0" class="text-[10px] text-text-muted mt-1">{{ weekDayFocus(d.date) }}m</p>
         </div>
         </div>
       </div>
     </div>
 
     <!-- 日期详情（固定结构） -->
-    <div class="bg-card border border-border rounded-2xl p-5">
+    <div class="bg-card border border-border rounded-xl p-5">
       <!-- 标题 -->
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-sm font-semibold text-text-primary">{{ selectedLabel }}</h3>
+        <h3 class="text-sm font-medium text-text-primary">{{ selectedLabel }}</h3>
         <span class="text-xs font-medium" :class="typeColor">{{ typeLabel }}</span>
       </div>
 
@@ -253,15 +253,15 @@ function addTaskForDate() { showCreate.value = true }
       <div class="grid grid-cols-3 gap-3 mb-5">
         <div class="text-center bg-gray-50 rounded-xl py-3">
           <p class="text-2xl font-bold text-text-primary">{{ selectedDoneTasks.length }}<span class="text-sm text-text-muted">/{{ selectedTasks.length }}</span></p>
-          <p class="text-xs text-text-muted mt-0.5">📋 任务完成</p>
+          <p class="text-xs text-text-muted mt-0.5">任务完成</p>
         </div>
         <div class="text-center bg-gray-50 rounded-xl py-3">
           <p class="text-2xl font-bold text-text-primary">{{ selectedHabits.length }}</p>
-          <p class="text-xs text-text-muted mt-0.5">🔥 习惯完成</p>
+          <p class="text-xs text-text-muted mt-0.5">习惯完成</p>
         </div>
         <div class="text-center bg-gray-50 rounded-xl py-3">
           <p class="text-2xl font-bold text-text-primary">{{ selectedFocusMin }}<span class="text-sm text-text-muted">m</span></p>
-          <p class="text-xs text-text-muted mt-0.5">🍅 专注时间</p>
+          <p class="text-xs text-text-muted mt-0.5">专注时间</p>
         </div>
       </div>
 
@@ -279,7 +279,7 @@ function addTaskForDate() { showCreate.value = true }
         <div v-if="selectedHabits.length > 0" class="mb-4">
           <p class="text-xs text-text-muted mb-2">习惯打卡</p>
           <div class="flex flex-wrap gap-1">
-            <span v-for="h in selectedHabits" :key="h.id" class="text-xs px-2 py-0.5 rounded bg-orange-50 text-orange-600">{{ habitStore.habitCategoryMeta[h.category]?.icon || '✅' }} {{ h.name }}</span>
+            <span v-for="h in selectedHabits" :key="h.id" class="text-xs px-2 py-0.5 rounded bg-orange-50 text-orange-600">{{ h.name }}</span>
           </div>
         </div>
         <div v-if="selectedJournal">
@@ -304,7 +304,7 @@ function addTaskForDate() { showCreate.value = true }
         <div v-if="selectedHabits.length > 0" class="mb-4">
           <p class="text-xs text-text-muted mb-2">已打卡习惯</p>
           <div class="flex flex-wrap gap-1">
-            <span v-for="h in selectedHabits" :key="h.id" class="text-xs px-2 py-0.5 rounded bg-orange-50 text-orange-600">{{ habitStore.habitCategoryMeta[h.category]?.icon || '✅' }} {{ h.name }}</span>
+            <span v-for="h in selectedHabits" :key="h.id" class="text-xs px-2 py-0.5 rounded bg-orange-50 text-orange-600">{{ h.name }}</span>
           </div>
         </div>
         <button class="text-xs text-accent hover:underline" @click="router.push('/')">→ 前往今日执行</button>

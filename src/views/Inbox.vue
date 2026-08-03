@@ -122,11 +122,10 @@ function clearDraft() {
     </div>
 
     <!-- 统一入口：AI 智能规划 -->
-    <div class="bg-gradient-to-br from-accent/5 to-blue-50/30 border border-accent/15 rounded-2xl p-6">
+    <div class="bg-gradient-to-br from-accent/5 to-blue-50/30 border border-accent/15 rounded-xl p-6">
       <div class="flex items-center gap-2 mb-4">
-        <span class="text-xl">🧠</span>
         <div>
-          <p class="text-base font-semibold text-text-primary">AI 智能规划</p>
+          <p class="text-base font-medium text-text-primary">AI 智能规划</p>
           <p class="text-xs text-text-muted">告诉我你的目标或需求，AI 帮你自动制定完整学习计划（目标 + 每日安排 + 具体任务）</p>
         </div>
       </div>
@@ -143,32 +142,31 @@ function clearDraft() {
         <button
           class="px-3 py-2 rounded-lg border-2 border-dashed border-border text-xs text-text-secondary hover:border-accent hover:text-accent transition-colors"
           @click="fileInput?.click()"
-        >📎 上传文件</button>
+        >上传文件</button>
         <span v-if="uploadedFilename" class="text-xs text-text-muted truncate min-w-0">{{ uploadedFilename }}</span>
         <div class="flex-1"></div>
         <button
           class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50"
           :disabled="!userInput.trim() || analyzing"
           @click="startAIPlanning"
-        >{{ analyzing ? '⏳ AI 分析中，请稍候...' : '开始 AI 整理' }}</button>
+        >{{ analyzing ? 'AI 分析中，请稍候...' : '开始 AI 整理' }}</button>
       </div>
       <p v-if="errorMsg" class="text-xs text-amber-600 mt-2">{{ errorMsg }}</p>
     </div>
 
     <!-- PlanDraft 层级预览 -->
-    <div v-if="draftStore.currentDraft" class="bg-card border border-border rounded-2xl p-5 space-y-4">
+    <div v-if="draftStore.currentDraft" class="bg-card border border-border rounded-xl p-5 space-y-4">
       <!-- 目标 -->
       <div class="flex items-center gap-2 pb-3 border-b border-border">
-        <span class="text-lg">🎯</span>
         <div class="flex-1">
-          <p class="text-sm font-semibold text-text-primary">{{ draftStore.currentDraft.goal.title }}</p>
+          <p class="text-sm font-medium text-text-primary">{{ draftStore.currentDraft.goal.title }}</p>
           <p class="text-xs text-text-muted">{{ draftStore.currentDraft.goal.description }}</p>
         </div>
       </div>
 
       <!-- 任务数量警告 -->
       <div v-if="taskWarning" class="px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-700">
-        ⚠ {{ taskWarning }}
+        {{ taskWarning }}
       </div>
 
       <!-- 按天分组展示 -->
@@ -180,7 +178,7 @@ function clearDraft() {
         >
           <!-- Day 头部 -->
           <div class="flex items-center gap-2 px-3 py-2 bg-gray-50 flex-wrap">
-            <span class="text-xs font-bold text-accent">📅 Day{{ day.day }}</span>
+            <span class="text-xs font-bold text-accent">Day{{ day.day }}</span>
             <span class="text-xs text-text-muted">{{ day.date }}</span>
             <span class="text-xs text-text-secondary ml-1 truncate min-w-0">{{ day.title.replace(/^Day\d+[：:]?\s*/, '') }}</span>
             <span class="text-xs text-text-muted ml-auto shrink-0">
@@ -219,9 +217,9 @@ function clearDraft() {
                 v-model="task.priority"
                 class="text-xs px-1 py-0.5 rounded border border-border bg-white text-text-secondary outline-none"
               >
-                <option value="high">🔴</option>
-                <option value="medium">🟡</option>
-                <option value="low">⚪</option>
+                <option value="high">高</option>
+                <option value="medium">中</option>
+                <option value="low">低</option>
               </select>
               <button
                 class="w-5 h-5 rounded flex items-center justify-center text-text-muted hover:text-red-500 transition-colors text-xs opacity-0 group-hover:opacity-100"
@@ -266,7 +264,6 @@ function clearDraft() {
       </div>
     </div>
     <div v-else-if="!draftStore.currentDraft" class="flex flex-col items-center justify-center py-12 text-text-muted">
-      <span class="text-4xl mb-4">📥</span>
       <p class="text-sm">{{ tab==='pending'?'输入计划开始 AI 整理':'没有已处理的条目' }}</p>
     </div>
   </div>

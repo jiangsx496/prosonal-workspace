@@ -164,11 +164,11 @@ const linkedTaskCount = computed(() =>
     <Teleport to="body">
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-start justify-center pt-[10vh]" @click.self="closeModal">
         <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
-        <div class="relative bg-white border border-border rounded-2xl w-full max-w-md mx-4 shadow-2xl overflow-hidden">
+        <div class="relative bg-white border border-border rounded-xl w-full max-w-md mx-4 shadow-2xl overflow-hidden">
           <!-- Step 1: 目标信息 -->
           <template v-if="step === 'form'">
             <div class="flex items-center justify-between px-5 py-4 border-b border-border">
-              <h2 class="text-sm font-semibold text-text-primary">{{ editingGoal ? '编辑目标' : '新建目标' }}</h2>
+              <h2 class="text-sm font-medium text-text-primary">{{ editingGoal ? '编辑目标' : '新建目标' }}</h2>
               <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="closeModal">✕</button>
             </div>
             <div class="p-5 space-y-4">
@@ -179,7 +179,7 @@ const linkedTaskCount = computed(() =>
                 <div><label class="block text-xs font-medium text-text-secondary mb-1.5">截止日期</label><input v-model="form.deadline" type="date" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent" /></div>
               </div>
               <div><label class="block text-xs font-medium text-text-secondary mb-1.5">优先级</label><div class="flex gap-2">
-                <button v-for="p in [{v:'high',l:'🔴 高'},{v:'medium',l:'🟡 中'},{v:'low',l:'⚪ 低'}]" :key="p.v" type="button" class="flex-1 px-3 py-2 rounded-lg border text-sm transition-colors" :class="form.priority===p.v?'border-accent bg-accent/10 text-accent font-medium':'border-border bg-gray-50 text-text-secondary hover:bg-gray-100'" @click="form.priority=p.v as Goal['priority']">{{ p.l }}</button>
+                <button v-for="p in [{v:'high',l:'高'},{v:'medium',l:'中'},{v:'low',l:'低'}]" :key="p.v" type="button" class="flex-1 px-3 py-2 rounded-lg border text-sm transition-colors" :class="form.priority===p.v?'border-accent bg-accent/10 text-accent font-medium':'border-border bg-gray-50 text-text-secondary hover:bg-gray-100'" @click="form.priority=p.v as Goal['priority']">{{ p.l }}</button>
               </div></div>
             </div>
             <div class="flex justify-end gap-2 px-5 py-4 border-t border-border bg-gray-50/50">
@@ -192,7 +192,7 @@ const linkedTaskCount = computed(() =>
           <template v-if="step === 'tasks'">
             <div class="flex items-center justify-between px-5 py-4 border-b border-border">
               <div>
-                <h2 class="text-sm font-semibold text-text-primary">添加关联任务</h2>
+                <h2 class="text-sm font-medium text-text-primary">添加关联任务</h2>
                 <p class="text-xs text-text-muted mt-0.5">为目标「{{ form.title }}」拆解子任务</p>
               </div>
               <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="finishCreate">✕</button>
@@ -227,9 +227,9 @@ const linkedTaskCount = computed(() =>
     <Teleport to="body">
       <div v-if="deleteModal" class="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]" @click.self="deleteModal=false">
         <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
-        <div class="relative bg-white border border-border rounded-2xl w-full max-w-sm mx-4 shadow-2xl overflow-hidden">
+        <div class="relative bg-white border border-border rounded-xl w-full max-w-sm mx-4 shadow-2xl overflow-hidden">
           <div class="px-5 py-4 border-b border-border">
-            <h2 class="text-sm font-semibold text-text-primary">删除目标</h2>
+            <h2 class="text-sm font-medium text-text-primary">删除目标</h2>
           </div>
           <div class="p-5 space-y-3">
             <p class="text-sm text-text-secondary">确定删除「{{ deleteTarget?.title }}」？</p>

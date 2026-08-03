@@ -81,18 +81,16 @@ const weekMax = computed(() => {
     </div>
 
     <!-- 昨天复盘卡片 -->
-    <div class="bg-card border border-border rounded-2xl p-5 space-y-4">
+    <div class="bg-card border border-border rounded-xl p-5 space-y-4">
       <div class="flex items-center gap-2 pb-3 border-b border-border">
-        <span class="text-lg">📊</span>
-        <p class="text-sm font-semibold text-text-primary">昨天复盘 · {{ yesterday }}</p>
+        <p class="text-sm font-medium text-text-primary">昨天复盘 · {{ yesterday }}</p>
       </div>
 
       <!-- 昨天完成任务 -->
       <div>
-        <p class="text-xs font-medium text-text-secondary mb-2">✅ 完成（{{ yesterdayCompleted.length }}）</p>
+        <p class="text-xs font-medium text-text-secondary mb-2">完成（{{ yesterdayCompleted.length }}）</p>
         <div v-if="yesterdayCompleted.length > 0" class="space-y-1">
           <div v-for="t in yesterdayCompleted" :key="t.id" class="flex items-center gap-2 py-1 px-2">
-            <span class="text-xs text-green-500">✅</span>
             <span class="text-sm text-text-muted line-through">{{ t.title }}</span>
           </div>
         </div>
@@ -101,23 +99,21 @@ const weekMax = computed(() => {
 
       <!-- 昨天未完成任务 -->
       <div>
-        <p class="text-xs font-medium text-text-secondary mb-2">⏳ 未完成（{{ yesterdayUncompleted.length }}）</p>
+        <p class="text-xs font-medium text-text-secondary mb-2">未完成（{{ yesterdayUncompleted.length }}）</p>
         <div v-if="yesterdayUncompleted.length > 0" class="space-y-1">
           <div v-for="t in yesterdayUncompleted" :key="t.id" class="flex items-center gap-2 py-1 px-2">
-            <span class="text-xs text-amber-500">⏳</span>
             <span class="text-sm text-text-primary">{{ t.title }}</span>
             <span class="text-xs text-text-muted ml-auto">{{ t.status === 'deferred' ? '已延期' : '待完成' }}</span>
           </div>
         </div>
-        <p v-else class="text-xs text-text-muted/60 py-1 px-2">（全部完成 🎉）</p>
+        <p v-else class="text-xs text-text-muted/60 py-1 px-2">（全部完成）</p>
       </div>
 
       <!-- 昨天习惯 -->
       <div>
-        <p class="text-xs font-medium text-text-secondary mb-2">🔥 习惯（{{ yesterdayHabits.length }}）</p>
+        <p class="text-xs font-medium text-text-secondary mb-2">习惯（{{ yesterdayHabits.length }}）</p>
         <div v-if="yesterdayHabits.length > 0" class="space-y-1">
           <div v-for="h in yesterdayHabits" :key="h.id" class="flex items-center gap-2 py-1 px-2">
-            <span class="text-xs">🔥</span>
             <span class="text-sm text-text-primary">{{ h.name }}</span>
             <span class="text-xs text-amber-500 ml-auto">{{ h.streak }}天</span>
           </div>
@@ -127,16 +123,15 @@ const weekMax = computed(() => {
 
       <!-- 昨天专注 -->
       <div>
-        <p class="text-xs font-medium text-text-secondary mb-2">🍅 专注</p>
+        <p class="text-xs font-medium text-text-secondary mb-2">专注</p>
         <p class="text-sm text-text-primary px-2">{{ Math.round(yesterdayFocusMinutes) }} 分钟</p>
       </div>
     </div>
 
     <!-- 本周趋势图 -->
-    <div class="bg-card border border-border rounded-2xl p-5">
+    <div class="bg-card border border-border rounded-xl p-5">
       <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-        <span class="text-lg">📈</span>
-        <p class="text-sm font-semibold text-text-primary">本周趋势</p>
+        <p class="text-sm font-medium text-text-primary">本周趋势</p>
       </div>
 
       <!-- 柱状图 -->
@@ -165,7 +160,7 @@ const weekMax = computed(() => {
     <!-- 延期任务处理（保留原功能） -->
     <div v-if="taskStore.deferredTasks.length > 0">
       <div class="flex items-center gap-2 mb-3">
-        <span class="text-sm font-semibold text-text-primary">📥 延期任务（{{ taskStore.deferredTasks.length }}）</span>
+        <span class="text-sm font-medium text-text-primary">延期任务（{{ taskStore.deferredTasks.length }}）</span>
       </div>
       <div class="space-y-3">
         <div v-for="t in taskStore.deferredTasks" :key="t.id" class="bg-card border border-border rounded-xl p-4">
@@ -194,7 +189,6 @@ const weekMax = computed(() => {
     </div>
 
     <div v-if="taskStore.deferredTasks.length === 0 && yesterdayCompleted.length === 0 && yesterdayUncompleted.length === 0" class="flex flex-col items-center justify-center py-20 text-text-muted">
-      <span class="text-4xl mb-4">📊</span>
       <p class="text-sm">还没有复盘数据</p>
       <p class="text-xs mt-1 opacity-60">完成任务后这里会出现记录</p>
     </div>

@@ -124,7 +124,7 @@ function goToday() {
   <div class="space-y-5 pb-20 md:pb-0">
     <!-- 标题 + 统计 -->
     <div>
-      <h1 class="text-2xl font-bold text-text-primary">📚 面试题库</h1>
+      <h1 class="text-2xl font-bold text-text-primary">面试题库</h1>
       <p class="text-xs text-text-muted mt-1">系统复习，反复巩固</p>
     </div>
 
@@ -227,7 +227,6 @@ function goToday() {
       </details>
 
       <div v-if="filteredQuestions.length === 0" class="flex flex-col items-center justify-center py-16 text-text-muted">
-        <span class="text-3xl mb-3">📭</span>
         <p class="text-sm">没有符合条件的题目</p>
       </div>
     </div>

@@ -114,12 +114,12 @@ function scheduleSelected() {
         <button
           class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
           @click="handleDelete"
-        >🗑 删除</button>
+        >删除</button>
       </div>
     </div>
 
     <!-- 进度面板 -->
-    <div class="bg-card border border-border rounded-2xl p-6">
+    <div class="bg-card border border-border rounded-xl p-6">
       <div class="flex items-center justify-between mb-4">
         <div>
           <p class="text-3xl font-bold" :class="displayProgress>=100?'text-green-500':'text-accent'">{{ displayProgress }}%</p>
@@ -140,7 +140,7 @@ function scheduleSelected() {
           class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50"
           :disabled="selectedTaskIds.size === 0"
           @click="scheduleSelected"
-        >📅 安排到今天（已选 {{ selectedTaskIds.size }} 个）</button>
+        >安排到今天（已选 {{ selectedTaskIds.size }} 个）</button>
         <span v-if="scheduleMsg" class="text-xs text-green-600 font-medium">{{ scheduleMsg }}</span>
       </div>
     </div>
@@ -148,14 +148,14 @@ function scheduleSelected() {
     <!-- 计划视图（Plan 层级展示） -->
     <div v-if="plan" class="bg-card border border-border rounded-xl p-5">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-sm font-semibold text-text-primary">📅 计划视图</h3>
+        <h3 class="text-sm font-medium text-text-primary">计划视图</h3>
         <span class="text-xs text-text-muted">{{ plan.totalDays }} 天 · 从 {{ plan.startDate }} 开始</span>
       </div>
       <div class="space-y-3">
         <div v-for="day in plan.days" :key="day.id" class="border border-border rounded-xl overflow-hidden">
           <!-- Day 头部 -->
           <div class="flex items-center gap-2 px-3 py-2 bg-gray-50 flex-wrap">
-            <span class="text-xs font-bold text-accent">📅 Day{{ day.day }}</span>
+            <span class="text-xs font-bold text-accent">Day{{ day.day }}</span>
             <span class="text-xs text-text-muted">{{ day.date }}</span>
             <span class="text-xs text-text-secondary ml-1 truncate min-w-0">{{ day.title.replace(/^Day\d+[：:]?\s*/, '') }}</span>
             <span class="text-xs text-text-muted ml-auto shrink-0">
@@ -186,7 +186,7 @@ function scheduleSelected() {
     <!-- 任务池（原关联任务，默认折叠） -->
     <div class="bg-card border border-border rounded-xl p-5">
       <button class="flex items-center justify-between w-full mb-4" @click="showTaskPool = !showTaskPool">
-        <h3 class="text-sm font-semibold text-text-primary">🗂️ 任务池</h3>
+        <h3 class="text-sm font-medium text-text-primary">任务池</h3>
         <div class="flex items-center gap-2">
           <span class="text-xs text-text-muted">{{ doneTasks.length }}/{{ goalTasks.length }}</span>
           <span class="text-xs text-text-muted">{{ showTaskPool ? '▾' : '▸' }}</span>
@@ -199,9 +199,9 @@ function scheduleSelected() {
       <div class="flex gap-2 mb-4">
         <input v-model="newTaskTitle" type="text" placeholder="添加任务，按回车确认" class="flex-1 px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent focus:bg-white transition-colors" @keyup.enter="addQuickTask" />
         <select v-model="newTaskPriority" class="px-2 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-xs outline-none focus:border-accent">
-          <option value="high">🔴</option>
-          <option value="medium">🟡</option>
-          <option value="low">⚪</option>
+          <option value="high">高</option>
+          <option value="medium">中</option>
+          <option value="low">低</option>
         </select>
         <button class="px-3 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50" :disabled="!newTaskTitle.trim()" @click="addQuickTask">+</button>
       </div>
@@ -213,7 +213,7 @@ function scheduleSelected() {
             class="w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors"
             :class="selectedTaskIds.has(t.id) ? 'bg-accent border-accent text-white' : 'border-gray-300 hover:border-accent/50'"
             @click.stop="toggleSelect(t.id)"
-          ><span v-if="selectedTaskIds.has(t.id)" class="text-xs">📅</span></button>
+          ><span v-if="selectedTaskIds.has(t.id)" class="text-xs">✓</span></button>
           <span class="w-2 h-2 rounded-full shrink-0" :class="priorityDot[t.priority]"></span>
           <span class="flex-1 min-w-0 text-sm text-text-primary truncate">{{ t.title }}</span>
           <span class="text-xs w-5 h-5 rounded border border-border flex items-center justify-center cursor-pointer group-hover:border-accent/50" @click.stop="taskStore.toggleTask(t.id)"></span>
@@ -237,7 +237,7 @@ function scheduleSelected() {
     </div>
 
     <!-- 下一步 -->
-    <div v-if="goalStore.goalNextTask(goal.id) !== '全部完成 🎉'" class="bg-gradient-to-r from-accent/10 to-blue-50 border border-accent/20 rounded-2xl p-5 flex items-center gap-4">
+    <div v-if="goalStore.goalNextTask(goal.id) !== '全部完成 🎉'" class="bg-gradient-to-r from-accent/10 to-blue-50 border border-accent/20 rounded-xl p-5 flex items-center gap-4">
       <span class="text-2xl">→</span>
       <div>
         <p class="text-xs text-text-muted">下一步行动</p>
@@ -247,7 +247,6 @@ function scheduleSelected() {
   </div>
 
   <div v-else class="flex flex-col items-center justify-center py-20 text-text-muted">
-    <span class="text-4xl mb-4">🔍</span>
     <p class="text-sm">目标不存在</p>
     <router-link to="/goals" class="text-xs text-accent hover:underline mt-2">返回目标列表</router-link>
   </div>

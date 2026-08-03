@@ -7,6 +7,7 @@ import { useHabitStore } from '@/stores/habits'
 import { useFocusStore } from '@/stores/focus'
 import { useGoalStore } from '@/stores/goals'
 import { useInterviewStore } from '@/stores/interview'
+import Icon from '@/components/Icon.vue'
 
 const router = useRouter()
 const taskStore = useTaskStore()
@@ -135,10 +136,10 @@ const masteredPercent = computed(() => {
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- a) 任务总览 -->
-      <div class="bg-card border border-border rounded-2xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/tasks')">
+      <div class="bg-card border border-border rounded-xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/tasks')">
         <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-          <span class="text-lg">📋</span>
-          <p class="text-sm font-semibold text-text-primary">任务总览</p>
+          <Icon name="list" :size="16" class="text-text-muted" />
+          <p class="text-sm font-medium text-text-primary">任务总览</p>
           <span class="ml-auto text-xs text-accent">查看 →</span>
         </div>
         <div class="grid grid-cols-3 gap-2 text-center">
@@ -158,10 +159,10 @@ const masteredPercent = computed(() => {
       </div>
 
       <!-- b) 习惯坚持 -->
-      <div class="bg-card border border-border rounded-2xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/habits')">
+      <div class="bg-card border border-border rounded-xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/habits')">
         <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-          <span class="text-lg">🔥</span>
-          <p class="text-sm font-semibold text-text-primary">习惯坚持</p>
+          <Icon name="flame" :size="16" class="text-text-muted" />
+          <p class="text-sm font-medium text-text-primary">习惯坚持</p>
           <span class="ml-auto text-xs text-accent">查看 →</span>
         </div>
         <div class="grid grid-cols-2 gap-2 text-center mb-4">
@@ -187,10 +188,10 @@ const masteredPercent = computed(() => {
       </div>
 
       <!-- c) 专注统计 -->
-      <div class="bg-card border border-border rounded-2xl p-5">
+      <div class="bg-card border border-border rounded-xl p-5">
         <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-          <span class="text-lg">🍅</span>
-          <p class="text-sm font-semibold text-text-primary">专注统计</p>
+          <Icon name="clock" :size="16" class="text-text-muted" />
+          <p class="text-sm font-medium text-text-primary">专注统计</p>
         </div>
         <div class="space-y-3">
           <div class="flex items-center justify-between">
@@ -209,10 +210,10 @@ const masteredPercent = computed(() => {
       </div>
 
       <!-- d) 目标进度 -->
-      <div class="bg-card border border-border rounded-2xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/goals')">
+      <div class="bg-card border border-border rounded-xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/goals')">
         <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-          <span class="text-lg">🎯</span>
-          <p class="text-sm font-semibold text-text-primary">目标进度</p>
+          <Icon name="target" :size="16" class="text-text-muted" />
+          <p class="text-sm font-medium text-text-primary">目标进度</p>
           <span class="ml-auto text-xs text-accent">查看 →</span>
         </div>
         <div class="grid grid-cols-2 gap-2 text-center mb-4">
@@ -238,10 +239,10 @@ const masteredPercent = computed(() => {
       </div>
 
       <!-- e) 面试题掌握度 -->
-      <div class="bg-card border border-border rounded-2xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/interview')">
+      <div class="bg-card border border-border rounded-xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/interview')">
         <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-          <span class="text-lg">📚</span>
-          <p class="text-sm font-semibold text-text-primary">面试题掌握度</p>
+          <Icon name="book" :size="16" class="text-text-muted" />
+          <p class="text-sm font-medium text-text-primary">面试题掌握度</p>
           <span class="ml-auto text-xs text-accent">查看 →</span>
         </div>
         <div class="grid grid-cols-3 gap-2 text-center mb-4">
@@ -268,10 +269,10 @@ const masteredPercent = computed(() => {
       </div>
 
       <!-- f) 每周趋势图 -->
-      <div class="bg-card border border-border rounded-2xl p-5">
+      <div class="bg-card border border-border rounded-xl p-5">
         <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-          <span class="text-lg">📈</span>
-          <p class="text-sm font-semibold text-text-primary">每周趋势</p>
+          <Icon name="chart" :size="16" class="text-text-muted" />
+          <p class="text-sm font-medium text-text-primary">每周趋势</p>
         </div>
         <div class="flex items-end justify-around gap-1 h-32 mb-3">
           <div

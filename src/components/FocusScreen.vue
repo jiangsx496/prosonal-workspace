@@ -43,9 +43,9 @@ const ringClass = computed(() => {
 
 const phaseMeta = computed(() => {
   switch (phase.value) {
-    case 'short-break': return { label: '短休息', emoji: '☕' }
-    case 'long-break': return { label: '长休息', emoji: '☕' }
-    default: return { label: '专注中', emoji: '🍅' }
+    case 'short-break': return { label: '短休息' }
+    case 'long-break': return { label: '长休息' }
+    default: return { label: '专注中' }
   }
 })
 
@@ -82,7 +82,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         <span
           v-if="activeTaskName"
           class="max-w-[140px] md:max-w-xs truncate px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs md:text-sm text-white/80"
-        >📋 {{ activeTaskName }}</span>
+        >{{ activeTaskName }}</span>
         <button
           class="px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 text-xs font-medium transition-colors"
           @click="emit('close')"
@@ -91,7 +91,6 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
       <!-- 阶段标识 -->
       <div class="flex items-center gap-2 mb-4 md:mb-8">
-        <span class="text-lg md:text-xl">{{ phaseMeta.emoji }}</span>
         <span class="text-xs md:text-sm font-medium tracking-widest text-white/60">{{ phaseMeta.label }}</span>
       </div>
 
@@ -122,12 +121,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
           v-if="focusStore.running"
           class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors"
           @click="focusStore.pauseFocus()"
-        >⏸ 暂停</button>
+        >暂停</button>
         <button
           v-else
           class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors"
           @click="focusStore.resumeFocus()"
-        >▶ 继续</button>
+        >继续</button>
         <button
           class="px-5 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium transition-colors"
           @click="handleComplete"

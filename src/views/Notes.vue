@@ -103,7 +103,6 @@ function handleDelete() {
     </div>
 
     <div v-else class="flex flex-col items-center justify-center py-20 text-text-muted">
-      <span class="text-4xl mb-4">📝</span>
       <p class="text-sm">暂无笔记</p>
       <button
         class="mt-3 text-xs text-accent hover:underline"
