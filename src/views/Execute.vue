@@ -405,7 +405,7 @@ onUnmounted(() => {
               class="py-1.5 px-2 rounded-lg hover:bg-card-hover transition-colors"
             >
               <summary class="text-sm text-text-primary cursor-pointer select-none flex items-center justify-between gap-2">
-                <span class="flex-1">{{ q.question }}</span>
+                <span class="flex-1 min-w-0">{{ q.question }}</span>
                 <div class="flex items-center gap-1 shrink-0">
                   <button
                     class="text-xs hover:underline shrink-0"

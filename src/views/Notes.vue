@@ -56,9 +56,9 @@ function handleDelete() {
       >+ 新建笔记</button>
     </div>
 
-    <div v-if="store.notes.length > 0" class="flex gap-4">
+    <div v-if="store.notes.length > 0" class="flex flex-col md:flex-row gap-4">
       <!-- 左侧列表 -->
-      <div class="w-56 shrink-0 space-y-1 max-h-[500px] overflow-y-auto">
+      <div class="md:w-56 shrink-0 space-y-1 max-h-[200px] md:max-h-[500px] overflow-y-auto">
         <button
           v-for="note in store.sortedNotes"
           :key="note.id"

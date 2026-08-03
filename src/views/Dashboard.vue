@@ -302,11 +302,11 @@ const masteredPercent = computed(() => {
             >{{ s.label }}</span>
           </div>
         </div>
-        <div class="flex items-center gap-4 pt-2 border-t border-border text-[10px] text-text-muted">
+        <div class="flex items-center gap-4 pt-2 border-t border-border text-[10px] text-text-muted flex-wrap">
           <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-blue-400"></span>任务</span>
           <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-orange-400"></span>习惯</span>
           <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-red-400"></span>专注</span>
-          <span class="ml-auto">单位：任务(个)·习惯(个)·专注(25m番茄)</span>
+          <span class="w-full sm:ml-auto sm:w-auto">单位：任务(个)·习惯(个)·专注(25m番茄)</span>
         </div>
       </div>
     </div>

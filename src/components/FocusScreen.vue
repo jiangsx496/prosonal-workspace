@@ -78,26 +78,26 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   <Teleport to="body">
     <div v-if="visible" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gray-950/75 backdrop-blur-md">
       <!-- 右上角：关联任务名 + 关闭 -->
-      <div class="absolute top-8 right-8 flex items-center gap-3">
+      <div class="absolute top-4 right-4 md:top-8 md:right-8 flex items-center gap-2 md:gap-3">
         <span
           v-if="activeTaskName"
-          class="max-w-xs truncate px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-sm text-white/80"
+          class="max-w-[140px] md:max-w-xs truncate px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs md:text-sm text-white/80"
         >📋 {{ activeTaskName }}</span>
         <button
-          class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 text-xs font-medium transition-colors"
+          class="px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 text-xs font-medium transition-colors"
           @click="emit('close')"
         >✕ 关闭</button>
       </div>
 
       <!-- 阶段标识 -->
-      <div class="flex items-center gap-2 mb-8">
-        <span class="text-xl">{{ phaseMeta.emoji }}</span>
-        <span class="text-sm font-medium tracking-widest text-white/60">{{ phaseMeta.label }}</span>
+      <div class="flex items-center gap-2 mb-4 md:mb-8">
+        <span class="text-lg md:text-xl">{{ phaseMeta.emoji }}</span>
+        <span class="text-xs md:text-sm font-medium tracking-widest text-white/60">{{ phaseMeta.label }}</span>
       </div>
 
       <!-- 圆形进度环 + 倒计时 -->
-      <div class="relative">
-        <svg width="300" height="300" viewBox="0 0 300 300" class="-rotate-90">
+      <div class="relative w-[240px] h-[240px] md:w-[300px] md:h-[300px]">
+        <svg viewBox="0 0 300 300" class="-rotate-90 w-full h-full">
           <circle cx="150" cy="150" :r="RADIUS" fill="none" stroke-width="8" class="stroke-white/10" />
           <circle
             cx="150" cy="150" :r="RADIUS"
@@ -110,15 +110,14 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         </svg>
         <div class="absolute inset-0 flex flex-col items-center justify-center">
           <span
-            class="text-8xl font-bold tabular-nums text-white leading-none"
-            style="font-size: 8rem"
+            class="text-6xl md:text-8xl font-bold tabular-nums text-white leading-none"
           >{{ focusStore.display }}</span>
-          <span class="mt-4 text-sm text-white/50">本轮 {{ durationLabel }}</span>
+          <span class="mt-2 md:mt-4 text-xs md:text-sm text-white/50">本轮 {{ durationLabel }}</span>
         </div>
       </div>
 
       <!-- 底部控制栏 -->
-      <div class="mt-12 flex items-center gap-4">
+      <div class="mt-8 md:mt-12 flex items-center gap-2 md:gap-4 flex-wrap justify-center px-4">
         <button
           v-if="focusStore.running"
           class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors"

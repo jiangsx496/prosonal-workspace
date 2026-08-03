@@ -154,7 +154,7 @@ const weekMax = computed(() => {
       </div>
 
       <!-- 图例 -->
-      <div class="flex items-center gap-4 pt-2 border-t border-border text-[10px] text-text-muted">
+      <div class="flex items-center gap-4 pt-2 border-t border-border text-[10px] text-text-muted flex-wrap">
         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-blue-400"></span>任务</span>
         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-orange-400"></span>习惯</span>
         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-red-400"></span>专注</span>
@@ -170,7 +170,7 @@ const weekMax = computed(() => {
       <div class="space-y-3">
         <div v-for="t in taskStore.deferredTasks" :key="t.id" class="bg-card border border-border rounded-xl p-4">
           <div class="flex items-start justify-between gap-4">
-            <div class="flex-1 min-w0">
+            <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-text-primary mb-1">{{ t.title }}</p>
               <div class="flex items-center gap-2 text-xs text-text-muted flex-wrap">
                 <span>{{ t.project }}</span>

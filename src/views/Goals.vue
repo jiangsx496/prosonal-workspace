@@ -207,7 +207,7 @@ const linkedTaskCount = computed(() =>
               <div v-if="pendingTasks.length > 0" class="space-y-1.5 pt-2">
                 <div v-for="(t, idx) in pendingTasks" :key="idx" class="flex items-center gap-3 py-2 px-3 rounded-lg bg-gray-50">
                   <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
-                  <span class="flex-1 text-sm text-text-primary">{{ t.title }}</span>
+                  <span class="flex-1 min-w-0 text-sm text-text-primary">{{ t.title }}</span>
                   <button class="w-5 h-5 rounded flex items-center justify-center text-text-muted hover:bg-red-50 hover:text-red-500 transition-colors text-xs" @click="removeTaskItem(idx)">✕</button>
                 </div>
               </div>

@@ -191,7 +191,7 @@ function addTaskForDate() { showCreate.value = true }
       </div>
 
       <!-- 图例 -->
-      <div class="flex items-center gap-4 mt-3 pt-2 border-t border-border text-xs text-text-muted">
+      <div class="flex items-center gap-4 mt-3 pt-2 border-t border-border text-xs text-text-muted flex-wrap">
         <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>任务</span>
         <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>习惯</span>
         <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>专注</span>
@@ -210,7 +210,8 @@ function addTaskForDate() { showCreate.value = true }
         </div>
       </div>
 
-      <div class="grid grid-cols-7 gap-2">
+      <div class="overflow-x-auto -mx-4 px-4 pb-2">
+        <div class="grid grid-cols-7 gap-2 min-w-[560px]">
         <div v-for="d in weekDays" :key="d.date" class="min-h-[200px] rounded-xl p-2 cursor-pointer transition-colors"
           :class="[d.isToday ? 'bg-accent/5 ring-1 ring-accent/30' : 'hover:bg-card-hover', selectedDate === d.date ? 'ring-2 ring-accent' : '']"
           @click="selectDate(d.date)">
@@ -235,6 +236,7 @@ function addTaskForDate() { showCreate.value = true }
 
           <!-- 专注 -->
           <p v-if="weekDayFocus(d.date) > 0" class="text-[10px] text-text-muted mt-1">🍅 {{ weekDayFocus(d.date) }}m</p>
+        </div>
         </div>
       </div>
     </div>

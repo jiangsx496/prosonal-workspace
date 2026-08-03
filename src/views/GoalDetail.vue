@@ -96,12 +96,12 @@ function scheduleSelected() {
 <template>
   <div class="space-y-6 pb-20 md:pb-0" v-if="goal">
     <!-- 返回 + 标题 -->
-    <div class="flex items-center gap-3">
-      <button class="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="router.push('/goals')">←</button>
-      <div class="flex-1">
-        <div class="flex items-center gap-2">
+    <div class="flex items-start gap-3 flex-wrap">
+      <button class="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors shrink-0" @click="router.push('/goals')">←</button>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
           <span class="text-2xl">{{ goalStore.goalIcon(goal.category) }}</span>
-          <h1 class="text-2xl font-bold text-text-primary">{{ goal.title }}</h1>
+          <h1 class="text-xl md:text-2xl font-bold text-text-primary truncate">{{ goal.title }}</h1>
           <span v-if="goal.status==='completed'" class="text-xs px-2 py-0.5 rounded bg-green-100 text-green-700">已完成</span>
         </div>
         <p class="text-xs text-text-muted mt-1">{{ goal.description }}</p>
@@ -154,11 +154,11 @@ function scheduleSelected() {
       <div class="space-y-3">
         <div v-for="day in plan.days" :key="day.id" class="border border-border rounded-xl overflow-hidden">
           <!-- Day 头部 -->
-          <div class="flex items-center gap-2 px-3 py-2 bg-gray-50">
+          <div class="flex items-center gap-2 px-3 py-2 bg-gray-50 flex-wrap">
             <span class="text-xs font-bold text-accent">📅 Day{{ day.day }}</span>
             <span class="text-xs text-text-muted">{{ day.date }}</span>
-            <span class="text-xs text-text-secondary ml-1">{{ day.title.replace(/^Day\d+[：:]?\s*/, '') }}</span>
-            <span class="text-xs text-text-muted ml-auto">
+            <span class="text-xs text-text-secondary ml-1 truncate min-w-0">{{ day.title.replace(/^Day\d+[：:]?\s*/, '') }}</span>
+            <span class="text-xs text-text-muted ml-auto shrink-0">
               {{ day.blocks.reduce((sum, b) => sum + b.taskIds.length, 0) }} 个任务
             </span>
           </div>
@@ -171,7 +171,7 @@ function scheduleSelected() {
             <!-- 任务列表（按 taskIds 查 Task） -->
             <div v-for="tid in block.taskIds" :key="tid" class="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50">
               <span class="w-2 h-2 rounded-full shrink-0" :class="getTask(tid)?.priority ? priorityDot[getTask(tid)!.priority] : 'bg-slate-300'"></span>
-              <span class="flex-1 text-sm truncate" :class="getTask(tid)?.status==='done'?'text-text-muted line-through':'text-text-primary'">{{ getTask(tid)?.title || '（任务已删除）' }}</span>
+              <span class="flex-1 min-w-0 text-sm truncate" :class="getTask(tid)?.status==='done'?'text-text-muted line-through':'text-text-primary'">{{ getTask(tid)?.title || '（任务已删除）' }}</span>
               <span class="text-xs w-5 h-5 rounded border flex items-center justify-center cursor-pointer hover:border-accent/50"
                 :class="getTask(tid)?.status==='done'?'bg-accent border-accent text-white':'border-border'"
                 @click.stop="tid && taskStore.toggleTask(tid)"
@@ -215,7 +215,7 @@ function scheduleSelected() {
             @click.stop="toggleSelect(t.id)"
           ><span v-if="selectedTaskIds.has(t.id)" class="text-xs">📅</span></button>
           <span class="w-2 h-2 rounded-full shrink-0" :class="priorityDot[t.priority]"></span>
-          <span class="flex-1 text-sm text-text-primary truncate">{{ t.title }}</span>
+          <span class="flex-1 min-w-0 text-sm text-text-primary truncate">{{ t.title }}</span>
           <span class="text-xs w-5 h-5 rounded border border-border flex items-center justify-center cursor-pointer group-hover:border-accent/50" @click.stop="taskStore.toggleTask(t.id)"></span>
         </div>
       </div>
@@ -224,7 +224,7 @@ function scheduleSelected() {
         <p class="text-xs text-text-muted mb-2">已完成</p>
         <div v-for="t in doneTasks" :key="t.id" class="flex items-center gap-3 py-2 px-3 rounded-lg cursor-pointer" @click="taskStore.toggleTask(t.id)">
           <span class="w-2 h-2 rounded-full shrink-0 bg-green-400"></span>
-          <span class="flex-1 text-sm text-text-muted line-through truncate">{{ t.title }}</span>
+          <span class="flex-1 min-w-0 text-sm text-text-muted line-through truncate">{{ t.title }}</span>
           <span class="text-xs w-5 h-5 rounded bg-accent border-accent text-white flex items-center justify-center">✓</span>
         </div>
       </div>

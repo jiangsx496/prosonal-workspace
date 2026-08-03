@@ -144,7 +144,7 @@ function clearDraft() {
           class="px-3 py-2 rounded-lg border-2 border-dashed border-border text-xs text-text-secondary hover:border-accent hover:text-accent transition-colors"
           @click="fileInput?.click()"
         >📎 上传文件</button>
-        <span v-if="uploadedFilename" class="text-xs text-text-muted truncate">{{ uploadedFilename }}</span>
+        <span v-if="uploadedFilename" class="text-xs text-text-muted truncate min-w-0">{{ uploadedFilename }}</span>
         <div class="flex-1"></div>
         <button
           class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50"
@@ -179,11 +179,11 @@ function clearDraft() {
           class="border border-border rounded-xl overflow-hidden"
         >
           <!-- Day 头部 -->
-          <div class="flex items-center gap-2 px-3 py-2 bg-gray-50">
+          <div class="flex items-center gap-2 px-3 py-2 bg-gray-50 flex-wrap">
             <span class="text-xs font-bold text-accent">📅 Day{{ day.day }}</span>
             <span class="text-xs text-text-muted">{{ day.date }}</span>
-            <span class="text-xs text-text-secondary ml-1">{{ day.title.replace(/^Day\d+[：:]?\s*/, '') }}</span>
-            <span class="text-xs text-text-muted ml-auto">
+            <span class="text-xs text-text-secondary ml-1 truncate min-w-0">{{ day.title.replace(/^Day\d+[：:]?\s*/, '') }}</span>
+            <span class="text-xs text-text-muted ml-auto shrink-0">
               {{ day.blocks.reduce((sum, b) => sum + b.tasks.length, 0) }} 个任务
             </span>
           </div>

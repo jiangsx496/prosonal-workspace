@@ -61,8 +61,8 @@ const priorityBadge = computed(() => {
 
     <!-- 底部信息 -->
     <div class="flex items-center justify-between text-xs text-text-muted">
-      <span>{{ doneCount }}/{{ taskCount }} 任务</span>
-      <span class="truncate ml-2 flex items-center gap-1">
+      <span class="shrink-0">{{ doneCount }}/{{ taskCount }} 任务</span>
+      <span class="truncate ml-2 flex items-center gap-1 min-w-0">
         <span class="shrink-0">→</span>
         <span class="truncate">{{ nextTask }}</span>
       </span>

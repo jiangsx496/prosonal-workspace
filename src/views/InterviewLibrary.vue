@@ -178,7 +178,7 @@ function goToday() {
         class="bg-card border border-border rounded-xl overflow-hidden group"
       >
         <summary class="flex items-center gap-3 px-4 py-3 cursor-pointer select-none hover:bg-card-hover transition-colors">
-          <span class="flex-1 text-sm text-text-primary">{{ q.question }}</span>
+          <span class="flex-1 min-w-0 text-sm text-text-primary">{{ q.question }}</span>
           <span class="text-xs px-2 py-0.5 rounded shrink-0" :class="MASTERY_BG[interviewStore.getProgress(q.id).mastery]">
             {{ MASTERY_LABELS[interviewStore.getProgress(q.id).mastery] }}
           </span>
