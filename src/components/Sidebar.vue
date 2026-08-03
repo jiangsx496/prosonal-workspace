@@ -28,6 +28,7 @@ const navItems = [
   { path: '/goals', name: 'goals', label: '目标', icon: '🎯' },
   { path: '/resources', name: 'resources', label: '资源', icon: '🗂️' },
   { path: '/review', name: 'review', label: '复盘', icon: '🔄' },
+  { path: '/dashboard', name: 'dashboard', label: '看板', icon: '📊' },
   { path: '/interview', name: 'interview', label: '面试题库', icon: '📚' },
   { path: '/calendar', name: 'calendar', label: '日历', icon: '📅' },
 ]

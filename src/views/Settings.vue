@@ -136,6 +136,8 @@ function applyPreset(endpoint: string) {
           <option value="light">浅色</option>
           <option value="dark">深色</option>
           <option value="system">跟随系统</option>
+          <option value="focus-dark">🌙 专注深色</option>
+          <option value="warm-eye">📖 暖色护眼</option>
         </select>
       </div>
     </div>

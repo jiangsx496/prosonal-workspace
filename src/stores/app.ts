@@ -1,22 +1,27 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 
-export type Theme = 'light' | 'dark' | 'system'
+export type Theme = 'light' | 'dark' | 'system' | 'focus-dark' | 'warm-eye'
+
+const THEME_CLASSES = ['dark', 'theme-focus-dark', 'theme-warm-eye']
 
 function loadTheme(): Theme {
   try {
     const v = localStorage.getItem('pw-theme')
-    if (v === 'light' || v === 'dark' || v === 'system') return v
+    if (v === 'light' || v === 'dark' || v === 'system' || v === 'focus-dark' || v === 'warm-eye') return v
   } catch { /* ignore */ }
   return 'light'
 }
 
 function applyTheme(theme: Theme) {
   const root = document.documentElement
+  root.classList.remove(...THEME_CLASSES)
   if (theme === 'dark') {
     root.classList.add('dark')
-  } else if (theme === 'light') {
-    root.classList.remove('dark')
+  } else if (theme === 'focus-dark') {
+    root.classList.add('theme-focus-dark')
+  } else if (theme === 'warm-eye') {
+    root.classList.add('theme-warm-eye')
   } else {
     // system — follow OS preference
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches

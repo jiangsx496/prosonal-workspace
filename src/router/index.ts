@@ -8,6 +8,7 @@ const router = createRouter({
     { path: '/inbox', name: 'inbox', component: () => import('@/views/Inbox.vue'), meta: { title: '收集' } },
     { path: '/goals/:id', name: 'goal-detail', component: () => import('@/views/GoalDetail.vue'), meta: { title: '目标详情' } },    { path: '/goals', name: 'goals', component: () => import('@/views/Goals.vue'), meta: { title: '目标' } },
     { path: '/resources', name: 'resources', component: () => import('@/views/Resources.vue'), meta: { title: '资源' } },
+    { path: '/dashboard', name: 'dashboard', component: () => import('@/views/Dashboard.vue'), meta: { title: '看板' } },
     { path: '/review', name: 'review', component: () => import('@/views/Review.vue'), meta: { title: '复盘' } },
     { path: '/interview', name: 'interview', component: () => import('@/views/InterviewLibrary.vue'), meta: { title: '面试题库' } },
     { path: '/calendar', name: 'calendar', component: () => import('@/views/Calendar.vue'), meta: { title: '日历' } },

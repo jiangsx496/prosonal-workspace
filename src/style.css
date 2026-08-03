@@ -30,6 +30,40 @@
   scrollbar-color: #475569 transparent;
 }
 
+.theme-focus-dark {
+  --color-bg: #0a0a0f;
+  --color-sidebar: #0d0d14;
+  --color-card: #131318;
+  --color-card-hover: #1a1a22;
+  --color-accent: #6366f1;
+  --color-accent-hover: #818cf8;
+  --color-text-primary: #e0e0e8;
+  --color-text-secondary: #a0a0b0;
+  --color-text-muted: #6b6b7b;
+  --color-border: #2a2a35;
+}
+
+.theme-focus-dark * {
+  scrollbar-color: #3a3a48 transparent;
+}
+
+.theme-warm-eye {
+  --color-bg: #f5f0e8;
+  --color-sidebar: #f5f0e8;
+  --color-card: #faf6f0;
+  --color-card-hover: #efe8dc;
+  --color-accent: #b45309;
+  --color-accent-hover: #c2701f;
+  --color-text-primary: #4a3c2c;
+  --color-text-secondary: #6b5d4d;
+  --color-text-muted: #9a8f80;
+  --color-border: #ddd2c2;
+}
+
+.theme-warm-eye * {
+  scrollbar-color: #d8ccba transparent;
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
