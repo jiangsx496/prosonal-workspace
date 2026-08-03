@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useInterviewStore } from '@/stores/interview'
 import { useDailyStore } from '@/stores/daily'
 import { useTaskStore } from '@/stores/tasks'
 import { MASTERY_LABELS, MASTERY_BG, type Mastery } from '@/utils/reviewScheduler'
 import { todayLocal } from '@/utils/date'
 
+const router = useRouter()
 const interviewStore = useInterviewStore()
 const dailyStore = useDailyStore()
 const taskStore = useTaskStore()
@@ -100,7 +102,7 @@ function addToTodayPlan(question: string, answer: string, questionId: string) {
     goalId: null,
     category: 'study',
     priority: 'medium',
-    status: 'backlog',
+    status: 'doing',
     source: 'manual',
     dueDate: today,
     scheduledDate: today,
@@ -109,8 +111,12 @@ function addToTodayPlan(question: string, answer: string, questionId: string) {
     createdAt: today,
   })
   dailyStore.addTaskToToday(id)
-  addedFeedback.value[questionId] = '已加入今日计划 ✓'
-  setTimeout(() => { delete addedFeedback.value[questionId] }, 2000)
+  addedFeedback.value[questionId] = '✓ 去查看'
+  setTimeout(() => { delete addedFeedback.value[questionId] }, 3000)
+}
+
+function goToday() {
+  router.push('/')
 }
 </script>
 
@@ -203,9 +209,19 @@ function addToTodayPlan(question: string, answer: string, questionId: string) {
             >{{ interviewStore.getProgress(q.id).marked ? '★ 取消收藏' : '☆ 收藏' }}</button>
 
             <button
+              v-if="!addedFeedback[q.id]"
               class="px-2 py-1 rounded text-xs font-medium bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
               @click="addToTodayPlan(q.question, q.answer, q.id)"
-            >{{ addedFeedback[q.id] || '+ 加入今日计划' }}</button>
+            >+ 加入今日计划</button>
+            <button
+              v-else-if="addedFeedback[q.id]?.includes('查看')"
+              class="px-2 py-1 rounded text-xs font-medium bg-green-500 text-white hover:bg-green-600 transition-colors"
+              @click="goToday"
+            >{{ addedFeedback[q.id] }}</button>
+            <span
+              v-else
+              class="px-2 py-1 rounded text-xs font-medium bg-green-50 text-green-700"
+            >{{ addedFeedback[q.id] }}</span>
           </div>
         </div>
       </details>
