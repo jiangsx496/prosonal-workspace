@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { todayLocal } from '@/utils/date'
 import { fetchDailyFeed, type DailyFeed, type FeedRepo, type FeedQuestion } from '@/services/feed'
+import { useInterviewStore } from '@/stores/interview'
 
 const STORAGE_PREFIX = 'pw-feed-'
 
@@ -49,6 +50,11 @@ export const useFeedStore = defineStore('feed', () => {
       const data = await fetchDailyFeed(today, force)
       feed.value = data
       saveCached(today, data)
+      // AI 生成的面试题自动入库（支持反复复习）
+      const interviewStore = useInterviewStore()
+      data.questions.forEach((q) => {
+        interviewStore.addCustomQuestion({ category: q.category, question: q.question, answer: q.answer })
+      })
       return data
     } catch (e: any) {
       error.value = e.message || '获取每日精选失败'

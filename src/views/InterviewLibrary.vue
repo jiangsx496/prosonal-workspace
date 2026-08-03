@@ -3,7 +3,6 @@ import { ref, computed } from 'vue'
 import { useInterviewStore } from '@/stores/interview'
 import { useDailyStore } from '@/stores/daily'
 import { useTaskStore } from '@/stores/tasks'
-import { interviewQuestions } from '@/data/interviewQuestions'
 import { MASTERY_LABELS, MASTERY_BG, type Mastery } from '@/utils/reviewScheduler'
 import { todayLocal } from '@/utils/date'
 
@@ -11,12 +10,17 @@ const interviewStore = useInterviewStore()
 const dailyStore = useDailyStore()
 const taskStore = useTaskStore()
 
+// 从 store 获取题目列表（包含静态题 + AI 生成的自定义题）
+const interviewQuestions = computed(() => interviewStore.questions)
+
 // ---- 筛选 ----
 const activeCategory = ref<string>('all')
 const activeMastery = ref<Mastery | 'all' | 'due'>('all')
+const showMarkedOnly = ref(false)
+const addedFeedback = ref<Record<string, string>>({})
 
 const categories = computed(() => {
-  const set = new Set(interviewQuestions.map((q) => q.category))
+  const set = new Set(interviewQuestions.value.map((q) => q.category))
   return ['all', ...Array.from(set)]
 })
 
@@ -31,7 +35,11 @@ const masteryFilters: { key: Mastery | 'all' | 'due'; label: string }[] = [
 
 // ---- 过滤题目 ----
 const filteredQuestions = computed(() => {
-  let list = interviewQuestions
+  let list = interviewQuestions.value
+
+  if (showMarkedOnly.value) {
+    list = list.filter((q) => interviewStore.getProgress(q.id).marked)
+  }
 
   if (activeCategory.value !== 'all') {
     list = list.filter((q) => q.category === activeCategory.value)
@@ -55,10 +63,11 @@ const filteredQuestions = computed(() => {
 
 // ---- 统计 ----
 const stats = computed(() => {
-  const total = interviewQuestions.length
-  const mastered = interviewQuestions.filter((q) => interviewStore.getProgress(q.id).mastery === 'mastered').length
+  const all = interviewQuestions.value
+  const total = all.length
+  const mastered = all.filter((q) => interviewStore.getProgress(q.id).mastery === 'mastered').length
   const today = todayLocal()
-  const due = interviewQuestions.filter((q) => {
+  const due = all.filter((q) => {
     const p = interviewStore.getProgress(q.id)
     return !p.nextReviewDate || p.nextReviewDate <= today
   }).length
@@ -74,10 +83,14 @@ function toggleMark(questionId: string) {
   interviewStore.toggleMark(questionId)
 }
 
-function addToTodayPlan(question: string, answer: string) {
+function addToTodayPlan(question: string, answer: string, questionId: string) {
   const today = todayLocal()
   const exists = taskStore.tasks.some((t) => t.title === question && t.scheduledDate === today)
-  if (exists) return
+  if (exists) {
+    addedFeedback.value[questionId] = '已在今日计划中'
+    setTimeout(() => { delete addedFeedback.value[questionId] }, 2000)
+    return
+  }
   const id = taskStore.generateId()
   taskStore.addTask({
     id,
@@ -96,6 +109,8 @@ function addToTodayPlan(question: string, answer: string) {
     createdAt: today,
   })
   dailyStore.addTaskToToday(id)
+  addedFeedback.value[questionId] = '已加入今日计划 ✓'
+  setTimeout(() => { delete addedFeedback.value[questionId] }, 2000)
 }
 </script>
 
@@ -142,6 +157,11 @@ function addToTodayPlan(question: string, answer: string) {
         :class="activeMastery === f.key ? 'bg-accent text-white' : 'bg-card border border-border text-text-muted hover:bg-card-hover'"
         @click="activeMastery = f.key"
       >{{ f.label }}</button>
+      <button
+        class="px-3 py-1 rounded-full text-xs font-medium transition-colors ml-auto"
+        :class="showMarkedOnly ? 'bg-amber-500 text-white' : 'bg-card border border-border text-text-muted hover:bg-card-hover'"
+        @click="showMarkedOnly = !showMarkedOnly"
+      >{{ showMarkedOnly ? '★ 仅看收藏' : '☆ 收藏库' }}</button>
     </div>
 
     <!-- 题目列表 -->
@@ -184,8 +204,8 @@ function addToTodayPlan(question: string, answer: string) {
 
             <button
               class="px-2 py-1 rounded text-xs font-medium bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
-              @click="addToTodayPlan(q.question, q.answer)"
-            >+ 加入今日计划</button>
+              @click="addToTodayPlan(q.question, q.answer, q.id)"
+            >{{ addedFeedback[q.id] || '+ 加入今日计划' }}</button>
           </div>
         </div>
       </details>

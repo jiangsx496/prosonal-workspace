@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { interviewQuestions } from '@/data/interviewQuestions'
+import { interviewQuestions, type InterviewQuestion } from '@/data/interviewQuestions'
 import { nextReviewDate, masteryFromCount, type Mastery } from '@/utils/reviewScheduler'
 import { todayLocal } from '@/utils/date'
 import { watchPersist } from '@/utils/persist'
@@ -15,6 +15,7 @@ export interface QuestionProgress {
 }
 
 const STORAGE_KEY = 'pw-interview-progress'
+const CUSTOM_KEY = 'pw-interview-custom'
 
 function loadProgress(): Record<string, QuestionProgress> {
   try {
@@ -24,22 +25,34 @@ function loadProgress(): Record<string, QuestionProgress> {
   return {}
 }
 
+function loadCustom(): InterviewQuestion[] {
+  try {
+    const raw = localStorage.getItem(CUSTOM_KEY)
+    if (raw) return JSON.parse(raw) as InterviewQuestion[]
+  } catch { /* ignore */ }
+  return []
+}
+
 export const useInterviewStore = defineStore('interview', () => {
-  const questions = interviewQuestions
+  // 静态题库 + 用户自定义题（AI 生成的题自动入库）
+  const customQuestions = ref<InterviewQuestion[]>(loadCustom())
+  const questions = computed(() => [...interviewQuestions, ...customQuestions.value])
+
+  watchPersist(() => customQuestions.value, CUSTOM_KEY)
   const progressMap = ref<Record<string, QuestionProgress>>(loadProgress())
 
   watchPersist(() => progressMap.value, STORAGE_KEY)
 
   // ==== 计算属性 ====
   const allCategories = computed(() => {
-    const set = new Set(questions.map((q) => q.category))
+    const set = new Set(questions.value.map((q) => q.category))
     return ['全部', ...Array.from(set)]
   })
 
-  const totalQuestions = computed(() => questions.length)
+  const totalQuestions = computed(() => questions.value.length)
 
   const progressList = computed(() =>
-    questions.map((q) => ({
+    questions.value.map((q) => ({
       question: q,
       progress: progressMap.value[q.id] || {
         questionId: q.id,
@@ -154,6 +167,20 @@ export const useInterviewStore = defineStore('interview', () => {
     }
   }
 
+  /** 添加自定义题目（AI 生成的题目自动入库） */
+  function addCustomQuestion(q: { category: string; question: string; answer: string }) {
+    // 用 category + question 生成稳定 ID，避免重复添加
+    const raw = q.category + '|' + q.question
+    let hash = 0
+    for (let i = 0; i < raw.length; i++) {
+      hash = ((hash << 5) - hash + raw.charCodeAt(i)) | 0
+    }
+    const id = 'iq_' + Math.abs(hash).toString(36)
+    // 如果已存在则跳过
+    if (customQuestions.value.some((existing) => existing.id === id)) return
+    customQuestions.value.unshift({ id, ...q })
+  }
+
   return {
     questions,
     progressMap,
@@ -174,5 +201,7 @@ export const useInterviewStore = defineStore('interview', () => {
     resetAll,
     byCategory,
     getProgress,
+    addCustomQuestion,
+    customQuestions,
   }
 })

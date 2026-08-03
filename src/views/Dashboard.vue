@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { todayLocal, localDateStr, localDateFromISO } from '@/utils/date'
 import { useTaskStore } from '@/stores/tasks'
 import { useHabitStore } from '@/stores/habits'
@@ -7,6 +8,7 @@ import { useFocusStore } from '@/stores/focus'
 import { useGoalStore } from '@/stores/goals'
 import { useInterviewStore } from '@/stores/interview'
 
+const router = useRouter()
 const taskStore = useTaskStore()
 const habitStore = useHabitStore()
 const focusStore = useFocusStore()
@@ -133,10 +135,11 @@ const masteredPercent = computed(() => {
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- a) 任务总览 -->
-      <div class="bg-card border border-border rounded-2xl p-5">
+      <div class="bg-card border border-border rounded-2xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/tasks')">
         <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
           <span class="text-lg">📋</span>
           <p class="text-sm font-semibold text-text-primary">任务总览</p>
+          <span class="ml-auto text-xs text-accent">查看 →</span>
         </div>
         <div class="grid grid-cols-3 gap-2 text-center">
           <div>
@@ -155,10 +158,11 @@ const masteredPercent = computed(() => {
       </div>
 
       <!-- b) 习惯坚持 -->
-      <div class="bg-card border border-border rounded-2xl p-5">
+      <div class="bg-card border border-border rounded-2xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/habits')">
         <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
           <span class="text-lg">🔥</span>
           <p class="text-sm font-semibold text-text-primary">习惯坚持</p>
+          <span class="ml-auto text-xs text-accent">查看 →</span>
         </div>
         <div class="grid grid-cols-2 gap-2 text-center mb-4">
           <div>
@@ -205,10 +209,11 @@ const masteredPercent = computed(() => {
       </div>
 
       <!-- d) 目标进度 -->
-      <div class="bg-card border border-border rounded-2xl p-5">
+      <div class="bg-card border border-border rounded-2xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/goals')">
         <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
           <span class="text-lg">🎯</span>
           <p class="text-sm font-semibold text-text-primary">目标进度</p>
+          <span class="ml-auto text-xs text-accent">查看 →</span>
         </div>
         <div class="grid grid-cols-2 gap-2 text-center mb-4">
           <div>
@@ -220,7 +225,7 @@ const masteredPercent = computed(() => {
             <p class="text-xs text-text-muted mt-1">平均进度</p>
           </div>
         </div>
-        <div v-if="nearestDeadlineGoal" class="flex items-center gap-2 pt-3 border-t border-border">
+        <div v-if="nearestDeadlineGoal" class="flex items-center gap-2 pt-3 border-t border-border cursor-pointer hover:bg-card-hover rounded-lg -mx-2 px-2 py-1 transition-colors" @click.stop="router.push(`/goals/${nearestDeadlineGoal.id}`)">
           <span class="text-lg">{{ goalStore.goalIcon(nearestDeadlineGoal.category) }}</span>
           <div class="min-w-0">
             <p class="text-sm font-medium text-text-primary truncate">{{ nearestDeadlineGoal.title }}</p>
@@ -233,10 +238,11 @@ const masteredPercent = computed(() => {
       </div>
 
       <!-- e) 面试题掌握度 -->
-      <div class="bg-card border border-border rounded-2xl p-5">
+      <div class="bg-card border border-border rounded-2xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/interview')">
         <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
           <span class="text-lg">📚</span>
           <p class="text-sm font-semibold text-text-primary">面试题掌握度</p>
+          <span class="ml-auto text-xs text-accent">查看 →</span>
         </div>
         <div class="grid grid-cols-3 gap-2 text-center mb-4">
           <div>

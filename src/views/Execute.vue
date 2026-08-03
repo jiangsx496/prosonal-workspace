@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useTaskStore } from '@/stores/tasks'
 import { useHabitStore } from '@/stores/habits'
 import { useGoalStore } from '@/stores/goals'
@@ -13,6 +13,7 @@ import TaskModal from '@/components/TaskModal.vue'
 import GoalCard from '@/components/GoalCard.vue'
 import CalendarWidget from '@/components/CalendarWidget.vue'
 import FocusScreen from '@/components/FocusScreen.vue'
+import MotivationBanner from '@/components/MotivationBanner.vue'
 import { generateDailyPlan, sortTasksByPriority } from '@/services/scheduler'
 import { todayLocal } from '@/utils/date'
 
@@ -218,11 +219,39 @@ function goalName(goalId: string | null): string {
   const g = goalStore.goals.find((g) => g.id === goalId)
   return g ? goalStore.goalIcon(g.category) + ' ' + g.title : ''
 }
+
+// ---- 快捷键事件监听（与 useHotkeys composable 配合）----
+function onHotkeyFocus() { showFocusScreen.value = true }
+function onHotkeyNewTask() { showCreate.value = true }
+function onHotkeyToggleFirst() {
+  const first = sortedTodayTasks.value.find((t) => t.status !== 'done')
+  if (first) toggleAndTrack(first.id)
+}
+function onHotkeySearch() {
+  // 模拟点击 Sidebar 的搜索按钮
+  const btn = document.querySelector('[title="搜索"]') as HTMLElement
+  if (btn) btn.click()
+}
+
+onMounted(() => {
+  window.addEventListener('hotkey-focus', onHotkeyFocus)
+  window.addEventListener('hotkey-new-task', onHotkeyNewTask)
+  window.addEventListener('hotkey-toggle-first', onHotkeyToggleFirst)
+  window.addEventListener('hotkey-search', onHotkeySearch)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('hotkey-focus', onHotkeyFocus)
+  window.removeEventListener('hotkey-new-task', onHotkeyNewTask)
+  window.removeEventListener('hotkey-toggle-first', onHotkeyToggleFirst)
+  window.removeEventListener('hotkey-search', onHotkeySearch)
+})
 </script>
 
 <template>
   <div class="space-y-5 pb-20 md:pb-0">
-    <!-- MotivationBanner 将在 Wave 3 添加 -->
+    <!-- 动态激励横幅 -->
+    <MotivationBanner />
     <!-- ========== 1. 今日状态 ========== -->
     <div class="bg-card border border-border rounded-2xl p-6 md:p-8">
       <div class="flex items-start justify-between flex-wrap gap-4">
