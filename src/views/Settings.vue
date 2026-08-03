@@ -9,7 +9,6 @@ import { exportAllData, importAllData, downloadJson } from '@/services/dataExpor
 const appStore = useAppStore()
 const theme = ref<Theme>(appStore.theme)
 watch(theme, (val) => { appStore.theme = val })
-const language = ref('zh-CN')
 
 // ---- AI 配置 ----
 const aiConfig = ref(getAIConfig())
@@ -32,6 +31,7 @@ function runCleanup() {
     const parts: string[] = []
     if (result.orphanTasksDetached > 0) parts.push(`解除 ${result.orphanTasksDetached} 个孤儿任务关联`)
     if (result.orphanDailyRefsRemoved > 0) parts.push(`清理 ${result.orphanDailyRefsRemoved} 个无效日历引用`)
+    if (result.orphanPlanRefsRemoved > 0) parts.push(`清理 ${result.orphanPlanRefsRemoved} 个无效计划引用`)
     cleanupMsg.value = parts.length > 0 ? `✓ ${parts.join('，')}` : '✓ 数据完好，无需清理'
   } catch {
     cleanupMsg.value = '清理失败，请重试'
@@ -113,17 +113,6 @@ function applyPreset(endpoint: string) {
           <option value="light">浅色</option>
           <option value="dark">深色</option>
           <option value="system">跟随系统</option>
-        </select>
-      </div>
-
-      <div class="flex items-center justify-between">
-        <span class="text-sm text-text-secondary">语言</span>
-        <select
-          v-model="language"
-          class="bg-card-hover text-text-primary text-sm px-3 py-1.5 rounded-lg border border-border outline-none focus:border-accent"
-        >
-          <option value="zh-CN">简体中文</option>
-          <option value="en">English</option>
         </select>
       </div>
     </div>

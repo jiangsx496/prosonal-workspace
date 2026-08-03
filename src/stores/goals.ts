@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { todayLocal, computeDateLocal } from '@/utils/date'
+import { generateId as genId } from '@/utils/id'
+import { watchPersist } from '@/utils/persist'
 import { mockGoals, type Goal, goalCategories } from '@/mock/goals'
 import { useTaskStore } from '@/stores/tasks'
 import { useDailyStore } from '@/stores/daily'
@@ -26,14 +28,12 @@ function load(): Goal[] {
   return [...mockGoals]
 }
 
-function save(goals: Goal[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(goals))
-}
+
 
 export const useGoalStore = defineStore('goals', () => {
   const goals = ref<Goal[]>(load())
 
-  watch(goals, (val) => save(val), { deep: true })
+  watchPersist(goals, STORAGE_KEY)
 
   const activeGoals = computed(() => goals.value.filter((g) => g.status === 'active'))
 
@@ -97,7 +97,7 @@ export const useGoalStore = defineStore('goals', () => {
   }
 
   function generateId(): string {
-    return 'g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
+    return genId('g')
   }
 
   function daysLeft(deadline: string): { text: string; urgent: boolean } {

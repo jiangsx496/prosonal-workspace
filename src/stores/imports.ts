@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
+import { generateId as genId } from '@/utils/id'
+import { watchPersist } from '@/utils/persist'
 
 export interface ImportRecord {
   id: string
@@ -21,7 +23,7 @@ function load(): ImportRecord[] {
   try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r) } catch {}
   return []
 }
-function save(v: ImportRecord[]) { localStorage.setItem(STORAGE_KEY, JSON.stringify(v)) }
+
 
 function detectType(filename: string, mimeType: string): ImportRecord['fileType'] {
   const ext = filename.split('.').pop()?.toLowerCase()
@@ -35,14 +37,14 @@ function detectType(filename: string, mimeType: string): ImportRecord['fileType'
 
 export const useImportStore = defineStore('imports', () => {
   const records = ref<ImportRecord[]>(load())
-  watch(records, (v) => save(v), { deep: true })
+  watchPersist(records, STORAGE_KEY)
 
   const pending = computed(() => records.value.filter((r) => r.status === 'pending'))
   const parsed = computed(() => records.value.filter((r) => r.status === 'parsed'))
   const imported = computed(() => records.value.filter((r) => r.status === 'imported'))
 
   function generateId(): string {
-    return 'imp' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
+    return genId('imp')
   }
 
   function addRecord(record: ImportRecord) {

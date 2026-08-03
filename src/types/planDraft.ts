@@ -63,9 +63,11 @@ export function dayTasks(draft: PlanDraft, day: number): DraftTask[] {
   return draft.days.find((d) => d.day === day)?.blocks.flatMap((b) => b.tasks) || []
 }
 
+import { generateId } from '@/utils/id'
+
 /** 生成草稿内部 ID */
 export function generateDraftId(prefix: string = 'dt'): string {
-  return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
+  return generateId(prefix)
 }
 
 /** 计算从基准日偏移 N 天后的日期（本地时区，避免 UTC 偏移） */

@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref, watch, computed } from 'vue'
+import { ref, computed } from 'vue'
+import { generateId } from '@/utils/id'
+import { watchPersist } from '@/utils/persist'
 
 export interface Note {
   id: string
@@ -18,15 +20,13 @@ function load(): Note[] {
   return []
 }
 
-function save(val: Note[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
-}
+
 
 export const useNoteStore = defineStore('notes', () => {
   const notes = ref<Note[]>(load())
   const activeId = ref<string | null>(null)
 
-  watch(notes, (val) => save(val), { deep: true })
+  watchPersist(notes, STORAGE_KEY)
 
   const activeNote = computed(() => {
     if (!activeId.value) return notes.value[0] || null
@@ -38,7 +38,7 @@ export const useNoteStore = defineStore('notes', () => {
   )
 
   function createNote() {
-    const id = 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
+    const id = generateId('n')
     const note: Note = {
       id,
       title: '',

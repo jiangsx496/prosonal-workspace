@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { todayLocal, computeDateLocal } from '@/utils/date'
+import { generateId as genId } from '@/utils/id'
 import type { PlanDraft, DraftTask } from '@/types/planDraft'
 import { flattenTasks } from '@/types/planDraft'
 import { useGoalStore } from '@/stores/goals'
@@ -39,7 +40,7 @@ export const usePlanDraftStore = defineStore('planDraft', () => {
   })
 
   function generateId(prefix: string = 't'): string {
-    return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
+    return genId(prefix)
   }
 
   /** 接收解析器产出的 PlanDraft */

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref, watch, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { todayLocal } from '@/utils/date'
+import { watchPersist } from '@/utils/persist'
 import { mockDailyPlans, type DailyPlan } from '@/mock/daily'
 
 const STORAGE_KEY = 'pw-daily'
@@ -13,15 +14,13 @@ function load(): DailyPlan[] {
   return [...mockDailyPlans]
 }
 
-function save(val: DailyPlan[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
-}
+
 
 export const useDailyStore = defineStore('daily', () => {
   const plans = ref<DailyPlan[]>(load())
   const today = computed(() => todayLocal())
 
-  watch(plans, (val) => save(val), { deep: true })
+  watchPersist(plans, STORAGE_KEY)
 
   const todayPlan = computed(() =>
     plans.value.find((p) => p.date === today.value) || {
@@ -29,6 +28,7 @@ export const useDailyStore = defineStore('daily', () => {
       taskIds: [],
       habitIds: [],
       summary: '',
+      focusMinutes: 0,
       createdAt: new Date().toISOString(),
     }
   )

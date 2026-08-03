@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref, watch, computed } from 'vue'
+import { ref, computed } from 'vue'
+import { generateId } from '@/utils/id'
+import { watchPersist } from '@/utils/persist'
 import { mockReminders, type Reminder } from '@/mock/reminders'
 
 const STORAGE_KEY = 'pw-reminders'
@@ -8,16 +10,16 @@ function load(): Reminder[] {
   try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r) } catch {}
   return structuredClone(mockReminders)
 }
-function save(v: Reminder[]) { localStorage.setItem(STORAGE_KEY, JSON.stringify(v)) }
+
 
 export const useReminderStore = defineStore('reminders', () => {
   const items = ref<Reminder[]>(load())
-  watch(items, (v) => save(v), { deep: true })
+  watchPersist(items, STORAGE_KEY)
 
   const todayReminders = computed(() => items.value.filter((r) => r.enabled && !r.notified))
 
   function createReminder(r: Omit<Reminder, 'id'|'createdAt'>) {
-    items.value.push({ ...r, id: 'r'+Date.now().toString(36), createdAt: new Date().toISOString() })
+    items.value.push({ ...r, id: generateId('r'), createdAt: new Date().toISOString() })
   }
 
   function updateReminder(id: string, patch: Partial<Reminder>) {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { localDateFromISO } from '@/utils/date'
 import { useProjectStore } from '@/stores/projects'
 
 const store = useProjectStore()
@@ -122,7 +123,7 @@ function cancelEdit() {
             </div>
           </div>
           <p v-if="p.desc" class="text-xs text-text-muted">{{ p.desc }}</p>
-          <p class="text-xs text-text-muted/60 mt-2">创建于 {{ p.createdAt.slice(0, 10) }}</p>
+          <p class="text-xs text-text-muted/60 mt-2">创建于 {{ localDateFromISO(p.createdAt) }}</p>
         </template>
       </div>
     </div>

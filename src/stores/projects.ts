@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref, watch, computed } from 'vue'
+import { ref, computed } from 'vue'
+import { generateId } from '@/utils/id'
+import { watchPersist } from '@/utils/persist'
 import { useTaskStore } from '@/stores/tasks'
 
 export interface Project {
@@ -21,14 +23,12 @@ function load(): Project[] {
   return []
 }
 
-function save(val: Project[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
-}
+
 
 export const useProjectStore = defineStore('projects', () => {
   const projects = ref<Project[]>(load())
 
-  watch(projects, (val) => save(val), { deep: true })
+  watchPersist(projects, STORAGE_KEY)
 
   const sorted = computed(() =>
     [...projects.value].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
@@ -36,7 +36,7 @@ export const useProjectStore = defineStore('projects', () => {
 
   function create(name: string, desc: string = '') {
     const project: Project = {
-      id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+      id: generateId('p'),
       name: name.trim(),
       desc: desc.trim(),
       color: COLORS[projects.value.length % COLORS.length],

@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { todayLocal } from '@/utils/date'
+import { generateId as genId } from '@/utils/id'
+import { watchPersist } from '@/utils/persist'
 
 export interface Plan {
   id: string
@@ -19,17 +21,17 @@ function load(): Plan[] {
   try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r) } catch {}
   return []
 }
-function save(v: Plan[]) { localStorage.setItem(STORAGE_KEY, JSON.stringify(v)) }
+
 
 export const usePlanStore = defineStore('plans', () => {
   const plans = ref<Plan[]>(load())
-  watch(plans, (v) => save(v), { deep: true })
+  watchPersist(plans, STORAGE_KEY)
 
   const draftPlans = computed(() => plans.value.filter((p) => p.status === 'draft'))
   const confirmedPlans = computed(() => plans.value.filter((p) => p.status === 'confirmed'))
 
   function generateId(): string {
-    return 'plan' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
+    return genId('plan')
   }
 
   function createPlan(data: Partial<Plan>): string {

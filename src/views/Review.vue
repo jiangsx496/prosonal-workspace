@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { todayLocal, computeDateLocal, localDateStr } from '@/utils/date'
+import { todayLocal, computeDateLocal, localDateStr, localDateFromISO } from '@/utils/date'
 import { useTaskStore } from '@/stores/tasks'
 import { useHabitStore } from '@/stores/habits'
 import { useFocusStore } from '@/stores/focus'
@@ -24,7 +24,7 @@ const yesterdayHabits = computed(() =>
 // 昨天专注时间（秒 → 分钟）
 const yesterdayFocusMinutes = computed(() =>
   focusStore.sessions
-    .filter((s) => s.createdAt.slice(0, 10) === yesterday && s.status === 'completed')
+    .filter((s) => localDateFromISO(s.createdAt) === yesterday && s.status === 'completed')
     .reduce((sum, s) => sum + s.duration, 0) / 60
 )
 
@@ -56,7 +56,7 @@ const weekStats = computed(() => weekDays.value.map((d) => ({
   tasks: taskStore.tasksCompletedOn(d.date).length,
   habits: habitStore.habits.filter((h) => (h.completedDates || []).includes(d.date)).length,
   focusMin: Math.round(focusStore.sessions
-    .filter((s) => s.createdAt.slice(0,10) === d.date && s.status === 'completed')
+    .filter((s) => localDateFromISO(s.createdAt) === d.date && s.status === 'completed')
     .reduce((sum, s) => sum + s.duration, 0) / 60),
 })))
 

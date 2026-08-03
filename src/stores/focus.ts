@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { todayLocal } from '@/utils/date'
+import { todayLocal, localDateFromISO } from '@/utils/date'
+import { generateId as genId } from '@/utils/id'
 import { useTaskStore } from '@/stores/tasks'
 
 export interface FocusSession {
@@ -52,7 +53,7 @@ export const useFocusStore = defineStore('focus', () => {
 
   // ==== 今日统计 ====
   const todaySessions = computed(() =>
-    sessions.value.filter((s) => s.createdAt.slice(0, 10) === todayStr())
+    sessions.value.filter((s) => localDateFromISO(s.createdAt) === todayStr())
   )
 
   const todayFocusSeconds = computed(() =>
@@ -89,7 +90,7 @@ export const useFocusStore = defineStore('focus', () => {
   }
 
   function generateId(): string {
-    return 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
+    return genId('f')
   }
 
   function addSession(session: FocusSession) {

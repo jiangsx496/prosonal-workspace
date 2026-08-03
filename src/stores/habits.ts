@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref, watch, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { todayLocal, localDateStr } from '@/utils/date'
+import { generateId as genId } from '@/utils/id'
+import { watchPersist } from '@/utils/persist'
 import { mockHabits, type Habit, habitCategoryMeta } from '@/mock/habits'
 
 const STORAGE_KEY = 'pw-habits'
@@ -13,16 +15,14 @@ function load(): Habit[] {
   return structuredClone(mockHabits)
 }
 
-function save(val: Habit[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
-}
+
 
 const todayStr = () => todayLocal()
 
 export const useHabitStore = defineStore('habits', () => {
   const habits = ref<Habit[]>(load())
 
-  watch(habits, (val) => save(val), { deep: true })
+  watchPersist(habits, STORAGE_KEY)
 
   const activeHabits = computed(() => habits.value.filter((h) => h.active))
 
@@ -109,7 +109,7 @@ export const useHabitStore = defineStore('habits', () => {
     if (idx !== -1) Object.assign(habits.value[idx], patch)
   }
   function removeHabit(id: string) { habits.value = habits.value.filter((h) => h.id !== id) }
-  function generateId(): string { return 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5) }
+  function generateId(): string { return genId('h') }
 
   return {
     habits, activeHabits, doneCount, isDone, toggle, calcStreak,

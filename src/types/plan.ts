@@ -31,6 +31,7 @@ export interface Plan {
 }
 
 import { todayLocal } from '@/utils/date'
+import { generateId } from '@/utils/id'
 
 // ==== 查询工具函数 ====
 
@@ -61,7 +62,7 @@ export function getTaskIdsByDate(plan: Plan | undefined, date: string): string[]
 
 /** 从 PlanDraft 的 DraftBlock 格式生成 Plan 的 Block id */
 export function generatePlanId(prefix: string = 'pb'): string {
-  return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
+  return generateId(prefix)
 }
 
 /** 从指定 Plan 中移除某个 taskId 引用（任务删除时调用） */

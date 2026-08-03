@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
-import { todayLocal } from '@/utils/date'
+import { ref, computed } from 'vue'
+import { todayLocal, localDateFromISO } from '@/utils/date'
+import { generateId as genId } from '@/utils/id'
+import { watchPersist } from '@/utils/persist'
 import { mockTasks, type Task, projects } from '@/mock/tasks'
 import { useDailyStore } from '@/stores/daily'
 import { useGoalStore } from '@/stores/goals'
@@ -34,16 +36,11 @@ function loadTasks(): Task[] {
   return [...mockTasks]
 }
 
-function saveTasks(tasks: Task[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks))
-}
-
 export const useTaskStore = defineStore('tasks', () => {
   const tasks = ref<Task[]>(loadTasks())
   const filter = ref<TaskFilter>('all')
 
-  watch(tasks, (val) => saveTasks(val), { deep: true })
-
+  watchPersist(tasks, STORAGE_KEY)
   const today = computed(() => todayLocal())
 
   // 从 DailyStore 读今日 plan 的 taskIds（建立响应式依赖：daily 变化时相关 computed 自动重算）
@@ -154,7 +151,7 @@ export const useTaskStore = defineStore('tasks', () => {
 
   /** 获取指定日期完成的任务列表 */
   function tasksCompletedOn(date: string): Task[] {
-    return tasks.value.filter((t) => t.completedAt?.slice(0, 10) === date)
+    return tasks.value.filter((t) => t.completedAt && localDateFromISO(t.completedAt) === date)
   }
 
   /** 获取指定日期未完成的今日任务（scheduledDate 匹配但未 done） */
@@ -165,7 +162,7 @@ export const useTaskStore = defineStore('tasks', () => {
   }
 
   function generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
+    return genId()
   }
 
   return {

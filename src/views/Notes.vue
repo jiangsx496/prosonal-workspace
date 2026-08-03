@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
+import { localDateFromISO } from '@/utils/date'
 import { useNoteStore } from '@/stores/notes'
 
 const store = useNoteStore()
@@ -66,7 +67,7 @@ function handleDelete() {
           @click="store.selectNote(note.id)"
         >
           <span class="block truncate">{{ note.title || '无标题' }}</span>
-          <span class="block text-xs text-text-muted/60 mt-0.5">{{ note.updatedAt.slice(0, 10) }}</span>
+          <span class="block text-xs text-text-muted/60 mt-0.5">{{ localDateFromISO(note.updatedAt) }}</span>
         </button>
       </div>
 

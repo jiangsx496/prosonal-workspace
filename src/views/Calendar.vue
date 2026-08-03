@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { localDateStr, todayLocal } from '@/utils/date'
+import { localDateStr, todayLocal, localDateFromISO } from '@/utils/date'
 import { useRouter } from 'vue-router'
 import { useTaskStore } from '@/stores/tasks'
 import { useDailyStore } from '@/stores/daily'
@@ -48,7 +48,7 @@ const weekDays = computed(() => {
 function weekDayTasks(date: string) {
   const planIds = new Set(goalStore.allTaskIdsByDate(date))
   return taskStore.tasks.filter((t) =>
-    t.scheduledDate === date || t.completedAt?.slice(0,10) === date || planIds.has(t.id)
+    t.scheduledDate === date || (t.completedAt && localDateFromISO(t.completedAt) === date) || planIds.has(t.id)
   )
 }
 function weekDayHabits(date: string) {
@@ -56,7 +56,7 @@ function weekDayHabits(date: string) {
 }
 function weekDayFocus(date: string): number {
   return Math.round(focusStore.sessions
-    .filter((s) => s.createdAt.slice(0,10) === date && s.status === 'completed')
+    .filter((s) => localDateFromISO(s.createdAt) === date && s.status === 'completed')
     .reduce((sum, s) => sum + s.duration, 0) / 60)
 }
 
@@ -90,9 +90,9 @@ const weekdays = ['日', '一', '二', '三', '四', '五', '六']
 
 // ---- 日期状态点 ----
 function dayDots(date: string) {
-  const tasks = taskStore.tasks.some((t) => (t.scheduledDate === date || t.completedAt?.slice(0, 10) === date) && t.status === 'done')
+  const tasks = taskStore.tasks.some((t) => (t.scheduledDate === date || (t.completedAt && localDateFromISO(t.completedAt) === date)) && t.status === 'done')
   const habits = habitStore.habits.some((h) => (h.completedDates || []).includes(date))
-  const focus = focusStore.sessions.some((s) => s.createdAt.slice(0, 10) === date && s.status === 'completed')
+  const focus = focusStore.sessions.some((s) => localDateFromISO(s.createdAt) === date && s.status === 'completed')
   return { tasks, habits, focus }
 }
 function hasAnyActivity(date: string): boolean {
@@ -114,14 +114,14 @@ const selectedTasks = computed(() => {
   const planTaskIds = new Set(goalStore.allTaskIdsByDate(selectedDate.value))
   return taskStore.tasks.filter((t) =>
     t.scheduledDate === selectedDate.value ||
-    t.completedAt?.slice(0, 10) === selectedDate.value ||
+    (t.completedAt && localDateFromISO(t.completedAt) === selectedDate.value) ||
     planTaskIds.has(t.id)
   )
 })
 const selectedDoneTasks = computed(() => selectedTasks.value.filter((t) => t.status === 'done'))
 const selectedHabits = computed(() => habitStore.habits.filter((h) => (h.completedDates || []).includes(selectedDate.value)))
 const selectedFocusMin = computed(() => Math.round(
-  focusStore.sessions.filter((s) => s.createdAt.slice(0, 10) === selectedDate.value && s.status === 'completed')
+  focusStore.sessions.filter((s) => localDateFromISO(s.createdAt) === selectedDate.value && s.status === 'completed')
     .reduce((sum, s) => sum + s.duration, 0) / 60
 ))
 const selectedJournal = computed(() => journalStore.journals.find((j) => j.date === selectedDate.value))
