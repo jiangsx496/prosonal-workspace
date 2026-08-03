@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { interviewQuestions, type InterviewQuestion } from '@/data/interviewQuestions'
+import { interviewQuestions } from '@/data/interviewQuestions'
 import { nextReviewDate, masteryFromCount, type Mastery } from '@/utils/reviewScheduler'
 import { todayLocal } from '@/utils/date'
 import { watchPersist } from '@/utils/persist'
@@ -142,6 +142,18 @@ export const useInterviewStore = defineStore('interview', () => {
     return progressList.value.filter((p) => p.question.category === category)
   }
 
+  /** 获取单题进度 */
+  function getProgress(questionId: string): QuestionProgress {
+    return progressMap.value[questionId] || {
+      questionId,
+      mastery: 'new' as const,
+      reviewCount: 0,
+      lastReviewDate: null,
+      nextReviewDate: null,
+      marked: false,
+    }
+  }
+
   return {
     questions,
     progressMap,
@@ -161,5 +173,6 @@ export const useInterviewStore = defineStore('interview', () => {
     reset,
     resetAll,
     byCategory,
+    getProgress,
   }
 })

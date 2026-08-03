@@ -5,10 +5,33 @@ import { useAppStore, type Theme } from '@/stores/app'
 import { getAIConfig, setAIConfig } from '@/services/ai'
 import { cleanupOrphanData } from '@/services/dataCleanup'
 import { exportAllData, importAllData, downloadJson } from '@/services/dataExport'
+import { useFocusStore, type FocusConfig } from '@/stores/focus'
 
 const appStore = useAppStore()
 const theme = ref<Theme>(appStore.theme)
 watch(theme, (val) => { appStore.theme = val })
+
+// ---- 番茄钟设置 ----
+const focusStore = useFocusStore()
+const focusConfig = ref<FocusConfig>({ ...focusStore.config })
+
+function clampInt(v: number, min: number, max: number, fallback: number): number {
+  const n = Number(v)
+  if (!Number.isFinite(n)) return fallback
+  return Math.min(max, Math.max(min, Math.round(n)))
+}
+
+// 修改后实时保存
+watch(focusConfig, (val) => {
+  focusStore.updateConfig({
+    focusDuration: clampInt(val.focusDuration, 1, 180, 25),
+    shortBreak: clampInt(val.shortBreak, 1, 60, 5),
+    longBreak: clampInt(val.longBreak, 1, 120, 15),
+    longBreakInterval: clampInt(val.longBreakInterval, 1, 12, 4),
+    autoStartBreak: !!val.autoStartBreak,
+    soundEnabled: !!val.soundEnabled,
+  })
+}, { deep: true })
 
 // ---- AI 配置 ----
 const aiConfig = ref(getAIConfig())
@@ -173,6 +196,112 @@ function applyPreset(endpoint: string) {
           @click="saveAIConfig"
         >保存</button>
         <span v-if="aiSaveMsg" class="text-xs text-green-600">{{ aiSaveMsg }}</span>
+      </div>
+    </div>
+
+    <!-- 番茄钟设置 -->
+    <div class="bg-card border border-border rounded-xl p-5 space-y-4">
+      <div class="flex items-center gap-2">
+        <span class="text-base">🍅</span>
+        <h3 class="text-sm font-semibold text-text-primary">番茄钟设置</h3>
+      </div>
+      <p class="text-xs text-text-muted">专注与休息时长会应用到下一次计时，修改后自动保存。</p>
+
+      <div>
+        <label class="block text-xs font-medium text-text-secondary mb-1.5">专注时长：{{ focusConfig.focusDuration }} 分钟</label>
+        <div class="flex items-center gap-3">
+          <input
+            v-model.number="focusConfig.focusDuration"
+            type="number" min="1" max="180"
+            class="w-20 px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent"
+          />
+          <input
+            v-model.number="focusConfig.focusDuration"
+            type="range" min="1" max="180"
+            class="flex-1 accent-indigo-500"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-text-secondary mb-1.5">短休息：{{ focusConfig.shortBreak }} 分钟</label>
+        <div class="flex items-center gap-3">
+          <input
+            v-model.number="focusConfig.shortBreak"
+            type="number" min="1" max="60"
+            class="w-20 px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent"
+          />
+          <input
+            v-model.number="focusConfig.shortBreak"
+            type="range" min="1" max="60"
+            class="flex-1 accent-indigo-500"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-text-secondary mb-1.5">长休息：{{ focusConfig.longBreak }} 分钟</label>
+        <div class="flex items-center gap-3">
+          <input
+            v-model.number="focusConfig.longBreak"
+            type="number" min="1" max="120"
+            class="w-20 px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent"
+          />
+          <input
+            v-model.number="focusConfig.longBreak"
+            type="range" min="1" max="120"
+            class="flex-1 accent-indigo-500"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-text-secondary mb-1.5">每完成 {{ focusConfig.longBreakInterval }} 次专注后进入长休息</label>
+        <div class="flex items-center gap-3">
+          <input
+            v-model.number="focusConfig.longBreakInterval"
+            type="number" min="1" max="12"
+            class="w-20 px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent"
+          />
+          <input
+            v-model.number="focusConfig.longBreakInterval"
+            type="range" min="1" max="12"
+            class="flex-1 accent-indigo-500"
+          />
+        </div>
+      </div>
+
+      <!-- 开关 -->
+      <div class="pt-3 border-t border-border space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-text-secondary">专注完成后自动开始休息</span>
+          <button
+            type="button" role="switch" :aria-checked="focusConfig.autoStartBreak"
+            class="relative w-11 h-6 rounded-full transition-colors shrink-0"
+            :class="focusConfig.autoStartBreak ? 'bg-accent' : 'bg-gray-300'"
+            @click="focusConfig.autoStartBreak = !focusConfig.autoStartBreak"
+          >
+            <span
+              class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform"
+              :class="focusConfig.autoStartBreak ? 'translate-x-5' : ''"
+            ></span>
+          </button>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-text-secondary">完成音效</span>
+          <button
+            type="button" role="switch" :aria-checked="focusConfig.soundEnabled"
+            class="relative w-11 h-6 rounded-full transition-colors shrink-0"
+            :class="focusConfig.soundEnabled ? 'bg-accent' : 'bg-gray-300'"
+            @click="focusConfig.soundEnabled = !focusConfig.soundEnabled"
+          >
+            <span
+              class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform"
+              :class="focusConfig.soundEnabled ? 'translate-x-5' : ''"
+            ></span>
+          </button>
+        </div>
       </div>
     </div>
 

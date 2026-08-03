@@ -12,6 +12,7 @@ import type { FeedQuestion } from '@/services/feed'
 import TaskModal from '@/components/TaskModal.vue'
 import GoalCard from '@/components/GoalCard.vue'
 import CalendarWidget from '@/components/CalendarWidget.vue'
+import FocusScreen from '@/components/FocusScreen.vue'
 import { generateDailyPlan, sortTasksByPriority } from '@/services/scheduler'
 import { todayLocal } from '@/utils/date'
 
@@ -27,6 +28,7 @@ const feedStore = useFeedStore()
 const showCreate = ref(false)
 const generating = ref(false)
 const showEndDay = ref(false)
+const showFocusScreen = ref(false)
 
 // ---- 结束今天：生成总结草稿 ----
 const endDayDraft = computed(() => {
@@ -220,6 +222,7 @@ function goalName(goalId: string | null): string {
 
 <template>
   <div class="space-y-5 pb-20 md:pb-0">
+    <!-- MotivationBanner 将在 Wave 3 添加 -->
     <!-- ========== 1. 今日状态 ========== -->
     <div class="bg-card border border-border rounded-2xl p-6 md:p-8">
       <div class="flex items-start justify-between flex-wrap gap-4">
@@ -256,16 +259,8 @@ function goalName(goalId: string | null): string {
         <button
           v-if="focusStore.isIdle"
           class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors shrink-0"
-          @click="focusStore.startFocus()"
+          @click="showFocusScreen = true"
         >🍅 开始专注</button>
-      </div>
-      <div v-if="focusStore.isActive" class="flex items-center gap-4 bg-white/60 rounded-xl px-4 py-3">
-        <span class="text-3xl font-bold tabular-nums text-text-primary">{{ focusStore.display }}</span>
-        <div class="flex gap-2 flex-1">
-          <button v-if="focusStore.running" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 text-xs font-medium hover:bg-amber-100 transition-colors" @click="focusStore.pauseFocus()">⏸ 暂停</button>
-          <button v-else class="px-3 py-1.5 rounded-lg bg-green-50 text-green-700 text-xs font-medium hover:bg-green-100 transition-colors" @click="focusStore.resumeFocus()">▶ 继续</button>
-          <button class="px-3 py-1.5 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors" @click="focusStore.completeFocus()">✓ 完成</button>
-        </div>
       </div>
       <div class="flex items-center gap-2 mt-2 text-xs text-text-muted">
         <span>🍅 今日专注：{{ focusStore.formatFocusTime() }}</span>
@@ -454,6 +449,7 @@ function goalName(goalId: string | null): string {
     <!-- ========== 6. 浮动按钮 ========== -->
     <button class="fixed bottom-20 right-6 md:bottom-8 md:right-8 w-12 h-12 rounded-full bg-accent text-white text-xl shadow-lg hover:bg-accent-hover hover:shadow-xl transition-all z-40 flex items-center justify-center" @click="showCreate=true" title="快速创建任务">+</button>
     <TaskModal :visible="showCreate" @close="showCreate=false" />
+    <FocusScreen :visible="showFocusScreen" @close="showFocusScreen=false" />
 
     <!-- 结束今天 Modal -->
     <Teleport to="body">

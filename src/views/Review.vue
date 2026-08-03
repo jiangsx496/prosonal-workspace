@@ -4,6 +4,7 @@ import { todayLocal, computeDateLocal, localDateStr, localDateFromISO } from '@/
 import { useTaskStore } from '@/stores/tasks'
 import { useHabitStore } from '@/stores/habits'
 import { useFocusStore } from '@/stores/focus'
+import HeatmapWidget from '@/components/HeatmapWidget.vue'
 
 const taskStore = useTaskStore()
 const habitStore = useHabitStore()
@@ -71,6 +72,9 @@ const weekMax = computed(() => {
 
 <template>
   <div class="space-y-6 pb-20 md:pb-0">
+    <!-- 贡献热力图（F6） -->
+    <HeatmapWidget class="mb-2" />
+
     <div>
       <h1 class="text-2xl font-bold text-text-primary">复盘</h1>
       <p class="text-xs text-text-muted mt-1">回顾昨天，规划今天</p>

@@ -67,7 +67,7 @@ const stats = computed(() => {
 
 // ---- 操作 ----
 function setMastery(questionId: string, mastery: Mastery) {
-  interviewStore.markReview(questionId, mastery)
+  interviewStore.setMastery(questionId, mastery)
 }
 
 function toggleMark(questionId: string) {
