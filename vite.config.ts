@@ -10,6 +10,13 @@ export default defineConfig({
     environment: 'node',
     exclude: ['node_modules/**', 'dist/**', '.rivet/**'],
   },
+  server: {
+    watch: {
+      // .rivet/ 是运行时工具数据目录（presence/knowledge 等持续写入），
+      // 不在 watch 范围内，避免每次写入都触发 full-reload 导致页面刷新循环
+      ignored: ['**/.rivet/**'],
+    },
+  },
   plugins: [
     vue(),
     tailwindcss(),

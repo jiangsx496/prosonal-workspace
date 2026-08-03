@@ -137,8 +137,8 @@ const linkedTaskCount = computed(() =>
           </div>
           <div class="flex items-center gap-1 shrink-0 ml-2">
             <span class="text-xs px-2 py-0.5 rounded border" :class="statusBadge[goal.status]">{{ statusLabel[goal.status] }}</span>
-            <button class="w-6 h-6 rounded flex items-center justify-center text-text-muted opacity-0 group-hover:opacity-100 hover:bg-accent/10 hover:text-accent transition-all" @click.stop="openEdit(goal)" title="编辑">✎</button>
-            <button class="w-6 h-6 rounded flex items-center justify-center text-text-muted opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 transition-all" @click.stop="openDelete(goal)" title="删除">✕</button>
+            <button class="w-6 h-6 rounded flex items-center justify-center text-text-muted opacity-0 group-hover:opacity-100 hover:bg-accent/10 hover:text-accent transition-all" @click.prevent.stop="openEdit(goal)" title="编辑">✎</button>
+            <button class="w-6 h-6 rounded flex items-center justify-center text-text-muted opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 transition-all" @click.prevent.stop="openDelete(goal)" title="删除">✕</button>
           </div>
         </div>
 
