@@ -46,17 +46,10 @@ export const useTaskStore = defineStore('tasks', () => {
 
   const today = computed(() => todayLocal())
 
-  // 从 localStorage 读 DailyPlan 的今日 taskIds
+  // 从 DailyStore 读今日 plan 的 taskIds（建立响应式依赖：daily 变化时相关 computed 自动重算）
   function getDailyPlanTaskIds(): string[] {
-    try {
-      const raw = localStorage.getItem('pw-daily')
-      if (raw) {
-        const plans = JSON.parse(raw)
-        const found = plans.find((p: any) => p.date === today.value)
-        return found ? found.taskIds : []
-      }
-    } catch { /* ignore */ }
-    return []
+    const dailyStore = useDailyStore()
+    return dailyStore.todayPlan.taskIds
   }
 
   const filteredTasks = computed(() => {
