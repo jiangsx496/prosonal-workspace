@@ -82,7 +82,7 @@ export const useGoalStore = defineStore('goals', () => {
       // 1. 批量清理 DailyPlan 中所有引用
       const dailyStore = useDailyStore()
       dailyStore.plans.forEach((p) => {
-        if (p.taskIds.some((tid) => idSet.has(tid))) {
+        if (p.taskIds?.some((tid) => idSet.has(tid))) {
           p.taskIds = p.taskIds.filter((tid) => !idSet.has(tid))
         }
       })

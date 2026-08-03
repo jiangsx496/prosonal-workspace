@@ -9,7 +9,17 @@ const STORAGE_KEY = 'pw-daily'
 function load(): DailyPlan[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return JSON.parse(raw) as DailyPlan[]
+    if (raw) {
+      const data = JSON.parse(raw) as any[]
+      // 数据规范化：旧版本数据可能缺字段，补齐默认值避免消费方（删除/清理）崩溃
+      return data.map((p) => ({
+        date: p.date,
+        taskIds: Array.isArray(p.taskIds) ? p.taskIds : [],
+        habitIds: Array.isArray(p.habitIds) ? p.habitIds : [],
+        summary: typeof p.summary === 'string' ? p.summary : '',
+        createdAt: p.createdAt || new Date().toISOString(),
+      }))
+    }
   } catch { /* ignore */ }
   return [...mockDailyPlans]
 }
