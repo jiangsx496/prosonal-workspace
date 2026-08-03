@@ -31,6 +31,7 @@ export interface DailyFeed {
 }
 
 import { interviewQuestions } from '@/data/interviewQuestions'
+import { todayLocal, computeDateLocal } from '@/utils/date'
 
 /**
  * 按日期从题库轮换选取面试题（保证每天不同，循环周期 = 题库长度）
@@ -63,7 +64,7 @@ function pickDailyQuestions(today: string): FeedQuestion[] {
 /** 获取 GitHub 近期热门仓库 */
 export async function fetchTrendingRepos(): Promise<FeedRepo[]> {
   // 搜索近 7 天创建、按 star 降序排列的仓库
-  const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10)
+  const weekAgo = computeDateLocal(todayLocal(), -7)
   // 随机翻页让每次刷新看到不同的仓库（GitHub Search 最多 1000 条，per_page=5 时最多 200 页）
   const page = Math.floor(Math.random() * 5) + 1
   const url = `https://api.github.com/search/repositories?q=created:>${weekAgo}+stars:>100&sort=stars&order=desc&per_page=5&page=${page}`
@@ -94,7 +95,7 @@ export async function fetchDailyQuestion(): Promise<FeedQuestion | null> {
   if (!config.apiKey) return null
 
   const categories = ['JavaScript', 'CSS', 'Vue', '浏览器原理', '网络', '性能优化', '工程化']
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayLocal()
   const seed = today.split('-').reduce((a: number, b: string) => a + parseInt(b), 0)
   const category = categories[seed % categories.length]
 

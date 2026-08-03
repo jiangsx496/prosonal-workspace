@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { todayLocal, computeDateLocal } from '@/utils/date'
 import type { PlanDraft, DraftTask } from '@/types/planDraft'
 import { flattenTasks } from '@/types/planDraft'
 import { useGoalStore } from '@/stores/goals'
@@ -94,7 +95,7 @@ export const usePlanDraftStore = defineStore('planDraft', () => {
     const goalStore = useGoalStore()
     const taskStore = useTaskStore()
     const dailyStore = useDailyStore()
-    const today = new Date().toISOString().slice(0, 10)
+    const today = todayLocal()
 
     // Step 1: 创建 Goal
     let goalId: string | null = null
@@ -109,7 +110,7 @@ export const usePlanDraftStore = defineStore('planDraft', () => {
           : /运动|健身|饮食|睡眠|习惯/.test(goalTitle) ? '生活'
           : /项目|开发|代码|部署/.test(goalTitle) ? '开发'
           : '开发'
-        const deadlineDate = new Date(Date.now() + currentDraft.value.totalDays * 86400000).toISOString().slice(0, 10)
+        const deadlineDate = computeDateLocal(today, currentDraft.value.totalDays)
         goalStore.addGoal({
           id: goalId,
           title: goalTitle,

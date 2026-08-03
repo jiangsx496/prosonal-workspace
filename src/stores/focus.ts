@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { todayLocal } from '@/utils/date'
 import { useTaskStore } from '@/stores/tasks'
 
 export interface FocusSession {
@@ -28,7 +29,7 @@ function save(val: FocusSession[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
 }
 
-const todayStr = () => new Date().toISOString().slice(0, 10)
+const todayStr = () => todayLocal()
 
 export const useFocusStore = defineStore('focus', () => {
   const sessions = ref<FocusSession[]>(load())

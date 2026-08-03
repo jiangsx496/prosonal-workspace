@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { todayLocal } from '@/utils/date'
 import { useAppStore, type Theme } from '@/stores/app'
 import { getAIConfig, setAIConfig } from '@/services/ai'
 import { cleanupOrphanData } from '@/services/dataCleanup'
@@ -52,7 +53,7 @@ function handleExport() {
       setTimeout(() => { exportMsg.value = '' }, 2000)
       return
     }
-    downloadJson(`personal-workspace-backup-${new Date().toISOString().slice(0, 10)}.json`, result.json)
+    downloadJson(`personal-workspace-backup-${todayLocal()}.json`, result.json)
     exportMsg.value = `✓ 已导出 ${result.keyCount} 项数据`
   } catch {
     exportMsg.value = '导出失败'

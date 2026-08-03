@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, watch, computed } from 'vue'
+import { todayLocal } from '@/utils/date'
 import { mockJournals, type Journal } from '@/mock/journal'
 
 const STORAGE_KEY = 'pw-journal'
@@ -11,7 +12,7 @@ export const useJournalStore = defineStore('journal', () => {
   const journals = ref<Journal[]>(load())
   watch(journals, (v)=>save(v), {deep:true})
 
-  const today = computed(()=>new Date().toISOString().slice(0,10))
+  const today = computed(()=>todayLocal())
   const todayJournal = computed(()=>journals.value.find((j)=>j.date===today.value)||null)
   const history = computed(()=>journals.value.filter((j)=>j.date!==today.value).sort((a,b)=>b.date.localeCompare(a.date)))
 

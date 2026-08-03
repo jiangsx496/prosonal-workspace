@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
+import { todayLocal } from '@/utils/date'
 import { mockTasks, type Task, projects } from '@/mock/tasks'
 import { useDailyStore } from '@/stores/daily'
 import { useGoalStore } from '@/stores/goals'
@@ -43,7 +44,7 @@ export const useTaskStore = defineStore('tasks', () => {
 
   watch(tasks, (val) => saveTasks(val), { deep: true })
 
-  const today = computed(() => new Date().toISOString().slice(0, 10))
+  const today = computed(() => todayLocal())
 
   // 从 localStorage 读 DailyPlan 的今日 taskIds
   function getDailyPlanTaskIds(): string[] {

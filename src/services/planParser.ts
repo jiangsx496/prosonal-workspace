@@ -1,5 +1,6 @@
 import type { PlanDraft, DraftDay, DraftBlock } from '@/types/planDraft'
 import { generateDraftId, computeDate } from '@/types/planDraft'
+import { localDateStr, todayLocal } from '@/utils/date'
 
 /**
  * PlanDraft 解析器 v2 — 层级输出（Goal → Days → Blocks → Tasks）
@@ -46,7 +47,7 @@ function isReviewLine(line: string): boolean {
 
 export function parseToPlanDraft(content: string, _sourceFile: string, planId: string): PlanDraft {
   const lines = content.split('\n').map((l) => l.trim())
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayLocal()
 
   let goalTitle: string | null = null
   let goalDescription = ''
@@ -194,8 +195,9 @@ export function parseToPlanDraft(content: string, _sourceFile: string, planId: s
 function resolveDate(s: string): string | null {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  if (s === '今天' || s === 'today') return today.toISOString().slice(0, 10)
-  if (s === '明天' || s === 'tomorrow') return new Date(today.getTime() + 86400000).toISOString().slice(0, 10)
+  const base = localDateStr(today)
+  if (s === '今天' || s === 'today') return base
+  if (s === '明天' || s === 'tomorrow') return computeDate(base, 1)
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s
   const md = s.match(/^(\d{1,2})\/(\d{1,2})$/)
   if (md) return `${today.getFullYear()}-${md[1].padStart(2, '0')}-${md[2].padStart(2, '0')}`

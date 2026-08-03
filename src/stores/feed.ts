@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { todayLocal } from '@/utils/date'
 import { fetchDailyFeed, type DailyFeed, type FeedRepo, type FeedQuestion } from '@/services/feed'
 
 const STORAGE_PREFIX = 'pw-feed-'
 
 function todayStr(): string {
-  return new Date().toISOString().slice(0, 10)
+  return todayLocal()
 }
 
 function loadCached(date: string): DailyFeed | null {

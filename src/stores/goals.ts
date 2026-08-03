@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
+import { todayLocal, computeDateLocal } from '@/utils/date'
 import { mockGoals, type Goal, goalCategories } from '@/mock/goals'
 import { useTaskStore } from '@/stores/tasks'
 import { useDailyStore } from '@/stores/daily'
@@ -14,7 +15,7 @@ function load(): Goal[] {
     if (raw) {
       const data = JSON.parse(raw) as Goal[]
       // 自动标记过期 + priority 迁移
-      const today = new Date().toISOString().slice(0, 10)
+      const today = todayLocal()
       return data.map((g) => ({
         ...g,
         priority: g.priority || 'medium',
@@ -49,8 +50,7 @@ export const useGoalStore = defineStore('goals', () => {
   })
   const completedGoals = computed(() => goals.value.filter((g) => g.status === 'completed'))
   const expiringSoon = computed(() => {
-    const today = new Date()
-    const week = new Date(today.getTime() + 7 * 86400000).toISOString().slice(0, 10)
+    const week = computeDateLocal(todayLocal(), 7)
     return activeGoals.value.filter((g) => g.deadline <= week)
   })
   const expiredGoals = computed(() => goals.value.filter((g) => g.status === 'expired'))

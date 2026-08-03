@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, watch, computed } from 'vue'
+import { todayLocal, localDateStr } from '@/utils/date'
 import { mockHabits, type Habit, habitCategoryMeta } from '@/mock/habits'
 
 const STORAGE_KEY = 'pw-habits'
@@ -16,7 +17,7 @@ function save(val: Habit[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
 }
 
-const todayStr = () => new Date().toISOString().slice(0, 10)
+const todayStr = () => todayLocal()
 
 export const useHabitStore = defineStore('habits', () => {
   const habits = ref<Habit[]>(load())
@@ -49,7 +50,7 @@ export const useHabitStore = defineStore('habits', () => {
     let streak = 0
     const t = new Date()
     for (let i = 0; i < dates.length; i++) {
-      const expected = new Date(t.getTime() - i * 86400000).toISOString().slice(0, 10)
+      const expected = localDateStr(new Date(t.getTime() - i * 86400000))
       if (dates[i] === expected) streak++
       else break
     }
@@ -61,7 +62,7 @@ export const useHabitStore = defineStore('habits', () => {
     if (!h) return 0
     const weekStart = new Date()
     weekStart.setDate(weekStart.getDate() - weekStart.getDay())
-    const start = weekStart.toISOString().slice(0, 10)
+    const start = localDateStr(weekStart)
     return h.completedDates.filter((d) => d >= start).length
   }
 
@@ -88,7 +89,7 @@ export const useHabitStore = defineStore('habits', () => {
     for (let w = 0; w < 5; w++) {
       const week: HeatmapDay[] = []
       for (let d = 0; d < 7; d++) {
-        const dateStr = current.toISOString().slice(0, 10)
+        const dateStr = localDateStr(current)
         week.push({
           date: dateStr,
           completed: completedSet.has(dateStr),

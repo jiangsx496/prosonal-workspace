@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { todayLocal } from '@/utils/date'
 import { useGoalStore } from '@/stores/goals'
 import { useTaskStore } from '@/stores/tasks'
 import type { Goal } from '@/mock/goals'
@@ -51,8 +52,8 @@ function submit() {
     const id = goalStore.generateId()
     goalStore.addGoal({
       id, title: form.value.title.trim(), description: form.value.description.trim(),
-      category: form.value.category, startDate: new Date().toISOString().slice(0,10),
-      deadline: form.value.deadline || new Date().toISOString().slice(0,10),
+      category: form.value.category, startDate: todayLocal(),
+      deadline: form.value.deadline || todayLocal(),
       progress: 0, priority: form.value.priority, status: 'active', autoSchedule: false,
     } as Goal)
     createdGoalId.value = id
@@ -73,7 +74,7 @@ function removeTaskItem(idx: number) {
 
 function finishCreate() {
   if (createdGoalId.value && pendingTasks.value.length > 0) {
-    const today = new Date().toISOString().slice(0, 10)
+    const today = todayLocal()
     pendingTasks.value.forEach((t) => {
       taskStore.addTask({
         id: taskStore.generateId(), title: t.title,

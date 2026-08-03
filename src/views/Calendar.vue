@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { localDateStr, todayLocal } from '@/utils/date'
 import { useRouter } from 'vue-router'
 import { useTaskStore } from '@/stores/tasks'
 import { useDailyStore } from '@/stores/daily'
@@ -17,7 +18,7 @@ const focusStore = useFocusStore()
 const goalStore = useGoalStore()
 const journalStore = useJournalStore()
 
-const todayStr = () => new Date().toISOString().slice(0, 10)
+const todayStr = () => todayLocal()
 const viewMode = ref<'month' | 'week'>('month')
 const viewYear = ref(new Date().getFullYear())
 const viewMonth = ref(new Date().getMonth())
@@ -34,7 +35,7 @@ const weekDays = computed(() => {
   const days: { date: string; day: number; month: number; label: string; isToday: boolean }[] = []
   for (let i = 0; i < 7; i++) {
     const d = new Date(weekStart.value.getTime() + i * 86400000)
-    const dateStr = d.toISOString().slice(0, 10)
+    const dateStr = localDateStr(d)
     days.push({
       date: dateStr, day: d.getDate(), month: d.getMonth() + 1,
       label: ['日','一','二','三','四','五','六'][d.getDay()],
@@ -79,10 +80,10 @@ const calendarDays = computed(() => {
   const daysInMonth = new Date(viewYear.value, viewMonth.value + 1, 0).getDate()
   const cells: { date: string; day: number; inMonth: boolean }[] = []
   const prevDays = new Date(viewYear.value, viewMonth.value, 0).getDate()
-  for (let i = startWeekday - 1; i >= 0; i--) cells.push({ date: new Date(viewYear.value, viewMonth.value - 1, prevDays - i).toISOString().slice(0, 10), day: prevDays - i, inMonth: false })
-  for (let d = 1; d <= daysInMonth; d++) cells.push({ date: new Date(viewYear.value, viewMonth.value, d).toISOString().slice(0, 10), day: d, inMonth: true })
+  for (let i = startWeekday - 1; i >= 0; i--) cells.push({ date: localDateStr(new Date(viewYear.value, viewMonth.value - 1, prevDays - i)), day: prevDays - i, inMonth: false })
+  for (let d = 1; d <= daysInMonth; d++) cells.push({ date: localDateStr(new Date(viewYear.value, viewMonth.value, d)), day: d, inMonth: true })
   const rem = 42 - cells.length
-  for (let d = 1; d <= rem; d++) cells.push({ date: new Date(viewYear.value, viewMonth.value + 1, d).toISOString().slice(0, 10), day: d, inMonth: false })
+  for (let d = 1; d <= rem; d++) cells.push({ date: localDateStr(new Date(viewYear.value, viewMonth.value + 1, d)), day: d, inMonth: false })
   return cells
 })
 const weekdays = ['日', '一', '二', '三', '四', '五', '六']

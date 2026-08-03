@@ -30,6 +30,8 @@ export interface Plan {
   days: PlanDay[]
 }
 
+import { todayLocal } from '@/utils/date'
+
 // ==== 查询工具函数 ====
 
 /** 获取 Plan 中指定日期的 Day，找不到返回 null */
@@ -40,7 +42,7 @@ export function getDayByDate(plan: Plan | undefined, date: string): PlanDay | nu
 
 /** 获取 Plan 中今天的 Day */
 export function getTodayDay(plan: Plan | undefined): PlanDay | null {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayLocal()
   return getDayByDate(plan, today)
 }
 

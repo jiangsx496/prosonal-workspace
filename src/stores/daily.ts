@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, watch, computed } from 'vue'
+import { todayLocal } from '@/utils/date'
 import { mockDailyPlans, type DailyPlan } from '@/mock/daily'
 
 const STORAGE_KEY = 'pw-daily'
@@ -18,7 +19,7 @@ function save(val: DailyPlan[]) {
 
 export const useDailyStore = defineStore('daily', () => {
   const plans = ref<DailyPlan[]>(load())
-  const today = computed(() => new Date().toISOString().slice(0, 10))
+  const today = computed(() => todayLocal())
 
   watch(plans, (val) => save(val), { deep: true })
 

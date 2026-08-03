@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { todayLocal } from '@/utils/date'
 import { useRoute, useRouter } from 'vue-router'
 import { useGoalStore } from '@/stores/goals'
 import { useTaskStore } from '@/stores/tasks'
@@ -55,7 +56,7 @@ const newTaskPriority = ref<Task['priority']>('medium')
 function addQuickTask() {
   const title = newTaskTitle.value.trim()
   if (!title || !goalId.value) return
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayLocal()
   taskStore.addTask({
     id: taskStore.generateId(), title,
     project: '', goalId: goalId.value,

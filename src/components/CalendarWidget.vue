@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { localDateStr } from '@/utils/date'
 import { useRouter } from 'vue-router'
 import { useTaskStore } from '@/stores/tasks'
 import { useHabitStore } from '@/stores/habits'
@@ -19,7 +20,7 @@ const monthPlanCount = computed(() =>
   taskStore.tasks.filter((t) => t.scheduledDate?.startsWith(monthPrefix)).length
 )
 
-const todayStr = now.toISOString().slice(0, 10)
+const todayStr = localDateStr(now)
 const todayHasActivity = computed(() => {
   const tasks = taskStore.tasks.filter((t) => t.scheduledDate === todayStr || t.completedAt?.slice(0, 10) === todayStr)
   const habitsDone = habitStore.habits.some((h) => (h.completedDates || []).includes(todayStr))

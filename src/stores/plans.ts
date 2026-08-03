@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
+import { todayLocal } from '@/utils/date'
 
 export interface Plan {
   id: string
@@ -37,7 +38,7 @@ export const usePlanStore = defineStore('plans', () => {
       id,
       title: data.title || '未命名计划',
       sourceFile: data.sourceFile || '',
-      startDate: data.startDate || new Date().toISOString().slice(0, 10),
+      startDate: data.startDate || todayLocal(),
       endDate: data.endDate || '',
       goalId: null,
       status: 'draft',

@@ -165,7 +165,7 @@ export function getDailyQuestions(startDate: string, days: number): { date: stri
   for (let i = 0; i < days; i++) {
     const d = new Date(base)
     d.setDate(d.getDate() + i)
-    const dateStr = d.toISOString().slice(0, 10)
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
     result.push({ date: dateStr, question: getDailyQuestion(dateStr) })
   }
   return result

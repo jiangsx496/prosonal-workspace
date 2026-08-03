@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { todayLocal, computeDateLocal, localDateStr } from '@/utils/date'
 import { useTaskStore } from '@/stores/tasks'
 import { useHabitStore } from '@/stores/habits'
 import { useFocusStore } from '@/stores/focus'
@@ -8,8 +9,8 @@ const taskStore = useTaskStore()
 const habitStore = useHabitStore()
 const focusStore = useFocusStore()
 
-const today = new Date().toISOString().slice(0, 10)
-const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10)
+const today = todayLocal()
+const yesterday = computeDateLocal(today, -1)
 
 // ---- 昨天复盘数据 ----
 const yesterdayCompleted = computed(() => taskStore.tasksCompletedOn(yesterday))
@@ -44,7 +45,7 @@ const weekDays = computed(() => {
   const sunday = new Date(now); sunday.setDate(now.getDate() - now.getDay())
   for (let i = 0; i < 7; i++) {
     const d = new Date(sunday.getTime() + i * 86400000)
-    const dateStr = d.toISOString().slice(0, 10)
+    const dateStr = localDateStr(d)
     days.push({ date: dateStr, label: ['日','一','二','三','四','五','六'][d.getDay()], isToday: dateStr === today })
   }
   return days

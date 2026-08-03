@@ -1,5 +1,6 @@
 import type { PlanDraft, DraftDay, DraftBlock, DraftTask, ContentCategory } from '@/types/planDraft'
 import { generateDraftId, computeDate } from '@/types/planDraft'
+import { todayLocal } from '@/utils/date'
 
 /**
  * AI 计划解析器 — 调用 OpenAI 兼容 API（支持豆包/DeepSeek/OpenAI）
@@ -202,7 +203,7 @@ export async function aiParseToPlanDraft(
     }
   }
 
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayLocal()
   const totalDays = parsed.totalDays || 1
 
   // 构建 days 层级结构

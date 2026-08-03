@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { todayLocal } from '@/utils/date'
 import { useInboxStore } from '@/stores/inbox'
 import { useTaskStore } from '@/stores/tasks'
 import { useDailyStore } from '@/stores/daily'
@@ -57,7 +58,7 @@ async function startAIPlanning() {
 
 // ---- 已处理条目转为任务 ----
 function convertToTask(content: string, itemId: string) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayLocal()
   const taskId = taskStore.generateId()
   taskStore.addTask({
     id: taskId,

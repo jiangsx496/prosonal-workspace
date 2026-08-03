@@ -13,6 +13,7 @@ import TaskModal from '@/components/TaskModal.vue'
 import GoalCard from '@/components/GoalCard.vue'
 import CalendarWidget from '@/components/CalendarWidget.vue'
 import { generateDailyPlan, sortTasksByPriority } from '@/services/scheduler'
+import { todayLocal } from '@/utils/date'
 
 const taskStore = useTaskStore()
 const habitStore = useHabitStore()
@@ -62,7 +63,7 @@ function saveEndDay() {
 }
 
 onMounted(() => {
-  const today = new Date().toISOString().slice(0,10)
+  const today = todayLocal()
   const stored = localStorage.getItem('pw-reminders-refreshed')
   if (stored !== today) {
     localStorage.setItem('pw-reminders-refreshed', today)
@@ -145,7 +146,7 @@ function toggleAndTrack(taskId: string) { taskStore.toggleTask(taskId) }
 
 /** 把面试题加入今日计划 */
 function addQuestionToTasks(q: FeedQuestion) {
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayLocal()
   const exists = taskStore.tasks.some((t) => t.title === q.question && t.scheduledDate === today)
   if (exists) return
   const id = taskStore.generateId()
@@ -176,7 +177,7 @@ const goalPickVisible = ref(false)
 function addQuestionToGoal(goalId: string) {
   const q = goalPickQuestion.value
   if (!q) return
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayLocal()
   const taskId = taskStore.generateId()
   taskStore.addTask({
     id: taskId,

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { todayLocal } from '@/utils/date'
 import { useHabitStore } from '@/stores/habits'
 import type { Habit } from '@/mock/habits'
 
@@ -13,7 +14,7 @@ function openEdit(h:Habit) { editing.value=h; form.value={name:h.name,category:h
 function submit() {
   if(!form.value.name.trim()) return
   if(editing.value) store.updateHabit(editing.value.id, form.value as any)
-  else store.addHabit({id:store.generateId(),name:form.value.name.trim(),category:form.value.category,frequency:form.value.frequency,target:form.value.target,completedDates:[],streak:0,active:true,createdAt:new Date().toISOString().slice(0,10)} as Habit)
+  else store.addHabit({id:store.generateId(),name:form.value.name.trim(),category:form.value.category,frequency:form.value.frequency,target:form.value.target,completedDates:[],streak:0,active:true,createdAt:todayLocal()} as Habit)
   showModal.value=false
 }
 </script>

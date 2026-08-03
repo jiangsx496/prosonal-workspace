@@ -1,5 +1,6 @@
 import type { PlanDraft, DraftDay, DraftBlock, ContentCategory } from '@/types/planDraft'
 import { generateDraftId, computeDate } from '@/types/planDraft'
+import { localDateStr, todayLocal } from '@/utils/date'
 
 /**
  * 本地启发式解析器 — 无 AI API 依赖
@@ -73,9 +74,10 @@ function matchBlockCategory(line: string): string | null {
 function resolveDate(s: string): string | null {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  if (s === '今天' || s === 'today') return today.toISOString().slice(0, 10)
-  if (s === '明天' || s === 'tomorrow') return new Date(today.getTime() + 86400000).toISOString().slice(0, 10)
-  if (s === '后天') return new Date(today.getTime() + 2 * 86400000).toISOString().slice(0, 10)
+  const base = localDateStr(today)
+  if (s === '今天' || s === 'today') return base
+  if (s === '明天' || s === 'tomorrow') return computeDate(base, 1)
+  if (s === '后天') return computeDate(base, 2)
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s
   const md = s.match(/^(\d{1,2})\/(\d{1,2})$/)
   if (md) return `${today.getFullYear()}-${md[1].padStart(2, '0')}-${md[2].padStart(2, '0')}`
@@ -87,7 +89,7 @@ function resolveDate(s: string): string | null {
  */
 export function parsePlan(input: string, source: 'file' | 'text' | 'image', filename?: string): PlanDraft {
   const lines = input.split('\n').map((l) => l.trim()).filter(Boolean)
-  const today = new Date().toISOString().slice(0, 10)
+  const today = todayLocal()
 
   let goalTitle = ''
   let goalDesc = ''

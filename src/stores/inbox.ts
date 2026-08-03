@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, watch, computed } from 'vue'
+import { todayLocal } from '@/utils/date'
 import { mockInboxItems, type InboxItem } from '@/mock/inbox'
 
 const STORAGE_KEY = 'pw-inbox'
@@ -21,7 +22,7 @@ export const useInboxStore = defineStore('inbox', () => {
     items.value.unshift({
       id: 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
       content: content.trim(), source: 'text', processed: false,
-      createdAt: new Date().toISOString().slice(0, 10),
+      createdAt: todayLocal(),
     })
   }
 

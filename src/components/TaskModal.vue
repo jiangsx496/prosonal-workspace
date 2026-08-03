@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { todayLocal } from '@/utils/date'
 import type { Task } from '@/mock/tasks'
 import { useTaskStore } from '@/stores/tasks'
 import { useGoalStore } from '@/stores/goals'
@@ -12,7 +13,7 @@ const store = useTaskStore()
 const goalStore = useGoalStore()
 const dailyStore = useDailyStore()
 
-const todayStr = () => new Date().toISOString().slice(0, 10)
+const todayStr = () => todayLocal()
 
 const form = ref({
   title: '', description: '',

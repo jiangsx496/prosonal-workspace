@@ -68,9 +68,13 @@ export function generateDraftId(prefix: string = 'dt'): string {
   return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
 }
 
-/** 计算从基准日偏移 N 天后的日期 */
+/** 计算从基准日偏移 N 天后的日期（本地时区，避免 UTC 偏移） */
 export function computeDate(base: string, addDays: number): string {
-  const d = new Date(base)
-  d.setDate(d.getDate() + addDays)
-  return d.toISOString().slice(0, 10)
+  const [y, m, d] = base.split('-').map(Number)
+  const dt = new Date(y, m - 1, d)
+  dt.setDate(dt.getDate() + addDays)
+  const yy = dt.getFullYear()
+  const mm = String(dt.getMonth() + 1).padStart(2, '0')
+  const dd = String(dt.getDate()).padStart(2, '0')
+  return `${yy}-${mm}-${dd}`
 }
