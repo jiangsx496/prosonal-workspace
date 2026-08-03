@@ -1,6 +1,7 @@
 import type { PlanDraft, DraftDay, DraftBlock } from '@/types/planDraft'
 import { generateDraftId, computeDate } from '@/types/planDraft'
-import { localDateStr, todayLocal } from '@/utils/date'
+import { todayLocal } from '@/utils/date'
+import { isTaskLine, cleanTaskTitle, isReviewLine, matchDay, resolveDate, PRIORITY_MAP } from './parserShared'
 
 /**
  * PlanDraft 解析器 v2 — 层级输出（Goal → Days → Blocks → Tasks）
@@ -11,39 +12,8 @@ import { localDateStr, todayLocal } from '@/utils/date'
  * 3. 学习/项目/复盘 → 时间块（Block）
  * 4. 列表内容 → Task
  *
- * 任务行识别（必须满足至少一条）：
- * - Markdown 列表前缀：- / * / • / 1. / 1)
- * - 包含优先级标记：!high / !medium / !low
- * - 包含时间标记：@HH:MM
- * - 包含日期标记：@YYYY-MM-DD 或 @明天/@后天
- *
- * 非任务行（忽略或分类为 note/review）：
- * - Markdown 标题（# 开头但不是列表）→ goal
- * - 纯文本段落 → note（不进入 Task）
- * - 复盘/总结标记 → review（不进入 Task）
+ * 任务行识别与标题清理等原语见 parserShared.ts（与 aiParser 共享）
  */
-
-const PRIORITY_MAP: Record<string, 'high' | 'medium' | 'low'> = {
-  high: 'high', medium: 'medium', low: 'low',
-  h: 'high', m: 'medium', l: 'low',
-  高: 'high', 中: 'medium', 低: 'low',
-}
-
-const REVIEW_KEYWORDS = /^(复盘|总结|模板|review|心得|反思)/i
-
-/** 判断是否为任务行（列表前缀 或 包含标记） */
-function isTaskLine(line: string): boolean {
-  if (/^[-*•]\s+/.test(line)) return true
-  if (/^\d+[.)]\s+/.test(line)) return true
-  if (/!\S+/.test(line) && /!(high|medium|low|h|m|l|高|中|低)\b/i.test(line)) return true
-  if (/@\d{1,2}:\d{2}/.test(line)) return true
-  return false
-}
-
-/** 判断是否为复盘/说明类行 */
-function isReviewLine(line: string): boolean {
-  return REVIEW_KEYWORDS.test(line)
-}
 
 export function parseToPlanDraft(content: string, _sourceFile: string, planId: string): PlanDraft {
   const lines = content.split('\n').map((l) => l.trim())
@@ -92,9 +62,9 @@ export function parseToPlanDraft(content: string, _sourceFile: string, planId: s
     if (startMatch) { startDate = resolveDate(startMatch[1]) || startDate; continue }
 
     // 天数标记
-    const dayMatch = line.match(/^第(\d+)\s*天/) || line.match(/^[Dd]ay\s*(\d+)/) || line.match(/^#{1,3}\s*[Dd]ay\s*(\d+)/)
-    if (dayMatch) {
-      currentDay = parseInt(dayMatch[1])
+    const dayNum = matchDay(line)
+    if (dayNum !== null) {
+      currentDay = dayNum
       dayDates[currentDay] = currentDay === 1 ? startDate : computeDate(startDate, currentDay - 1)
       continue
     }
@@ -124,14 +94,7 @@ export function parseToPlanDraft(content: string, _sourceFile: string, planId: s
     if (!isTaskLine(line)) continue
 
     // 提取任务标题
-    let title = line
-      .replace(/^#{1,3}\s*/, '')
-      .replace(/^[-*•]\s+/, '')
-      .replace(/^\d+[.)]\s+/, '')
-      .replace(/\s*@\d{1,2}:\d{2}/g, '')
-      .replace(/\s*!\S+/g, '')
-      .replace(/\s*#\S+/g, '')
-      .trim()
+    const title = cleanTaskTitle(line)
 
     if (!title || title.length < 2) continue
 
@@ -190,18 +153,6 @@ export function parseToPlanDraft(content: string, _sourceFile: string, planId: s
     totalDays,
     createdAt: new Date().toISOString(),
   }
-}
-
-function resolveDate(s: string): string | null {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const base = localDateStr(today)
-  if (s === '今天' || s === 'today') return base
-  if (s === '明天' || s === 'tomorrow') return computeDate(base, 1)
-  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s
-  const md = s.match(/^(\d{1,2})\/(\d{1,2})$/)
-  if (md) return `${today.getFullYear()}-${md[1].padStart(2, '0')}-${md[2].padStart(2, '0')}`
-  return null
 }
 
 // ==== 辅助函数（向后兼容）====

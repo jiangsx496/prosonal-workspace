@@ -1,37 +1,18 @@
 import type { PlanDraft, DraftDay, DraftBlock, ContentCategory } from '@/types/planDraft'
 import { generateDraftId, computeDate } from '@/types/planDraft'
-import { localDateStr, todayLocal } from '@/utils/date'
+import { todayLocal } from '@/utils/date'
+import { isTaskLine, cleanTaskTitle, matchDay, resolveDate } from './parserShared'
 
 /**
  * 本地启发式解析器 — 无 AI API 依赖
  *
  * 输出统一层级结构 PlanDraft（Goal → Days → Blocks → Tasks）
  * 解析策略：行级识别 + Day/Block 分组 + category 分类过滤
+ * 任务行识别等原语见 parserShared.ts（与 planParser 共享）
  */
 
 const MAX_TASKS = 30
 const MAX_TASKS_PER_DAY = 8
-
-/** 判断是否为任务行（列表前缀 或 包含标记） */
-function isTaskLine(line: string): boolean {
-  if (/^[-*•]\s+/.test(line)) return true
-  if (/^\d+[.)]\s+/.test(line)) return true
-  if (/!\S+/.test(line) && /!(high|medium|low|h|m|l|高|中|低)\b/i.test(line)) return true
-  if (/@\d{1,2}:\d{2}/.test(line)) return true
-  return false
-}
-
-/** 清理任务标题：去掉标记前缀 */
-function cleanTaskTitle(line: string): string {
-  return line
-    .replace(/^#{1,3}\s*/, '')
-    .replace(/^[-*•]\s+/, '')
-    .replace(/^\d+[.)]\s+/, '')
-    .replace(/\s*@\d{1,2}:\d{2}/g, '')
-    .replace(/\s*!\S+/g, '')
-    .replace(/\s*#\S+/g, '')
-    .trim()
-}
 
 /** 内容分类：识别任务/说明/复盘模板 */
 function classifyContent(line: string): ContentCategory {
@@ -45,12 +26,7 @@ function classifyContent(line: string): ContentCategory {
   return 'task'
 }
 
-/** 识别 Day 标记行 */
-function matchDay(line: string): number | null {
-  const m1 = line.match(/^第(\d+)\s*天/) || line.match(/^[Dd]ay\s*(\d+)/)
-  if (m1) return parseInt(m1[1])
-  return null
-}
+/** 识别 Day 标记行（见 parserShared.matchDay） */
 
 /** 识别 Block 分类标题（学习/项目/复盘等子标题） */
 function matchBlockCategory(line: string): string | null {
@@ -71,18 +47,7 @@ function matchBlockCategory(line: string): string | null {
   return null
 }
 
-function resolveDate(s: string): string | null {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const base = localDateStr(today)
-  if (s === '今天' || s === 'today') return base
-  if (s === '明天' || s === 'tomorrow') return computeDate(base, 1)
-  if (s === '后天') return computeDate(base, 2)
-  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s
-  const md = s.match(/^(\d{1,2})\/(\d{1,2})$/)
-  if (md) return `${today.getFullYear()}-${md[1].padStart(2, '0')}-${md[2].padStart(2, '0')}`
-  return null
-}
+/** 解析相对日期（今天/明天/后天/MM/DD/绝对日期）—— 见 parserShared.resolveDate */
 
 /**
  * 从文本/文件内容生成层级 PlanDraft
