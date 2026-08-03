@@ -6,12 +6,30 @@
  */
 
 export interface InterviewQuestion {
+  id: string
   category: string
   question: string
   answer: string
 }
 
-export const interviewQuestions: InterviewQuestion[] = [
+/** 从 category + question 生成稳定 ID（同一条题无论何时引用都得同一个 ID） */
+function makeId(category: string, question: string): string {
+  const raw = category + '|' + question
+  let hash = 0
+  for (let i = 0; i < raw.length; i++) {
+    hash = ((hash << 5) - hash + raw.charCodeAt(i)) | 0
+  }
+  return 'iq_' + Math.abs(hash).toString(36)
+}
+
+interface RawQuestion { category: string; question: string; answer: string }
+
+/** 自动注入稳定 ID */
+function withIds(items: RawQuestion[]): InterviewQuestion[] {
+  return items.map((q) => ({ id: makeId(q.category, q.question), ...q }))
+}
+
+export const interviewQuestions: InterviewQuestion[] = withIds([
   // === JavaScript 基础 ===
   {
     category: 'JavaScript',
@@ -150,7 +168,7 @@ export const interviewQuestions: InterviewQuestion[] = [
     question: '什么是前端模块化？CommonJS 和 ES Module 的区别？',
     answer: 'CommonJS：运行时加载（require）、同步、值的拷贝、可用于服务端。ES Module：编译时确定依赖（import）、异步、值的引用（动态绑定）、静态可分析（支持 Tree Shaking）。浏览器原生支持 ESM（<script type="module">）。',
   },
-]
+])
 
 /** 按日期轮换获取每日面试题（保证每天不同，循环覆盖） */
 export function getDailyQuestion(date: string): InterviewQuestion {

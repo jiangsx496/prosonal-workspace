@@ -26,10 +26,10 @@ watch(query, (q) => {
 })
 
 const typeIcon: Record<string, string> = {
-  task: '📋', goal: '🎯', habit: '🔥', note: '📝', project: '📁',
+  task: '📋', goal: '🎯', habit: '🔥', note: '📝', project: '📁', interview: '📚',
 }
 const typeLabel: Record<string, string> = {
-  task: '任务', goal: '目标', habit: '习惯', note: '笔记', project: '项目',
+  task: '任务', goal: '目标', habit: '习惯', note: '笔记', project: '项目', interview: '面试题',
 }
 
 function openResult(r: SearchResult) {

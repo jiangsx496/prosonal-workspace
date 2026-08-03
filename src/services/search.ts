@@ -3,9 +3,10 @@ import { useGoalStore } from '@/stores/goals'
 import { useNoteStore } from '@/stores/notes'
 import { useHabitStore } from '@/stores/habits'
 import { useProjectStore } from '@/stores/projects'
+import { interviewQuestions } from '@/data/interviewQuestions'
 
 export interface SearchResult {
-  type: 'task' | 'goal' | 'note' | 'habit' | 'project'
+  type: 'task' | 'goal' | 'note' | 'habit' | 'project' | 'interview'
   id: string
   title: string
   subtitle: string
@@ -76,6 +77,17 @@ export function useSearch() {
           type: 'project', id: p.id, title: p.name,
           subtitle: '📁 项目',
           link: '/projects',
+        })
+      }
+    }
+
+    // 面试题
+    for (const iq of interviewQuestions) {
+      if (iq.question.toLowerCase().includes(q) || iq.answer.toLowerCase().includes(q)) {
+        results.push({
+          type: 'interview', id: iq.id, title: iq.question,
+          subtitle: `📚 ${iq.category}`,
+          link: '/interview',
         })
       }
     }
