@@ -8,6 +8,7 @@ import { useReminderStore } from '@/stores/reminders'
 import { useJournalStore } from '@/stores/journal'
 import { useFocusStore } from '@/stores/focus'
 import { useFeedStore } from '@/stores/feed'
+import { useInterviewStore } from '@/stores/interview'
 import type { FeedQuestion } from '@/services/feed'
 import TaskModal from '@/components/TaskModal.vue'
 import GoalCard from '@/components/GoalCard.vue'
@@ -25,6 +26,7 @@ const reminderStore = useReminderStore()
 const journalStore = useJournalStore()
 const focusStore = useFocusStore()
 const feedStore = useFeedStore()
+const interviewStore = useInterviewStore()
 
 const showCreate = ref(false)
 const generating = ref(false)
@@ -211,6 +213,31 @@ function openGoalPicker(q: FeedQuestion) {
   goalPickVisible.value = true
 }
 
+/** 收藏首页面试题（同时入库 interviewStore 支持后续复习） */
+function toggleFavoriteQuestion(q: FeedQuestion) {
+  // 先确保题目在题库里（AI 生成的题可能还没入库）
+  interviewStore.addCustomQuestion({ category: q.category, question: q.question, answer: q.answer })
+  // 用和 interviewQuestions 一样的 hash 逻辑生成 ID 查找
+  const raw = q.category + '|' + q.question
+  let hash = 0
+  for (let i = 0; i < raw.length; i++) {
+    hash = ((hash << 5) - hash + raw.charCodeAt(i)) | 0
+  }
+  const questionId = 'iq_' + Math.abs(hash).toString(36)
+  interviewStore.toggleMark(questionId)
+}
+
+/** 判断首页面试题是否已收藏 */
+function isQuestionFavorited(q: FeedQuestion): boolean {
+  const raw = q.category + '|' + q.question
+  let hash = 0
+  for (let i = 0; i < raw.length; i++) {
+    hash = ((hash << 5) - hash + raw.charCodeAt(i)) | 0
+  }
+  const questionId = 'iq_' + Math.abs(hash).toString(36)
+  return interviewStore.getProgress(questionId).marked
+}
+
 function deferUnfinished() {
   todayTasks.value.filter((t) => t.status !== 'done').forEach((t) => taskStore.deferTask(t.id))
 }
@@ -367,7 +394,10 @@ onUnmounted(() => {
 
         <!-- 每日面试题 -->
         <div v-if="feedStore.todayQuestions.length > 0">
-          <p class="text-xs font-medium text-text-secondary mb-2">📚 每日面试题</p>
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-xs font-medium text-text-secondary">📚 每日面试题</p>
+            <router-link to="/interview" class="text-xs text-accent hover:underline">题库 →</router-link>
+          </div>
           <div class="space-y-1.5">
             <details
               v-for="(q, idx) in feedStore.todayQuestions"
@@ -377,6 +407,11 @@ onUnmounted(() => {
               <summary class="text-sm text-text-primary cursor-pointer select-none flex items-center justify-between gap-2">
                 <span class="flex-1">{{ q.question }}</span>
                 <div class="flex items-center gap-1 shrink-0">
+                  <button
+                    class="text-xs hover:underline shrink-0"
+                    :class="isQuestionFavorited(q) ? 'text-amber-500' : 'text-text-muted'"
+                    @click.stop.prevent="toggleFavoriteQuestion(q)"
+                  >{{ isQuestionFavorited(q) ? '★' : '☆' }}</button>
                   <button
                     class="text-xs text-accent hover:underline shrink-0"
                     @click.stop.prevent="addQuestionToTasks(q)"
