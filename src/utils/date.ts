@@ -26,3 +26,12 @@ export function computeDateLocal(base: string, addDays: number): string {
   dt.setDate(dt.getDate() + addDays)
   return localDateStr(dt)
 }
+
+/**
+ * ISO 时间戳 → 本地日期（YYYY-MM-DD）。
+ * 存储侧用 UTC ISO（createdAt/completedAt 等），
+ * 与本地日期键比较/展示时必须转换，否则 UTC+8 凌晨会错位一天。
+ */
+export function localDateFromISO(iso: string): string {
+  return localDateStr(new Date(iso))
+}

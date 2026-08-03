@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { localDateStr, todayLocal, computeDateLocal } from './date'
+import { localDateStr, todayLocal, computeDateLocal, localDateFromISO } from './date'
 
 describe('localDateStr', () => {
   it('格式化本地日期为 YYYY-MM-DD', () => {
@@ -50,5 +50,24 @@ describe('computeDateLocal', () => {
 
   it('零偏移返回原值', () => {
     expect(computeDateLocal('2026-06-14', 0)).toBe('2026-06-14')
+  })
+})
+
+describe('localDateFromISO', () => {
+  it('等于 Date 本地字段（恒等式，任意时区成立）', () => {
+    const iso = '2026-06-13T17:00:00.000Z'
+    const d = new Date(iso)
+    const expected = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    expect(localDateFromISO(iso)).toBe(expected)
+  })
+
+  it('UTC+8 凌晨场景：UTC 17:00 属本地次日（slice(0,10) 旧行为会错位）', () => {
+    const tzOffset = -new Date('2026-06-14T00:00:00Z').getTimezoneOffset() / 60
+    if (tzOffset === 8) {
+      // UTC 2026-06-13 17:00 = 本地 2026-06-14 01:00
+      expect(localDateFromISO('2026-06-13T17:00:00.000Z')).toBe('2026-06-14')
+      // 对照：旧行为 slice(0,10) 取 UTC 日期，错位为 06-13
+      expect('2026-06-13T17:00:00.000Z'.slice(0, 10)).toBe('2026-06-13')
+    }
   })
 })
