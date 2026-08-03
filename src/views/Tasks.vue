@@ -13,7 +13,7 @@ const selectAll = ref(false)
 
 function toggleSelectAll() {
   if (selectAll.value) {
-    selectedIds.value = new Set(sortedTasks.map((t) => t.id))
+    selectedIds.value = new Set(sortedTasks.value.map((t) => t.id))
   } else {
     selectedIds.value.clear()
   }

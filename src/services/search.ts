@@ -1,4 +1,3 @@
-import { computed } from 'vue'
 import { useTaskStore } from '@/stores/tasks'
 import { useGoalStore } from '@/stores/goals'
 import { useNoteStore } from '@/stores/notes'
