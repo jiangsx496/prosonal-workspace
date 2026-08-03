@@ -73,13 +73,15 @@ function handleImport() {
       const { success, errors } = importAllData(text)
       if (errors.length > 0) {
         importMsg.value = `⚠ 导入完成：${success} 项成功，${errors.length} 项失败（${errors[0]}）`
+        setTimeout(() => { importMsg.value = '' }, 4000)
       } else {
-        importMsg.value = `✓ 已导入 ${success} 项数据，刷新页面生效`
+        // 数据已写入 localStorage，reload 让所有 store 重新 hydrate
+        location.reload()
       }
     } catch {
       importMsg.value = '导入失败，请检查文件格式'
+      setTimeout(() => { importMsg.value = '' }, 4000)
     }
-    setTimeout(() => { importMsg.value = '' }, 4000)
   }
   input.click()
 }
@@ -191,7 +193,7 @@ function applyPreset(endpoint: string) {
         <span class="text-base">🧹</span>
         <h3 class="text-sm font-semibold text-text-primary">数据管理</h3>
       </div>
-      <p class="text-xs text-text-muted">导出备份到本地文件，或从备份恢复数据。清理功能用于修复数据不一致。</p>
+      <p class="text-xs text-text-muted">导出备份到本地文件，或从备份恢复数据。清理功能用于修复数据不一致。API Key 不包含在导出中。</p>
 
       <!-- 导出/导入 -->
       <div class="flex items-center gap-3 flex-wrap">

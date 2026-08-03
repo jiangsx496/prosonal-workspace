@@ -17,6 +17,7 @@ export function exportAllData(): ExportResult {
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
     if (!key?.startsWith(PREFIX)) continue
+    if (key.startsWith('pw-ai-')) continue // 排除 AI 凭据（API key），避免备份文件泄露
     keyCount++
     try {
       data[key] = JSON.parse(localStorage.getItem(key)!)
