@@ -118,14 +118,102 @@ const presetEndpoints = [
 function applyPreset(endpoint: string) {
   aiConfig.value.endpoint = endpoint
 }
+
+// ---- 账户与同步 ----
+import { useAuth } from '@/composables/useAuth'
+import { useSync } from '@/composables/useSync'
+import { isSupabaseConfigured } from '@/services/supabase'
+
+const { state: authState, signIn, signUp, signOut } = useAuth()
+const { status: syncStatus, syncNow } = useSync()
+
+const loginEmail = ref('')
+const loginPassword = ref('')
+const authMode = ref<'login' | 'register'>('login')
+const authMsg = ref('')
+const authLoading = ref(false)
+
+async function handleAuth() {
+  authMsg.value = ''
+  authLoading.value = true
+  try {
+    if (authMode.value === 'register') {
+      await signUp(loginEmail.value, loginPassword.value)
+      authMsg.value = '注册成功，请检查邮箱确认（如果需要）'
+    } else {
+      await signIn(loginEmail.value, loginPassword.value)
+      authMsg.value = '登录成功'
+    }
+    loginEmail.value = ''
+    loginPassword.value = ''
+  } catch (e: any) {
+    authMsg.value = e.message || '操作失败'
+  } finally {
+    authLoading.value = false
+    setTimeout(() => { authMsg.value = '' }, 3000)
+  }
+}
+
+async function handleSignOut() {
+  await signOut()
+  authMsg.value = '已退出登录'
+  setTimeout(() => { authMsg.value = '' }, 2000)
+}
+
+async function handleSync() {
+  await syncNow()
+}
+
+function formatSyncTime(time: string | null): string {
+  if (!time) return '从未同步'
+  const d = new Date(time)
+  return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`
+}
 </script>
 
 <template>
   <div class="space-y-6 pb-20 md:pb-0 max-w-lg">
     <h1 class="text-2xl font-bold text-text-primary">设置</h1>
 
+    <!-- 账户与同步 -->
     <div class="bg-card border border-border rounded-xl p-5 space-y-4">
-      <h3 class="text-sm font-semibold text-text-primary">外观</h3>
+      <h3 class="text-sm font-medium text-text-primary">账户与同步</h3>
+
+      <div v-if="!isSupabaseConfigured" class="text-xs text-amber-600 bg-amber-50 rounded-lg p-3">
+        云同步未配置。需要在 .env 中设置 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY。
+      </div>
+
+      <!-- 未登录：登录/注册表单 -->
+      <template v-else-if="!authState.userId">
+        <p class="text-xs text-text-muted">登录后可在手机和电脑之间同步数据</p>
+        <div class="flex rounded-lg bg-card-hover border border-border overflow-hidden">
+          <button class="flex-1 px-3 py-1.5 text-xs font-medium transition-colors" :class="authMode==='login'?'bg-accent text-white':'text-text-secondary'" @click="authMode='login'">登录</button>
+          <button class="flex-1 px-3 py-1.5 text-xs font-medium transition-colors" :class="authMode==='register'?'bg-accent text-white':'text-text-secondary'" @click="authMode='register'">注册</button>
+        </div>
+        <input v-model="loginEmail" type="email" placeholder="邮箱" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent" @keyup.enter="handleAuth" />
+        <input v-model="loginPassword" type="password" placeholder="密码（至少 6 位）" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent" @keyup.enter="handleAuth" />
+        <button class="w-full py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50" :disabled="!loginEmail.trim() || loginPassword.length < 6 || authLoading" @click="handleAuth">{{ authLoading ? '处理中...' : (authMode === 'login' ? '登录' : '注册') }}</button>
+        <span v-if="authMsg" class="text-xs" :class="authMsg.includes('失败')||authMsg.includes('错误')?'text-red-500':'text-green-600'">{{ authMsg }}</span>
+      </template>
+
+      <!-- 已登录：同步状态 -->
+      <template v-else>
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-text-primary">{{ authState.email }}</p>
+            <p class="text-xs text-text-muted mt-0.5">上次同步：{{ formatSyncTime(syncStatus.lastSync) }}</p>
+          </div>
+          <button class="text-xs text-text-muted hover:text-red-500 transition-colors" @click="handleSignOut">退出</button>
+        </div>
+        <div v-if="syncStatus.error" class="text-xs text-red-500 bg-red-50 rounded-lg p-2">{{ syncStatus.error }}</div>
+        <button class="w-full py-2 rounded-lg bg-card-hover text-text-primary text-sm font-medium hover:bg-border transition-colors disabled:opacity-50" :disabled="syncStatus.syncing" @click="handleSync">
+          {{ syncStatus.syncing ? '同步中...' : '立即同步' }}
+        </button>
+      </template>
+    </div>
+
+    <!-- 外观 -->
+    <div class="bg-card border border-border rounded-xl p-5 space-y-4">
 
       <div class="flex items-center justify-between">
         <span class="text-sm text-text-secondary">主题</span>
@@ -144,10 +232,7 @@ function applyPreset(endpoint: string) {
 
     <!-- AI 配置 -->
     <div class="bg-card border border-border rounded-xl p-5 space-y-4">
-      <div class="flex items-center gap-2">
-        <span class="text-base">🤖</span>
-        <h3 class="text-sm font-semibold text-text-primary">AI 计划解析</h3>
-      </div>
+      <h3 class="text-sm font-medium text-text-primary">AI 计划解析</h3>
       <p class="text-xs text-text-muted">配置 AI API 用于智能解析导入的计划文档。Key 存在浏览器本地，不会上传。</p>
 
       <!-- 快速预设 -->
@@ -203,10 +288,7 @@ function applyPreset(endpoint: string) {
 
     <!-- 番茄钟设置 -->
     <div class="bg-card border border-border rounded-xl p-5 space-y-4">
-      <div class="flex items-center gap-2">
-        <span class="text-base">🍅</span>
-        <h3 class="text-sm font-semibold text-text-primary">番茄钟设置</h3>
-      </div>
+      <h3 class="text-sm font-medium text-text-primary">番茄钟设置</h3>
       <p class="text-xs text-text-muted">专注与休息时长会应用到下一次计时，修改后自动保存。</p>
 
       <div>
@@ -309,10 +391,7 @@ function applyPreset(endpoint: string) {
 
     <!-- 数据管理 -->
     <div class="bg-card border border-border rounded-xl p-5 space-y-4">
-      <div class="flex items-center gap-2">
-        <span class="text-base">🧹</span>
-        <h3 class="text-sm font-semibold text-text-primary">数据管理</h3>
-      </div>
+      <h3 class="text-sm font-medium text-text-primary">数据管理</h3>
       <p class="text-xs text-text-muted">导出备份到本地文件，或从备份恢复数据。清理功能用于修复数据不一致。API Key 不包含在导出中。</p>
 
       <!-- 导出/导入 -->
@@ -320,11 +399,11 @@ function applyPreset(endpoint: string) {
         <button
           class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors"
           @click="handleExport"
-        >📥 导出数据</button>
+        >导出数据</button>
         <button
           class="px-4 py-2 rounded-lg border border-accent text-accent text-sm font-medium hover:bg-accent/5 transition-colors"
           @click="handleImport"
-        >📤 导入数据</button>
+        >导入数据</button>
         <span v-if="exportMsg" class="text-xs text-green-600">{{ exportMsg }}</span>
         <span v-if="importMsg" class="text-xs text-amber-600">{{ importMsg }}</span>
       </div>
@@ -344,7 +423,7 @@ function applyPreset(endpoint: string) {
     </div>
 
     <div class="bg-card border border-border rounded-xl p-5 space-y-3">
-      <h3 class="text-sm font-semibold text-text-primary">关于</h3>
+      <h3 class="text-sm font-medium text-text-primary">关于</h3>
       <p class="text-xs text-text-muted leading-relaxed">
         Personal Workspace v0.1.0<br />
         一个简洁的个人工作台，帮助你管理任务、项目和笔记。
