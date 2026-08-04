@@ -80,7 +80,7 @@ function cancelEdit() {
     </div>
 
     <!-- 项目列表 -->
-    <div v-if="store.sorted.length > 0" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-if="store.sorted.length > 0" class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
       <div
         v-for="p in store.sorted"
         :key="p.id"

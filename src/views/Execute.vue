@@ -299,7 +299,7 @@ onUnmounted(() => {
         <span class="rounded-full border border-border bg-card-hover/60 px-2.5 py-1">4 补充输入</span>
         <span class="rounded-full border border-border bg-card-hover/60 px-2.5 py-1">5 收尾复盘</span>
       </div>
-      <div class="mt-5 grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-3">
+      <div class="mt-5 grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
         <div class="rounded-2xl border border-border bg-card-hover/60 p-4">
           <p class="text-xs text-text-muted">今日完成</p>
           <div class="mt-2 flex items-end justify-between gap-2">
@@ -393,7 +393,7 @@ onUnmounted(() => {
       </div>
     </section>
 
-    <section class="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-2">
+    <section class="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">

@@ -15,7 +15,7 @@ const resourceItems = [
       <p class="text-xs text-text-muted mt-1">管理工具集</p>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
       <router-link
         v-for="item in resourceItems"
         :key="item.path"

@@ -77,7 +77,7 @@ function saveJournal() {
     <!-- History -->
     <div v-else class="space-y-3">
       <div v-if="journal.history.length>0">
-        <div class="grid gap-3 xl:grid-cols-2">
+        <div class="grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div v-for="j in journal.history" :key="j.id" class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
           <div class="flex items-center justify-between mb-2">
             <span class="text-sm font-medium text-text-primary">{{ j.date }}</span>

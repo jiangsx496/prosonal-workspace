@@ -26,7 +26,7 @@ function submit() {
       <button class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors" @click="openCreate">+ 新建习惯</button>
     </div>
 
-    <div v-if="store.activeHabits.length > 0" class="grid gap-4 sm:grid-cols-2">
+    <div v-if="store.activeHabits.length > 0" class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <div v-for="h in store.activeHabits" :key="h.id" class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 hover:shadow-sm transition-shadow group">
         <div class="flex items-start justify-between mb-3">
           <div class="flex items-center gap-3">

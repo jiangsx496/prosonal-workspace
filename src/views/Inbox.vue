@@ -265,7 +265,7 @@ function clearDraft() {
       <button class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors" :class="tab==='processed'?'bg-accent/10 text-accent':'text-text-muted hover:text-text-secondary'" @click="tab='processed'">已处理 ({{ inbox.processed.length }})</button>
     </div>
 
-    <div v-if="(tab==='pending'?inbox.pending:inbox.processed).length>0" class="grid grid-cols-[minmax(0,1fr)] gap-3 xl:grid-cols-2">
+    <div v-if="(tab==='pending'?inbox.pending:inbox.processed).length>0" class="grid grid-cols-[minmax(0,1fr)] gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <div v-for="item in tab==='pending'?inbox.pending:inbox.processed" :key="item.id" class="rounded-2xl border border-border bg-card p-4 shadow-sm shadow-slate-900/3 flex items-start justify-between gap-4 group">
         <div class="flex-1 min-w-0">
           <p class="text-sm text-text-primary" :class="item.processed?'line-through text-text-muted':''">{{ item.content }}</p>
