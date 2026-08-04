@@ -49,10 +49,21 @@ export const useTaskStore = defineStore('tasks', () => {
     return dailyStore.todayPlan.taskIds
   }
 
+  /**
+   * 今日任务判定（闭环）：今日计划内 ∪ 进行中 ∪ 安排了今天（scheduledDate=today，未延期）
+   * 与任务池「今日」筛选共用同一判定，保证两侧一致
+   */
+  function isTodayTask(t: Task): boolean {
+    return (
+      getDailyPlanTaskIds().includes(t.id) ||
+      t.status === 'doing' ||
+      (t.scheduledDate === today.value && t.status !== 'deferred')
+    )
+  }
+
   const filteredTasks = computed(() => {
-    const dailyIds = getDailyPlanTaskIds()
     switch (filter.value) {
-      case 'today': return tasks.value.filter((t) => dailyIds.includes(t.id) || t.status === 'doing')
+      case 'today': return tasks.value.filter(isTodayTask)
       case 'doing': return tasks.value.filter((t) => t.status === 'doing')
       case 'done': return tasks.value.filter((t) => t.status === 'done')
       case 'deferred': return tasks.value.filter((t) => t.status === 'deferred')
@@ -60,20 +71,13 @@ export const useTaskStore = defineStore('tasks', () => {
     }
   })
 
-  const todayTasks = computed(() => {
-    const dailyIds = getDailyPlanTaskIds()
-    return tasks.value.filter((t) => dailyIds.includes(t.id) || t.status === 'doing')
-  })
+  const todayTasks = computed(() => tasks.value.filter(isTodayTask))
 
-  const urgentToday = computed(() => {
-    const dailyIds = getDailyPlanTaskIds()
-    return tasks.value.filter((t) => dailyIds.includes(t.id) && t.priority === 'high')
-  })
+  const urgentToday = computed(() =>
+    tasks.value.filter((t) => isTodayTask(t) && t.priority === 'high')
+  )
 
-  const pendingCount = computed(() => {
-    const dailyIds = getDailyPlanTaskIds()
-    return tasks.value.filter((t) => dailyIds.includes(t.id) || t.status === 'doing').length
-  })
+  const pendingCount = computed(() => tasks.value.filter(isTodayTask).length)
 
   const deferredTasks = computed(() =>
     tasks.value.filter((t) => t.status === 'deferred')
