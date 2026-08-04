@@ -33,9 +33,6 @@ const showCreate = ref(false)
 const generating = ref(false)
 const showEndDay = ref(false)
 const showFocusScreen = ref(false)
-const showAllTasks = ref(false)
-
-const TASK_PREVIEW_COUNT = 5
 
 // ---- 结束今天：生成总结草稿 ----
 const endDayDraft = computed(() => {
@@ -139,12 +136,6 @@ const goalDeadlineMap = computed(() => {
 const sortedTodayTasks = computed(() =>
   sortTasksByPriority(todayTasks.value, goalDeadlineMap.value)
 )
-
-const visibleTasks = computed(() =>
-  showAllTasks.value ? sortedTodayTasks.value : sortedTodayTasks.value.slice(0, TASK_PREVIEW_COUNT)
-)
-
-const hasMoreTasks = computed(() => sortedTodayTasks.value.length > TASK_PREVIEW_COUNT)
 
 // ---- 当前行动（只关注 Task，不越界到 Habit）----
 const nextAction = computed(() => {
@@ -343,9 +334,9 @@ onUnmounted(() => {
           </div>
           <span class="text-xs text-text-muted">{{ todayDone }}/{{ todayTotal }}</span>
         </div>
-        <div class="mt-4" :class="{ 'flex-1 min-h-0 overflow-y-auto': showAllTasks }">
+        <div class="mt-4 flex-1 min-h-0 overflow-y-auto">
           <div v-if="todayTasks.length > 0" class="space-y-1">
-            <div v-for="t in visibleTasks" :key="t.id" class="group flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-card-hover" @click="toggleAndTrack(t.id)">
+            <div v-for="t in sortedTodayTasks" :key="t.id" class="group flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-card-hover" @click="toggleAndTrack(t.id)">
               <span class="h-2 w-2 shrink-0 rounded-full" :class="priorityDot[t.priority]"></span>
               <div class="min-w-0 flex-1">
                 <span class="block text-sm" :class="t.status==='done'?'text-text-muted line-through':'text-text-primary'">{{ t.title }}</span>
@@ -355,14 +346,6 @@ onUnmounted(() => {
               </div>
               <span class="flex h-5 w-5 items-center justify-center rounded border text-xs group-hover:border-accent/50" :class="t.status==='done'?'border-accent bg-accent text-white':'border-border'"><span v-if="t.status==='done'">✓</span></span>
             </div>
-            <button
-              v-if="hasMoreTasks"
-              class="flex w-full items-center justify-center gap-1 rounded-lg py-2 text-xs text-text-muted transition-colors hover:bg-card-hover hover:text-accent"
-              @click="showAllTasks = !showAllTasks"
-            >
-              <span>{{ showAllTasks ? '收起' : `展开全部（${sortedTodayTasks.length} 个）` }}</span>
-              <span class="transition-transform" :class="showAllTasks ? 'rotate-180' : ''">▾</span>
-            </button>
           </div>
           <div v-else class="flex flex-col items-center justify-center py-8 text-sm text-text-muted">
             <span>今天还没有计划任务</span>
