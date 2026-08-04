@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { todayLocal } from '@/utils/date'
 import { watchPersist } from '@/utils/persist'
+import { generateId } from '@/utils/id'
 import { mockDailyPlans, type DailyPlan } from '@/mock/daily'
 
 const STORAGE_KEY = 'pw-daily'
@@ -13,6 +14,8 @@ function load(): DailyPlan[] {
       const data = JSON.parse(raw) as any[]
       // 数据规范化：旧版本数据可能缺字段，补齐默认值避免消费方（删除/清理）崩溃
       return data.map((p) => ({
+        // 旧数据无 id：云端同步推送需要稳定主键，自动补齐
+        id: p.id || generateId(),
         date: p.date,
         taskIds: Array.isArray(p.taskIds) ? p.taskIds : [],
         habitIds: Array.isArray(p.habitIds) ? p.habitIds : [],
@@ -34,6 +37,7 @@ export const useDailyStore = defineStore('daily', () => {
 
   const todayPlan = computed(() =>
     plans.value.find((p) => p.date === today.value) || {
+      id: generateId(),
       date: today.value,
       taskIds: [],
       habitIds: [],
@@ -51,7 +55,7 @@ export const useDailyStore = defineStore('daily', () => {
   function addTaskToDate(taskId: string, date: string) {
     let p = plans.value.find((p) => p.date === date)
     if (!p) {
-      p = { date, taskIds: [], habitIds: [], summary: '', createdAt: new Date().toISOString() }
+      p = { id: generateId(), date, taskIds: [], habitIds: [], summary: '', createdAt: new Date().toISOString() }
       plans.value.push(p)
     }
     if (!p.taskIds.includes(taskId)) p.taskIds.push(taskId)
@@ -74,7 +78,7 @@ export const useDailyStore = defineStore('daily', () => {
   function updateSummary(text: string) {
     let p = plans.value.find((p) => p.date === today.value)
     if (!p) {
-      p = { date: today.value, taskIds: [], habitIds: [], summary: '', createdAt: new Date().toISOString() }
+      p = { id: generateId(), date: today.value, taskIds: [], habitIds: [], summary: '', createdAt: new Date().toISOString() }
       plans.value.push(p)
     }
     p.summary = text
@@ -83,6 +87,7 @@ export const useDailyStore = defineStore('daily', () => {
   /** 获取指定日期的 DailyPlan（复盘页面用） */
   function getPlanByDate(date: string): DailyPlan {
     return plans.value.find((p) => p.date === date) || {
+      id: generateId(),
       date,
       taskIds: [],
       habitIds: [],

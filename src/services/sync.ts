@@ -142,5 +142,20 @@ export function collectLocalData(): Record<string, any[]> {
     }
   }
 
+  // interview_progress 是对象字典（questionId → progress），非数组，
+  // 转成 upsert 可用的数组（id = questionId）
+  try {
+    const rawProgress = localStorage.getItem('pw-interview-progress')
+    if (rawProgress) {
+      const parsed = JSON.parse(rawProgress)
+      result['interview_progress'] = Object.entries(parsed).map(([questionId, progress]) => ({
+        id: questionId,
+        ...(progress as object),
+      }))
+    }
+  } catch {
+    // skip
+  }
+
   return result
 }

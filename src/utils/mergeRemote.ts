@@ -27,6 +27,25 @@ export function mergeRemoteData(table: SyncTableName, remoteRows: any[]) {
   const lsKey = tableToKey[table]
   if (!lsKey) return
 
+  // interview_progress 在本地是对象字典（questionId → progress），
+  // 云端是数组（id = questionId），需要转回字典再合并
+  if (table === 'interview_progress') {
+    try {
+      const dict: Record<string, any> = {}
+      for (const row of remoteRows) {
+        if (row.id) dict[row.id] = { ...row, questionId: row.id }
+      }
+      const localRaw = localStorage.getItem(lsKey)
+      let local: Record<string, any> = {}
+      if (localRaw) local = JSON.parse(localRaw)
+      localStorage.setItem(lsKey, JSON.stringify({ ...local, ...dict }))
+      window.dispatchEvent(new StorageEvent('storage', { key: lsKey }))
+    } catch {
+      // 解析失败则跳过
+    }
+    return
+  }
+
   try {
     const localRaw = localStorage.getItem(lsKey)
     const localRows: any[] = localRaw ? JSON.parse(localRaw) : []
