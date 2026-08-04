@@ -129,185 +129,188 @@ const masteredPercent = computed(() => {
 
 <template>
   <div class="space-y-6 pb-20 md:pb-0">
-    <div>
-      <h1 class="text-2xl font-bold text-text-primary">数据看板</h1>
-      <p class="text-xs text-text-muted mt-1">全局统计总览 · {{ today }}</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- a) 任务总览 -->
-      <div class="bg-card border border-border rounded-xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/tasks')">
-        <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-          <Icon name="list" :size="16" class="text-text-muted" />
-          <p class="text-sm font-medium text-text-primary">任务总览</p>
-          <span class="ml-auto text-xs text-accent">查看 →</span>
+    <section class="rounded-3xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 md:p-6">
+      <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div class="min-w-0">
+          <p class="text-xs uppercase tracking-[0.16em] text-text-muted">Overview</p>
+          <h1 class="mt-2 text-2xl font-semibold text-text-primary">数据看板</h1>
+          <p class="mt-1 text-sm text-text-muted">全局统计总览 · {{ today }}</p>
         </div>
-        <div class="grid grid-cols-3 gap-2 text-center">
-          <div>
-            <p class="text-2xl font-bold text-text-primary">{{ weekCompletedTasks }}</p>
-            <p class="text-xs text-text-muted mt-1">本周完成</p>
+        <div class="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 lg:w-auto">
+          <div class="rounded-xl border border-border bg-card-hover/60 px-3 py-2">
+            <p class="text-[10px] text-text-muted">待处理</p>
+            <p class="mt-1 text-lg font-semibold text-text-primary">{{ todayPendingCount }}</p>
           </div>
-          <div>
-            <p class="text-2xl font-bold text-green-500">{{ taskCompletionRate }}%</p>
-            <p class="text-xs text-text-muted mt-1">完成率</p>
+          <div class="rounded-xl border border-border bg-card-hover/60 px-3 py-2">
+            <p class="text-[10px] text-text-muted">活跃目标</p>
+            <p class="mt-1 text-lg font-semibold text-text-primary">{{ activeGoalCount }}</p>
           </div>
-          <div>
-            <p class="text-2xl font-bold text-amber-500">{{ todayPendingCount }}</p>
-            <p class="text-xs text-text-muted mt-1">今日待处理</p>
+          <div class="rounded-xl border border-border bg-card-hover/60 px-3 py-2">
+            <p class="text-[10px] text-text-muted">本周专注</p>
+            <p class="mt-1 text-lg font-semibold text-text-primary">{{ weekFocusText }}</p>
+          </div>
+          <div class="rounded-xl border border-border bg-card-hover/60 px-3 py-2">
+            <p class="text-[10px] text-text-muted">掌握度</p>
+            <p class="mt-1 text-lg font-semibold text-text-primary">{{ masteredPercent }}%</p>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- b) 习惯坚持 -->
-      <div class="bg-card border border-border rounded-xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/habits')">
-        <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-          <Icon name="flame" :size="16" class="text-text-muted" />
-          <p class="text-sm font-medium text-text-primary">习惯坚持</p>
-          <span class="ml-auto text-xs text-accent">查看 →</span>
-        </div>
-        <div class="grid grid-cols-2 gap-2 text-center mb-4">
-          <div>
-            <p class="text-2xl font-bold text-text-primary">{{ todayHabitRate }}%</p>
-            <p class="text-xs text-text-muted mt-1">今日完成率</p>
+    <div class="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(0,0.95fr)]">
+      <div class="space-y-4">
+        <div class="cursor-pointer rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md" @click="router.push('/tasks')">
+          <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
+            <Icon name="list" :size="16" class="text-text-muted" />
+            <p class="text-sm font-medium text-text-primary">任务总览</p>
+            <span class="ml-auto text-xs text-accent">查看 →</span>
           </div>
-          <div>
-            <p class="text-2xl font-bold text-orange-500">{{ maxStreak }} 天</p>
-            <p class="text-xs text-text-muted mt-1">最长连续</p>
-          </div>
-        </div>
-        <p class="text-xs font-medium text-text-secondary mb-2">本周完成趋势</p>
-        <div class="flex items-end gap-1 h-8">
-          <div
-            v-for="(v, i) in weekHabitTrend"
-            :key="i"
-            class="flex-1 rounded-sm bg-orange-400 transition-all"
-            :style="{ height: (v / habitTrendMax * 100) + '%' }"
-            :title="`${weekDays[i].label} ${v} 个习惯`"
-          ></div>
-        </div>
-      </div>
-
-      <!-- c) 专注统计 -->
-      <div class="bg-card border border-border rounded-xl p-5">
-        <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-          <Icon name="clock" :size="16" class="text-text-muted" />
-          <p class="text-sm font-medium text-text-primary">专注统计</p>
-        </div>
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs text-text-secondary">今日专注</span>
-            <span class="text-sm font-semibold text-text-primary">{{ todayFocusText }}</span>
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="text-xs text-text-secondary">本周专注</span>
-            <span class="text-sm font-semibold text-text-primary">{{ weekFocusText }}</span>
-          </div>
-          <div class="flex items-center justify-between pt-3 border-t border-border">
-            <span class="text-xs text-text-secondary">累计专注</span>
-            <span class="text-base font-bold text-red-500">{{ totalFocusText }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- d) 目标进度 -->
-      <div class="bg-card border border-border rounded-xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/goals')">
-        <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-          <Icon name="target" :size="16" class="text-text-muted" />
-          <p class="text-sm font-medium text-text-primary">目标进度</p>
-          <span class="ml-auto text-xs text-accent">查看 →</span>
-        </div>
-        <div class="grid grid-cols-2 gap-2 text-center mb-4">
-          <div>
-            <p class="text-2xl font-bold text-text-primary">{{ activeGoalCount }}</p>
-            <p class="text-xs text-text-muted mt-1">活跃目标</p>
-          </div>
-          <div>
-            <p class="text-2xl font-bold text-indigo-500">{{ avgGoalProgress }}%</p>
-            <p class="text-xs text-text-muted mt-1">平均进度</p>
-          </div>
-        </div>
-        <div v-if="nearestDeadlineGoal" class="flex items-center gap-2 pt-3 border-t border-border cursor-pointer hover:bg-card-hover rounded-lg -mx-2 px-2 py-1 transition-colors" @click.stop="router.push(`/goals/${nearestDeadlineGoal.id}`)">
-          <span class="text-lg">{{ goalStore.goalIcon(nearestDeadlineGoal.category) }}</span>
-          <div class="min-w-0">
-            <p class="text-sm font-medium text-text-primary truncate">{{ nearestDeadlineGoal.title }}</p>
-            <p class="text-xs text-text-muted mt-0.5">
-              {{ goalStore.daysLeft(nearestDeadlineGoal.deadline).text }} · {{ nearestDeadlineGoal.deadline }}
-            </p>
-          </div>
-        </div>
-        <p v-else class="text-xs text-text-muted/60 pt-3 border-t border-border">暂无活跃目标</p>
-      </div>
-
-      <!-- e) 面试题掌握度 -->
-      <div class="bg-card border border-border rounded-xl p-5 cursor-pointer hover:border-accent/40 transition-colors" @click="router.push('/interview')">
-        <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-          <Icon name="book" :size="16" class="text-text-muted" />
-          <p class="text-sm font-medium text-text-primary">面试题掌握度</p>
-          <span class="ml-auto text-xs text-accent">查看 →</span>
-        </div>
-        <div class="grid grid-cols-3 gap-2 text-center mb-4">
-          <div>
-            <p class="text-2xl font-bold text-text-primary">{{ totalQuestions }}</p>
-            <p class="text-xs text-text-muted mt-1">总题数</p>
-          </div>
-          <div>
-            <p class="text-2xl font-bold text-green-500">{{ masteredCount }}</p>
-            <p class="text-xs text-text-muted mt-1">已掌握</p>
-          </div>
-          <div>
-            <p class="text-2xl font-bold text-amber-500">{{ todayReviewCount }}</p>
-            <p class="text-xs text-text-muted mt-1">待复习</p>
-          </div>
-        </div>
-        <div class="h-2 rounded-full bg-card-hover overflow-hidden">
-          <div
-            class="h-full rounded-full bg-green-500 transition-all"
-            :style="{ width: masteredPercent + '%' }"
-          ></div>
-        </div>
-        <p class="text-[10px] text-text-muted mt-1">已掌握 {{ masteredPercent }}%</p>
-      </div>
-
-      <!-- f) 每周趋势图 -->
-      <div class="bg-card border border-border rounded-xl p-5">
-        <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
-          <Icon name="chart" :size="16" class="text-text-muted" />
-          <p class="text-sm font-medium text-text-primary">每周趋势</p>
-        </div>
-        <div class="flex items-end justify-around gap-1 h-32 mb-3">
-          <div
-            v-for="s in weekStats"
-            :key="s.date"
-            class="flex-1 flex flex-col items-center gap-1 h-full justify-end"
-          >
-            <div class="flex gap-0.5 items-end h-28">
-              <div
-                class="w-2.5 rounded-t-sm bg-blue-400 transition-all"
-                :style="{ height: (s.tasks / weekMax * 100) + '%' }"
-                :title="`${s.tasks} 个任务`"
-              ></div>
-              <div
-                class="w-2.5 rounded-t-sm bg-orange-400 transition-all"
-                :style="{ height: (s.habits / weekMax * 100) + '%' }"
-                :title="`${s.habits} 个习惯`"
-              ></div>
-              <div
-                class="w-2.5 rounded-t-sm bg-red-400 transition-all"
-                :style="{ height: (Math.ceil(s.focusMin / 25) / weekMax * 100) + '%' }"
-                :title="`${s.focusMin} 分钟专注`"
-              ></div>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div>
+              <p class="text-2xl font-bold text-text-primary">{{ weekCompletedTasks }}</p>
+              <p class="mt-1 text-xs text-text-muted">本周完成</p>
             </div>
-            <span
-              class="text-[10px]"
-              :class="s.isToday ? 'text-accent font-semibold' : 'text-text-muted'"
-            >{{ s.label }}</span>
+            <div>
+              <p class="text-2xl font-bold text-green-500">{{ taskCompletionRate }}%</p>
+              <p class="mt-1 text-xs text-text-muted">完成率</p>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-amber-500">{{ todayPendingCount }}</p>
+              <p class="mt-1 text-xs text-text-muted">今日待处理</p>
+            </div>
           </div>
         </div>
-        <div class="flex items-center gap-4 pt-2 border-t border-border text-[10px] text-text-muted flex-wrap">
-          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-blue-400"></span>任务</span>
-          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-orange-400"></span>习惯</span>
-          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm bg-red-400"></span>专注</span>
-          <span class="w-full sm:ml-auto sm:w-auto">单位：任务(个)·习惯(个)·专注(25m番茄)</span>
+
+        <div class="cursor-pointer rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md" @click="router.push('/goals')">
+          <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
+            <Icon name="target" :size="16" class="text-text-muted" />
+            <p class="text-sm font-medium text-text-primary">目标进度</p>
+            <span class="ml-auto text-xs text-accent">查看 →</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-center mb-4">
+            <div>
+              <p class="text-2xl font-bold text-text-primary">{{ activeGoalCount }}</p>
+              <p class="mt-1 text-xs text-text-muted">活跃目标</p>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-indigo-500">{{ avgGoalProgress }}%</p>
+              <p class="mt-1 text-xs text-text-muted">平均进度</p>
+            </div>
+          </div>
+          <div v-if="nearestDeadlineGoal" class="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 transition-colors hover:bg-card-hover" @click.stop="router.push(`/goals/${nearestDeadlineGoal.id}`)">
+            <span class="text-lg">{{ goalStore.goalIcon(nearestDeadlineGoal.category) }}</span>
+            <div class="min-w-0">
+              <p class="truncate text-sm font-medium text-text-primary">{{ nearestDeadlineGoal.title }}</p>
+              <p class="mt-0.5 text-xs text-text-muted">
+                {{ goalStore.daysLeft(nearestDeadlineGoal.deadline).text }} · {{ nearestDeadlineGoal.deadline }}
+              </p>
+            </div>
+          </div>
+          <p v-else class="border-t border-border pt-3 text-xs text-text-muted/60">暂无活跃目标</p>
+        </div>
+
+        <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+          <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
+            <Icon name="chart" :size="16" class="text-text-muted" />
+            <p class="text-sm font-medium text-text-primary">每周趋势</p>
+          </div>
+          <div class="mb-3 flex h-36 items-end justify-around gap-1">
+            <div
+              v-for="s in weekStats"
+              :key="s.date"
+              class="flex h-full flex-1 flex-col items-center justify-end gap-1"
+            >
+              <div class="flex h-28 items-end gap-0.5">
+                <div class="w-2.5 rounded-t-sm bg-blue-400 transition-all" :style="{ height: (s.tasks / weekMax * 100) + '%' }" :title="`${s.tasks} 个任务`"></div>
+                <div class="w-2.5 rounded-t-sm bg-orange-400 transition-all" :style="{ height: (s.habits / weekMax * 100) + '%' }" :title="`${s.habits} 个习惯`"></div>
+                <div class="w-2.5 rounded-t-sm bg-red-400 transition-all" :style="{ height: (Math.ceil(s.focusMin / 25) / weekMax * 100) + '%' }" :title="`${s.focusMin} 分钟专注`"></div>
+              </div>
+              <span class="text-[10px]" :class="s.isToday ? 'text-accent font-semibold' : 'text-text-muted'">{{ s.label }}</span>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-4 border-t border-border pt-2 text-[10px] text-text-muted">
+            <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-sm bg-blue-400"></span>任务</span>
+            <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-sm bg-orange-400"></span>习惯</span>
+            <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-sm bg-red-400"></span>专注</span>
+            <span class="w-full sm:ml-auto sm:w-auto">单位：任务(个)·习惯(个)·专注(25m番茄)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="cursor-pointer rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md" @click="router.push('/habits')">
+          <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
+            <Icon name="flame" :size="16" class="text-text-muted" />
+            <p class="text-sm font-medium text-text-primary">习惯坚持</p>
+            <span class="ml-auto text-xs text-accent">查看 →</span>
+          </div>
+          <div class="mb-4 grid grid-cols-2 gap-2 text-center">
+            <div>
+              <p class="text-2xl font-bold text-text-primary">{{ todayHabitRate }}%</p>
+              <p class="mt-1 text-xs text-text-muted">今日完成率</p>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-orange-500">{{ maxStreak }} 天</p>
+              <p class="mt-1 text-xs text-text-muted">最长连续</p>
+            </div>
+          </div>
+          <p class="mb-2 text-xs font-medium text-text-secondary">本周完成趋势</p>
+          <div class="flex h-8 items-end gap-1">
+            <div
+              v-for="(v, i) in weekHabitTrend"
+              :key="i"
+              class="flex-1 rounded-sm bg-orange-400 transition-all"
+              :style="{ height: (v / habitTrendMax * 100) + '%' }"
+              :title="`${weekDays[i].label} ${v} 个习惯`"
+            ></div>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+          <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
+            <Icon name="clock" :size="16" class="text-text-muted" />
+            <p class="text-sm font-medium text-text-primary">专注统计</p>
+          </div>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-text-secondary">今日专注</span>
+              <span class="text-sm font-semibold text-text-primary">{{ todayFocusText }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-text-secondary">本周专注</span>
+              <span class="text-sm font-semibold text-text-primary">{{ weekFocusText }}</span>
+            </div>
+            <div class="flex items-center justify-between border-t border-border pt-3">
+              <span class="text-xs text-text-secondary">累计专注</span>
+              <span class="text-base font-bold text-red-500">{{ totalFocusText }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cursor-pointer rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md" @click="router.push('/interview')">
+          <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
+            <Icon name="book" :size="16" class="text-text-muted" />
+            <p class="text-sm font-medium text-text-primary">面试题掌握度</p>
+            <span class="ml-auto text-xs text-accent">查看 →</span>
+          </div>
+          <div class="mb-4 grid grid-cols-3 gap-2 text-center">
+            <div>
+              <p class="text-2xl font-bold text-text-primary">{{ totalQuestions }}</p>
+              <p class="mt-1 text-xs text-text-muted">总题数</p>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-green-500">{{ masteredCount }}</p>
+              <p class="mt-1 text-xs text-text-muted">已掌握</p>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-amber-500">{{ todayReviewCount }}</p>
+              <p class="mt-1 text-xs text-text-muted">待复习</p>
+            </div>
+          </div>
+          <div class="h-2 overflow-hidden rounded-full bg-card-hover">
+            <div class="h-full rounded-full bg-green-500 transition-all" :style="{ width: masteredPercent + '%' }"></div>
+          </div>
+          <p class="mt-1 text-[10px] text-text-muted">已掌握 {{ masteredPercent }}%</p>
         </div>
       </div>
     </div>

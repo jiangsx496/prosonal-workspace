@@ -34,7 +34,7 @@ function goCalendar() { router.push('/calendar') }
 
 <template>
   <button
-    class="w-full flex items-center justify-between p-4 mt-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
+    class="w-full flex items-center justify-between p-4 mt-3 bg-card-hover/50 hover:bg-card-hover rounded-xl transition-colors"
     @click="goCalendar"
   >
     <div class="flex items-center gap-3">

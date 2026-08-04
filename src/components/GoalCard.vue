@@ -30,9 +30,9 @@ const priorityBadge = computed(() => {
   <router-link
     :to="`/goals/${goal.id}`"
     :class="[
-      'block border rounded-xl p-4 transition-all hover:shadow-sm',
+      'block border rounded-xl p-4 transition-all hover:shadow-md hover:-translate-y-0.5',
       highlight
-        ? 'bg-gradient-to-br from-accent/5 to-blue-50/40 border-accent/20 hover:border-accent/35'
+        ? 'bg-accent/5 border-accent/20 hover:border-accent/35'
         : 'bg-card border-border hover:border-accent/20'
     ]"
   >

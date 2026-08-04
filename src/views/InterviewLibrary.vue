@@ -129,15 +129,15 @@ function goToday() {
     </div>
 
     <div class="grid grid-cols-3 gap-3">
-      <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="rounded-2xl border border-border bg-card p-4 shadow-sm shadow-slate-900/3 text-center">
         <p class="text-2xl font-bold text-text-primary">{{ stats.total }}</p>
         <p class="text-xs text-text-muted mt-1">总题数</p>
       </div>
-      <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="rounded-2xl border border-border bg-card p-4 shadow-sm shadow-slate-900/3 text-center">
         <p class="text-2xl font-bold text-green-500">{{ stats.mastered }}</p>
         <p class="text-xs text-text-muted mt-1">已掌握</p>
       </div>
-      <div class="bg-card border border-border rounded-xl p-4 text-center">
+      <div class="rounded-2xl border border-border bg-card p-4 shadow-sm shadow-slate-900/3 text-center">
         <p class="text-2xl font-bold text-amber-500">{{ stats.due }}</p>
         <p class="text-xs text-text-muted mt-1">待复习</p>
       </div>
@@ -175,7 +175,7 @@ function goToday() {
       <details
         v-for="q in filteredQuestions"
         :key="q.id"
-        class="bg-card border border-border rounded-xl overflow-hidden group"
+        class="rounded-2xl border border-border bg-card shadow-sm shadow-slate-900/3 overflow-hidden group"
       >
         <summary class="flex items-center gap-3 px-4 py-3 cursor-pointer select-none hover:bg-card-hover transition-colors">
           <span class="flex-1 min-w-0 text-sm text-text-primary">{{ q.question }}</span>

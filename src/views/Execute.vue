@@ -277,277 +277,302 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="space-y-5 pb-20 md:pb-0">
-    <!-- 动态激励横幅 -->
+  <div class="space-y-4 pb-20 md:pb-0">
+    <section class="rounded-3xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 md:p-6">
+      <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div class="min-w-0">
+          <p class="text-xs uppercase tracking-[0.16em] text-text-muted">Control Tower</p>
+          <p class="mt-2 text-3xl md:text-4xl font-light text-text-primary tracking-tight tabular-nums">{{ timeDisplay }}</p>
+          <p class="mt-1 text-lg md:text-xl font-medium text-text-primary">{{ greeting.text }}</p>
+          <p class="mt-1 text-sm text-text-muted">{{ now.month }}月{{ now.day }}日 {{ now.weekday }} · {{ taskStore.pendingCount }} 项待办 · {{ habitStore.doneCount }}/{{ habitStore.activeHabits.length }} 习惯</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button class="rounded-xl bg-accent px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover" @click="showCreate = true">+ 快速新建</button>
+          <button class="rounded-xl bg-card-hover px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary disabled:opacity-50" :disabled="generating" @click="runScheduler">{{ generating ? '生成中...' : '生成今日计划' }}</button>
+          <button class="rounded-xl px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-card-hover" @click="openEndDay">结束今天</button>
+        </div>
+      </div>
+      <div class="mt-5 flex flex-wrap gap-2 text-[10px] text-text-muted">
+        <span class="rounded-full border border-border bg-card-hover/60 px-2.5 py-1">1 看状态</span>
+        <span class="rounded-full border border-border bg-card-hover/60 px-2.5 py-1">2 执行任务</span>
+        <span class="rounded-full border border-border bg-card-hover/60 px-2.5 py-1">3 专注推进</span>
+        <span class="rounded-full border border-border bg-card-hover/60 px-2.5 py-1">4 补充输入</span>
+        <span class="rounded-full border border-border bg-card-hover/60 px-2.5 py-1">5 收尾复盘</span>
+      </div>
+      <div class="mt-5 grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-3">
+        <div class="rounded-2xl border border-border bg-card-hover/60 p-4">
+          <p class="text-xs text-text-muted">今日完成</p>
+          <div class="mt-2 flex items-end justify-between gap-2">
+            <span class="text-2xl font-semibold tabular-nums text-text-primary">{{ todayDone }}/{{ todayTotal }}</span>
+            <span class="text-sm font-medium tabular-nums" :class="progressPct===100?'text-emerald-500':'text-accent'">{{ progressPct }}%</span>
+          </div>
+          <div class="mt-3 h-1.5 overflow-hidden rounded-full bg-card-hover">
+            <div class="h-full rounded-full transition-all duration-700" :style="{width:progressPct+'%',backgroundColor:progressPct===100?'#16a34a':'var(--color-accent)'}"></div>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-border bg-card-hover/60 p-4">
+          <p class="text-xs text-text-muted">待处理</p>
+          <p class="mt-2 text-2xl font-semibold tabular-nums text-text-primary">{{ taskStore.pendingCount }}</p>
+          <p class="mt-1 text-sm text-text-secondary">今天要推进的任务量</p>
+        </div>
+        <div class="rounded-2xl border border-border bg-card-hover/60 p-4">
+          <p class="text-xs text-text-muted">累计专注</p>
+          <p class="mt-2 text-2xl font-semibold tabular-nums text-text-primary">{{ focusStore.formatFocusTime() }}</p>
+          <p class="mt-1 text-sm text-text-secondary">今天已经投入的时间</p>
+        </div>
+      </div>
+    </section>
+
     <MotivationBanner />
-    <!-- ========== 1. 今日状态 ========== -->
-    <div class="bg-card border border-border rounded-xl p-5 md:p-6">
-      <div class="flex items-start justify-between flex-wrap gap-4">
-        <div>
-          <p class="text-3xl md:text-4xl font-light text-text-primary tracking-tight tabular-nums">{{ timeDisplay }}</p>
-          <p class="text-lg md:text-xl font-medium text-text-primary mt-1">{{ greeting.text }}</p>
-          <p class="text-sm text-text-muted mt-1">{{ now.month }}月{{ now.day }}日 {{ now.weekday }} · {{ taskStore.pendingCount }} 项待办 · {{ habitStore.doneCount }}/{{ habitStore.activeHabits.length }} 习惯</p>
-        </div>
-        <div v-if="todayTotal > 0" class="flex flex-col items-end gap-1">
-          <span class="text-2xl font-semibold tabular-nums" :class="progressPct===100?'text-green-500':'text-accent'">{{ progressPct }}%</span>
-          <span class="text-xs text-text-muted">{{ todayDone }}/{{ todayTotal }} 完成</span>
-        </div>
-      </div>
-      <div class="mt-4 h-1.5 bg-card-hover rounded-full overflow-hidden">
-        <div class="h-full rounded-full transition-all duration-700" :style="{width:progressPct+'%',backgroundColor:progressPct===100?'#16a34a':'var(--color-accent)'}"></div>
-      </div>
-      <div class="mt-3 flex justify-end gap-2">
-        <button class="px-3 py-1.5 rounded-lg bg-card-hover text-text-secondary text-xs font-medium hover:text-text-primary transition-colors disabled:opacity-50" :disabled="generating" @click="runScheduler">{{ generating ? '生成中...' : '生成今日计划' }}</button>
-        <button class="px-3 py-1.5 rounded-lg text-text-secondary text-xs font-medium hover:bg-card-hover transition-colors" @click="openEndDay">结束今天</button>
-      </div>
-      <!-- 时间入口：折叠日历 -->
-      <CalendarWidget />
-    </div>
 
-    <!-- ========== 2. 当前行动 + 专注计时 ========== -->
-    <div class="bg-card border border-border rounded-xl p-5 flex items-center gap-4">
-      <div class="w-1 h-10 rounded-full shrink-0" :class="nextAction.icon==='🎉' ? 'bg-green-400' : 'bg-accent'"></div>
-      <div class="flex-1 min-w-0">
-        <p class="text-xs text-text-muted">{{ nextAction.label }}</p>
-        <p class="text-base font-medium text-text-primary truncate">{{ nextAction.text }}</p>
-        <p v-if="nextAction.goalId && goalName(nextAction.goalId)" class="text-xs text-text-muted mt-0.5 truncate">{{ goalName(nextAction.goalId) }}</p>
-      </div>
-      <button
-        v-if="focusStore.isIdle"
-        class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors shrink-0 flex items-center gap-1.5"
-        @click="showFocusScreen = true"
-      ><Icon name="play" :size="14" /> 专注</button>
-      <div v-else-if="focusStore.running" class="text-sm text-text-muted tabular-nums">{{ focusStore.formatFocusTime() }}</div>
-      <div class="ml-2 text-xs text-text-muted tabular-nums">{{ focusStore.formatFocusTime() }}</div>
-    </div>
-
-    <!-- ========== 3. 今日任务 ========== -->
-    <div class="bg-card border border-border rounded-xl p-5">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
-          <Icon name="list" :size="16" class="text-text-muted" />
-          <h3 class="text-sm font-medium text-text-primary">今日任务</h3>
-        </div>
-        <span class="text-xs text-text-muted">{{ todayDone }}/{{ todayTotal }}</span>
-      </div>
-      <div v-if="todayTasks.length > 0" class="space-y-1">
-        <div v-for="t in sortedTodayTasks" :key="t.id" class="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-card-hover transition-colors cursor-pointer group" @click="toggleAndTrack(t.id)">
-          <span class="w-2 h-2 rounded-full shrink-0" :class="priorityDot[t.priority]"></span>
-          <div class="flex-1 min-w-0">
-            <span class="text-sm block" :class="t.status==='done'?'text-text-muted line-through':'text-text-primary'">{{ t.title }}</span>
-            <span v-if="t.goalId && goalName(t.goalId)" class="text-xs text-accent/70 flex items-center gap-1 mt-0.5 truncate">
-              <span>🎯</span><span class="truncate">{{ goalName(t.goalId) }}</span>
-            </span>
+    <section class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,0.7fr)]">
+      <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex items-center gap-2">
+            <Icon name="list" :size="16" class="text-text-muted" />
+            <h3 class="text-sm font-medium text-text-primary">1. 今日任务</h3>
           </div>
-          <span class="text-xs w-5 h-5 rounded border flex items-center justify-center group-hover:border-accent/50" :class="t.status==='done'?'bg-accent border-accent text-white':'border-border'"><span v-if="t.status==='done'">✓</span></span>
+          <span class="text-xs text-text-muted">{{ todayDone }}/{{ todayTotal }}</span>
         </div>
-      </div>
-      <div v-else class="flex flex-col items-center justify-center py-6 text-text-muted text-sm space-y-2">
-        <span>今天还没有计划任务</span>
-        <button class="text-xs text-accent hover:underline" @click="showCreate=true">+ 添加第一个任务</button>
-      </div>
-      <div v-if="todayTasks.length>0" class="mt-3 pt-3 border-t border-border">
-        <button class="text-xs text-text-muted hover:text-amber-500 transition-colors" @click="deferUnfinished">将未完成的标记为延期</button>
-      </div>
-    </div>
-
-    <!-- ========== 3.5 每日精选 ========== -->
-    <div class="bg-card border border-border rounded-xl p-5">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
-          <Icon name="sparkles" :size="16" class="text-text-muted" />
-          <h3 class="text-sm font-medium text-text-primary">每日精选</h3>
-        </div>
-        <button
-          class="text-xs text-text-muted hover:text-accent transition-colors disabled:opacity-50"
-          :disabled="feedStore.loading"
-          @click="feedStore.loadToday(true)"
-        >{{ feedStore.loading ? '刷新中...' : '刷新' }}</button>
-      </div>
-
-      <div v-if="feedStore.loading && !feedStore.hasFeed" class="py-6 text-center text-xs text-text-muted">
-        <span>正在获取今日精选...</span>
-      </div>
-
-      <div v-else-if="feedStore.error" class="py-4 text-center text-xs text-amber-600">
-        {{ feedStore.error }}
-      </div>
-
-      <div v-else-if="feedStore.hasFeed" class="space-y-4">
-        <!-- GitHub 热门仓库 -->
-        <div v-if="feedStore.todayRepos.length > 0">
-          <p class="text-xs font-medium text-text-secondary mb-2">GitHub 热门</p>
-          <div class="space-y-1.5">
-            <a
-              v-for="repo in feedStore.todayRepos"
-              :key="repo.url"
-              :href="repo.url"
-              target="_blank"
-              rel="noopener"
-              class="flex items-start gap-2 py-1.5 px-2 rounded-lg hover:bg-card-hover transition-colors group"
-            >
-              <span class="text-xs shrink-0 mt-0.5">⭐ {{ repo.stars > 999 ? (repo.stars / 1000).toFixed(1) + 'k' : repo.stars }}</span>
-              <div class="flex-1 min-w-0">
-                <p class="text-sm text-accent group-hover:underline truncate">{{ repo.name }}</p>
-                <p v-if="repo.description" class="text-xs text-text-muted line-clamp-2 mt-0.5">{{ repo.description }}</p>
+        <div class="mt-4">
+          <div v-if="todayTasks.length > 0" class="space-y-1">
+            <div v-for="t in sortedTodayTasks" :key="t.id" class="group flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-card-hover" @click="toggleAndTrack(t.id)">
+              <span class="h-2 w-2 shrink-0 rounded-full" :class="priorityDot[t.priority]"></span>
+              <div class="min-w-0 flex-1">
+                <span class="block text-sm" :class="t.status==='done'?'text-text-muted line-through':'text-text-primary'">{{ t.title }}</span>
+                <span v-if="t.goalId && goalName(t.goalId)" class="mt-0.5 flex items-center gap-1 truncate text-xs text-accent/70">
+                  <span>🎯</span><span class="truncate">{{ goalName(t.goalId) }}</span>
+                </span>
               </div>
-            </a>
+              <span class="flex h-5 w-5 items-center justify-center rounded border text-xs group-hover:border-accent/50" :class="t.status==='done'?'border-accent bg-accent text-white':'border-border'"><span v-if="t.status==='done'">✓</span></span>
+            </div>
+          </div>
+          <div v-else class="flex flex-col items-center justify-center py-8 text-sm text-text-muted">
+            <span>今天还没有计划任务</span>
+            <button class="mt-2 text-xs text-accent hover:underline" @click="showCreate=true">+ 添加第一个任务</button>
           </div>
         </div>
+        <div v-if="todayTasks.length>0" class="mt-3 border-t border-border pt-3">
+          <button class="text-xs text-text-muted transition-colors hover:text-amber-500" @click="deferUnfinished">将未完成的标记为延期</button>
+        </div>
+      </div>
 
-        <!-- 每日面试题 -->
-        <div v-if="feedStore.todayQuestions.length > 0">
-          <div class="flex items-center justify-between mb-2">
-            <p class="text-xs font-medium text-text-secondary">每日面试题</p>
-            <router-link to="/interview" class="text-xs text-accent hover:underline">题库 →</router-link>
+      <div class="space-y-4">
+        <section class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <Icon name="play" :size="16" class="text-text-muted" />
+              <h3 class="text-sm font-medium text-text-primary">2. 当前行动与专注</h3>
+            </div>
           </div>
-          <div class="space-y-1.5">
-            <details
-              v-for="(q, idx) in feedStore.todayQuestions"
-              :key="idx"
-              class="py-1.5 px-2 rounded-lg hover:bg-card-hover transition-colors"
-            >
-              <summary class="text-sm text-text-primary cursor-pointer select-none flex items-center justify-between gap-2">
-                <span class="flex-1 min-w-0">{{ q.question }}</span>
-                <div class="flex items-center gap-1 shrink-0">
-                  <button
-                    class="text-xs hover:underline shrink-0"
-                    :class="isQuestionFavorited(q) ? 'text-amber-500' : 'text-text-muted'"
-                    @click.stop.prevent="toggleFavoriteQuestion(q)"
-                  >{{ isQuestionFavorited(q) ? '★' : '☆' }}</button>
-                  <button
-                    class="text-xs text-accent hover:underline shrink-0"
-                    @click.stop.prevent="addQuestionToTasks(q)"
-                  >+ 计划</button>
-                  <div class="relative">
+          <div class="flex items-center gap-4">
+            <div class="h-10 w-1 shrink-0 rounded-full" :class="nextAction.icon==='🎉' ? 'bg-emerald-400' : 'bg-accent'"></div>
+            <div class="min-w-0 flex-1">
+              <p class="text-xs text-text-muted">{{ nextAction.label }}</p>
+              <p class="truncate text-base font-medium text-text-primary">{{ nextAction.text }}</p>
+              <p v-if="nextAction.goalId && goalName(nextAction.goalId)" class="mt-0.5 truncate text-xs text-text-muted">{{ goalName(nextAction.goalId) }}</p>
+            </div>
+          </div>
+          <div class="mt-4 flex items-center justify-between rounded-xl border border-border bg-card-hover/60 px-3 py-2">
+            <span class="text-xs text-text-muted">本次/今日专注</span>
+            <span class="text-sm font-medium tabular-nums text-text-primary">{{ focusStore.formatFocusTime() }}</span>
+          </div>
+          <button
+            class="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
+            @click="showFocusScreen = true"
+          ><Icon name="play" :size="14" /> {{ focusStore.isIdle ? '开始专注' : '打开专注屏幕' }}</button>
+        </section>
+
+        <section class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-medium text-text-primary">时间入口</h3>
+            <span class="text-xs text-text-muted">日历</span>
+          </div>
+          <CalendarWidget />
+        </section>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-2">
+      <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <Icon name="sparkles" :size="16" class="text-text-muted" />
+            <h3 class="text-sm font-medium text-text-primary">4. 每日精选</h3>
+          </div>
+          <button class="text-xs text-text-muted transition-colors hover:text-accent disabled:opacity-50" :disabled="feedStore.loading" @click="feedStore.loadToday(true)">{{ feedStore.loading ? '刷新中...' : '刷新' }}</button>
+        </div>
+        <div v-if="feedStore.loading && !feedStore.hasFeed" class="py-6 text-center text-xs text-text-muted">
+          <span>正在获取今日精选...</span>
+        </div>
+        <div v-else-if="feedStore.error" class="py-4 text-center text-xs text-amber-600">
+          {{ feedStore.error }}
+        </div>
+        <div v-else-if="feedStore.hasFeed" class="space-y-4">
+          <div v-if="feedStore.todayRepos.length > 0">
+            <p class="mb-2 text-xs font-medium text-text-secondary">GitHub 热门</p>
+            <div class="space-y-1.5">
+              <a
+                v-for="repo in feedStore.todayRepos"
+                :key="repo.url"
+                :href="repo.url"
+                target="_blank"
+                rel="noopener"
+                class="group flex items-start gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-card-hover"
+              >
+                <span class="shrink-0 text-xs mt-0.5">⭐ {{ repo.stars > 999 ? (repo.stars / 1000).toFixed(1) + 'k' : repo.stars }}</span>
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm text-accent group-hover:underline">{{ repo.name }}</p>
+                  <p v-if="repo.description" class="mt-0.5 line-clamp-2 text-xs text-text-muted">{{ repo.description }}</p>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div v-if="feedStore.todayQuestions.length > 0">
+            <div class="mb-2 flex items-center justify-between">
+              <p class="text-xs font-medium text-text-secondary">每日面试题</p>
+              <router-link to="/interview" class="text-xs text-accent hover:underline">题库 →</router-link>
+            </div>
+            <div class="space-y-1.5">
+              <details
+                v-for="(q, idx) in feedStore.todayQuestions"
+                :key="idx"
+                class="rounded-lg px-2 py-1.5 transition-colors hover:bg-card-hover"
+              >
+                <summary class="flex cursor-pointer select-none items-center justify-between gap-2 text-sm text-text-primary">
+                  <span class="min-w-0 flex-1">{{ q.question }}</span>
+                  <div class="flex shrink-0 items-center gap-1">
                     <button
-                      class="text-xs text-orange-500 hover:underline shrink-0"
-                      @click.stop.prevent="openGoalPicker(q)"
-                    >→ 目标</button>
-                    <!-- 目标选择下拉 -->
-                    <div
-                      v-if="goalPickVisible && goalPickQuestion === q"
-                      class="absolute right-0 top-full mt-1 w-48 bg-card border border-border rounded-xl shadow-xl z-50 py-1 max-h-48 overflow-y-auto"
-                      @click.stop
-                    >
-                      <p class="px-3 py-1.5 text-[10px] text-text-muted">选择目标</p>
+                      class="shrink-0 text-xs hover:underline"
+                      :class="isQuestionFavorited(q) ? 'text-amber-500' : 'text-text-muted'"
+                      @click.stop.prevent="toggleFavoriteQuestion(q)"
+                    >{{ isQuestionFavorited(q) ? '★' : '☆' }}</button>
+                    <button
+                      class="shrink-0 text-xs text-accent hover:underline"
+                      @click.stop.prevent="addQuestionToTasks(q)"
+                    >+ 计划</button>
+                    <div class="relative">
                       <button
-                        v-for="g in goalStore.sortedActiveGoals"
-                        :key="g.id"
-                        class="w-full text-left px-3 py-1.5 text-xs text-text-primary hover:bg-card-hover transition-colors truncate"
-                        @click="addQuestionToGoal(g.id); goalPickVisible = false"
-                      >{{ goalStore.goalIcon(g.category) }} {{ g.title }}</button>
-                      <div v-if="goalStore.sortedActiveGoals.length === 0" class="px-3 py-2 text-[10px] text-text-muted">
-                        暂无活跃目标，请先创建
+                        class="shrink-0 text-xs text-orange-500 hover:underline"
+                        @click.stop.prevent="openGoalPicker(q)"
+                      >→ 目标</button>
+                      <div
+                        v-if="goalPickVisible && goalPickQuestion === q"
+                        class="absolute right-0 top-full z-50 mt-1 max-h-48 w-48 overflow-y-auto rounded-xl border border-border bg-card py-1 shadow-xl"
+                        @click.stop
+                      >
+                        <p class="px-3 py-1.5 text-[10px] text-text-muted">选择目标</p>
+                        <button
+                          v-for="g in goalStore.sortedActiveGoals"
+                          :key="g.id"
+                          class="w-full truncate px-3 py-1.5 text-left text-xs text-text-primary transition-colors hover:bg-card-hover"
+                          @click="addQuestionToGoal(g.id); goalPickVisible = false"
+                        >{{ goalStore.goalIcon(g.category) }} {{ g.title }}</button>
+                        <div v-if="goalStore.sortedActiveGoals.length === 0" class="px-3 py-2 text-[10px] text-text-muted">
+                          暂无活跃目标，请先创建
+                        </div>
                       </div>
                     </div>
                   </div>
+                </summary>
+                <div class="mt-2 border-l-2 border-accent/30 pl-3">
+                  <p class="whitespace-pre-wrap text-xs text-text-muted">{{ q.answer }}</p>
+                  <span class="mt-1 inline-block rounded bg-accent/10 px-1.5 py-0.5 text-xs text-accent">{{ q.category }}</span>
                 </div>
-              </summary>
-              <div class="mt-2 pl-3 border-l-2 border-accent/30">
-                <p class="text-xs text-text-muted whitespace-pre-wrap">{{ q.answer }}</p>
-                <span class="inline-block mt-1 text-xs px-1.5 py-0.5 rounded bg-accent/10 text-accent">{{ q.category }}</span>
-              </div>
-            </details>
-          </div>
-        </div>
-      </div>
-
-      <div v-else class="py-4 text-center text-xs text-text-muted">
-        <span>暂无精选内容，点击刷新获取</span>
-      </div>
-    </div>
-
-    <!-- ========== 4. 今日习惯 ========== -->
-    <div class="bg-card border border-border rounded-xl p-5">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
-          <Icon name="flame" :size="16" class="text-text-muted" />
-          <h3 class="text-sm font-medium text-text-primary">今日习惯</h3>
-        </div>
-        <span class="text-xs text-text-muted">{{ habitStore.doneCount }}/{{ habitStore.activeHabits.length }}</span>
-      </div>
-      <div class="space-y-2">
-        <div v-for="h in habitStore.activeHabits" :key="h.id" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-card-hover transition-colors cursor-pointer" @click="habitStore.toggle(h.id)">
-          <div class="flex items-center gap-2">
-            <span class="text-lg">{{ habitStore.habitCategoryMeta[h.category]?.icon || '✅' }}</span>
-            <div>
-              <span class="text-sm" :class="habitStore.isDone(h)?'text-text-muted line-through':'text-text-primary'">{{ h.name }}</span>
-              <span class="text-xs text-text-muted ml-1">本周 {{ habitStore.weeklyCount(h.id) }}/{{ h.frequency==='weekly'?1:7 }}</span>
+              </details>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs text-amber-500 font-medium">{{ h.streak }}天</span>
-            <span class="text-xs w-5 h-5 rounded border flex items-center justify-center" :class="habitStore.isDone(h)?'bg-accent border-accent text-white':'border-border'"><span v-if="habitStore.isDone(h)">✓</span></span>
+        </div>
+        <div v-else class="py-4 text-center text-xs text-text-muted">
+          <span>暂无精选内容，点击刷新获取</span>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <Icon name="flame" :size="16" class="text-text-muted" />
+              <h3 class="text-sm font-medium text-text-primary">5. 今日习惯</h3>
+            </div>
+            <span class="text-xs text-text-muted">{{ habitStore.doneCount }}/{{ habitStore.activeHabits.length }}</span>
+          </div>
+          <div class="space-y-2">
+            <div v-for="h in habitStore.activeHabits" :key="h.id" class="flex cursor-pointer items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-card-hover" @click="habitStore.toggle(h.id)">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">{{ habitStore.habitCategoryMeta[h.category]?.icon || '✅' }}</span>
+                <div>
+                  <span class="text-sm" :class="habitStore.isDone(h)?'text-text-muted line-through':'text-text-primary'">{{ h.name }}</span>
+                  <span class="ml-1 text-xs text-text-muted">本周 {{ habitStore.weeklyCount(h.id) }}/{{ h.frequency==='weekly'?1:7 }}</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-medium text-amber-500">{{ h.streak }}天</span>
+                <span class="flex h-5 w-5 items-center justify-center rounded border text-xs" :class="habitStore.isDone(h)?'border-accent bg-accent text-white':'border-border'"><span v-if="habitStore.isDone(h)">✓</span></span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ========== 5. 今日记录 ========== -->
-    <div class="grid gap-5 lg:grid-cols-2">
-      <!-- 当前目标 -->
-      <div class="bg-card border border-border rounded-xl p-5">
-        <div class="flex items-center gap-2 mb-4">
-          <Icon name="target" :size="16" class="text-text-muted" />
-          <h3 class="text-sm font-medium text-text-primary">当前目标</h3>
+        <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+          <div class="flex items-center gap-2 mb-4">
+            <Icon name="target" :size="16" class="text-text-muted" />
+            <h3 class="text-sm font-medium text-text-primary">6. 当前目标</h3>
+          </div>
+          <div v-if="goalStore.sortedActiveGoals.length > 0" class="space-y-3">
+            <GoalCard
+              v-for="(g, idx) in goalStore.sortedActiveGoals.slice(0, 3)"
+              :key="g.id"
+              :goal="g"
+              :highlight="idx === 0"
+            />
+          </div>
+          <div v-else class="flex flex-col items-center justify-center py-6 text-sm text-text-muted">
+            <span>还没有进行中的目标</span>
+            <router-link to="/goals" class="mt-1 text-xs text-accent hover:underline">+ 创建第一个目标</router-link>
+          </div>
         </div>
-        <div v-if="goalStore.sortedActiveGoals.length > 0" class="space-y-3">
-          <GoalCard
-            v-for="(g, idx) in goalStore.sortedActiveGoals.slice(0, 3)"
-            :key="g.id"
-            :goal="g"
-            :highlight="idx === 0"
-          />
-        </div>
-        <div v-else class="flex flex-col items-center justify-center py-6 text-text-muted text-sm">
-          <span>还没有进行中的目标</span>
-          <router-link to="/goals" class="text-xs text-accent hover:underline mt-1">+ 创建第一个目标</router-link>
-        </div>
-      </div>
-      <!-- 今日总结 -->
-      <div class="bg-card border border-border rounded-xl p-5">
-        <div class="flex items-center gap-2 mb-3">
-          <Icon name="edit" :size="16" class="text-text-muted" />
-          <h3 class="text-sm font-medium text-text-primary">今日总结</h3>
-        </div>
-        <textarea
-          :value="dailyStore.todayPlan.summary"
-          @input="dailyStore.updateSummary(($event.target as HTMLTextAreaElement).value)"
-          placeholder="今天完成了什么？有什么收获？..."
-          class="w-full h-24 px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent resize-none placeholder-text-muted/50 transition-colors"
-        ></textarea>
-        <router-link to="/journal" class="block mt-2 text-xs text-accent hover:underline text-right">📖 记录完整日志 →</router-link>
-      </div>
-    </div>
 
-    <!-- ========== 6. 日历 ========== -->
-    <!-- ========== 6. 浮动按钮 ========== -->
-    <button class="fixed bottom-20 right-6 md:bottom-8 md:right-8 w-11 h-11 rounded-full bg-accent text-white shadow-lg hover:bg-accent-hover hover:shadow-xl transition-all z-40 flex items-center justify-center" @click="showCreate=true" title="快速创建任务"><Icon name="plus" :size="20" /></button>
+        <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+          <div class="flex items-center gap-2 mb-3">
+            <Icon name="edit" :size="16" class="text-text-muted" />
+            <h3 class="text-sm font-medium text-text-primary">7. 今日总结</h3>
+          </div>
+          <textarea
+            :value="dailyStore.todayPlan.summary"
+            @input="dailyStore.updateSummary(($event.target as HTMLTextAreaElement).value)"
+            placeholder="今天完成了什么？有什么收获？..."
+            class="h-28 w-full resize-none rounded-lg border border-border bg-card-hover/50 px-3 py-2 text-sm text-text-primary outline-none transition-colors placeholder:text-text-muted/50 focus:border-accent focus:bg-card"
+          ></textarea>
+          <router-link to="/journal" class="mt-2 block text-right text-xs text-accent hover:underline">📖 记录完整日志 →</router-link>
+        </div>
+      </div>
+    </section>
+
+    <button class="fixed bottom-20 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-white shadow-lg transition-all hover:bg-accent-hover hover:shadow-xl md:bottom-8 md:right-8" @click="showCreate=true" title="快速创建任务"><Icon name="plus" :size="20" /></button>
     <TaskModal :visible="showCreate" @close="showCreate=false" />
     <FocusScreen :visible="showFocusScreen" @close="showFocusScreen=false" />
 
-    <!-- 结束今天 Modal -->
     <Teleport to="body">
       <div v-if="showEndDay" class="fixed inset-0 z-50 flex items-start justify-center pt-[8vh]" @click.self="showEndDay=false">
         <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
-        <div class="relative bg-white border border-border rounded-2xl w-full max-w-lg mx-4 shadow-2xl overflow-hidden">
-          <div class="flex items-center justify-between px-5 py-4 border-b border-border">
+        <div class="relative w-full max-w-lg mx-4 overflow-hidden rounded-2xl border border-border/80 bg-card shadow-2xl shadow-slate-900/15">
+          <div class="flex items-center justify-between border-b border-border px-5 py-4">
             <h2 class="text-sm font-semibold text-text-primary">🌙 结束今天</h2>
-            <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="showEndDay=false">✕</button>
+            <button class="flex h-7 w-7 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-card-hover" @click="showEndDay=false">✕</button>
           </div>
           <div class="p-5">
-            <p class="text-xs text-text-muted mb-3">以下是今日总结草稿，保存后将自动延期未完成任务并记录到日志：</p>
-            <pre class="w-full px-4 py-3 rounded-lg border border-border bg-gray-50 text-xs text-text-secondary whitespace-pre-wrap font-mono max-h-[50vh] overflow-y-auto">{{ endDayDraft }}</pre>
+            <p class="mb-3 text-xs text-text-muted">以下是今日总结草稿，保存后将自动延期未完成任务并记录到日志：</p>
+            <pre class="max-h-[50vh] w-full overflow-y-auto rounded-lg border border-border bg-card-hover/50 px-4 py-3 font-mono whitespace-pre-wrap text-xs text-text-secondary">{{ endDayDraft }}</pre>
           </div>
-          <div class="flex justify-end gap-2 px-5 py-4 border-t border-border bg-gray-50/50">
-            <button class="px-4 py-2 rounded-lg text-sm text-text-secondary hover:bg-gray-100 transition-colors" @click="showEndDay=false">取消</button>
-            <router-link to="/journal" class="px-4 py-2 rounded-lg text-sm text-accent hover:bg-accent/10 transition-colors" @click="saveEndDay()">保存并查看日志</router-link>
-            <button class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors" @click="saveEndDay()">保存</button>
+          <div class="flex justify-end gap-2 border-t border-border bg-card-hover/30 px-5 py-4">
+            <button class="rounded-lg px-4 py-2 text-sm text-text-secondary transition-colors hover:bg-card-hover" @click="showEndDay=false">取消</button>
+            <router-link to="/journal" class="rounded-lg px-4 py-2 text-sm text-accent transition-colors hover:bg-accent/10" @click="saveEndDay()">保存并查看日志</router-link>
+            <button class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover" @click="saveEndDay()">保存</button>
           </div>
         </div>
       </div>
     </Teleport>
   </div>
 </template>
-

@@ -25,9 +25,6 @@ watch(query, (q) => {
   selectedIdx.value = 0
 })
 
-const typeIcon: Record<string, string> = {
-  task: '📋', goal: '🎯', habit: '🔥', note: '📝', project: '📁', interview: '📚',
-}
 const typeLabel: Record<string, string> = {
   task: '任务', goal: '目标', habit: '习惯', note: '笔记', project: '项目', interview: '面试题',
 }
@@ -52,10 +49,9 @@ function onKeydown(e: KeyboardEvent) {
 <template>
   <Teleport to="body">
     <div class="fixed inset-0 z-[60] flex items-start justify-center pt-[15vh]" @click.self="emit('close')">
-      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-      <div class="relative w-full max-w-lg mx-4 bg-card border border-border rounded-2xl shadow-2xl overflow-hidden">
+      <div class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"></div>
+      <div class="relative w-full max-w-lg mx-4 bg-card border border-border/80 rounded-2xl shadow-2xl shadow-slate-900/15 overflow-hidden">
         <div class="flex items-center gap-3 px-4 py-3 border-b border-border">
-          <span class="text-base">🔍</span>
           <input
             ref="inputRef"
             v-model="query"
@@ -74,7 +70,6 @@ function onKeydown(e: KeyboardEvent) {
             @click="openResult(r)"
             @mouseenter="selectedIdx = i"
           >
-            <span class="text-sm shrink-0 mt-0.5">{{ typeIcon[r.type] }}</span>
             <div class="flex-1 min-w-0">
               <p class="text-sm text-text-primary truncate">{{ r.title }}</p>
               <p v-if="r.subtitle" class="text-xs text-text-muted truncate mt-0.5">{{ r.subtitle }}</p>

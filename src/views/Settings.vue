@@ -172,11 +172,25 @@ function formatSyncTime(time: string | null): string {
 </script>
 
 <template>
-  <div class="space-y-6 pb-20 md:pb-0 max-w-lg">
-    <h1 class="text-2xl font-bold text-text-primary">设置</h1>
+  <div class="space-y-6 pb-20 md:pb-0">
+    <div class="rounded-3xl border border-border bg-card px-5 py-5 shadow-sm shadow-slate-900/3 md:px-6">
+      <p class="text-xs font-medium uppercase tracking-[0.18em] text-text-muted">Preferences</p>
+      <div class="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 class="text-2xl font-semibold text-text-primary">设置</h1>
+          <p class="mt-1 text-sm text-text-muted">同步、外观、AI 和专注节奏都在这里统一管理。</p>
+        </div>
+        <div class="rounded-2xl border border-border bg-card-hover/60 px-4 py-3 text-sm text-text-secondary">
+          当前主题：<span class="font-medium text-text-primary">{{ theme }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+      <div class="space-y-4">
 
     <!-- 账户与同步 -->
-    <div class="bg-card border border-border rounded-xl p-5 space-y-4">
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 space-y-4">
       <h3 class="text-sm font-medium text-text-primary">账户与同步</h3>
 
       <div v-if="!isSupabaseConfigured" class="text-xs text-amber-600 bg-amber-50 rounded-lg p-3">
@@ -190,8 +204,8 @@ function formatSyncTime(time: string | null): string {
           <button class="flex-1 px-3 py-1.5 text-xs font-medium transition-colors" :class="authMode==='login'?'bg-accent text-white':'text-text-secondary'" @click="authMode='login'">登录</button>
           <button class="flex-1 px-3 py-1.5 text-xs font-medium transition-colors" :class="authMode==='register'?'bg-accent text-white':'text-text-secondary'" @click="authMode='register'">注册</button>
         </div>
-        <input v-model="loginEmail" type="email" placeholder="邮箱" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent" @keyup.enter="handleAuth" />
-        <input v-model="loginPassword" type="password" placeholder="密码（至少 6 位）" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent" @keyup.enter="handleAuth" />
+        <input v-model="loginEmail" type="email" placeholder="邮箱" class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent" @keyup.enter="handleAuth" />
+        <input v-model="loginPassword" type="password" placeholder="密码（至少 6 位）" class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent" @keyup.enter="handleAuth" />
         <button class="w-full py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50" :disabled="!loginEmail.trim() || loginPassword.length < 6 || authLoading" @click="handleAuth">{{ authLoading ? '处理中...' : (authMode === 'login' ? '登录' : '注册') }}</button>
         <span v-if="authMsg" class="text-xs" :class="authMsg.includes('失败')||authMsg.includes('错误')?'text-red-500':'text-green-600'">{{ authMsg }}</span>
       </template>
@@ -213,7 +227,7 @@ function formatSyncTime(time: string | null): string {
     </div>
 
     <!-- 外观 -->
-    <div class="bg-card border border-border rounded-xl p-5 space-y-4">
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 space-y-4">
 
       <div class="flex items-center justify-between">
         <span class="text-sm text-text-secondary">主题</span>
@@ -229,9 +243,12 @@ function formatSyncTime(time: string | null): string {
         </select>
       </div>
     </div>
+      </div>
+
+      <div class="space-y-4">
 
     <!-- AI 配置 -->
-    <div class="bg-card border border-border rounded-xl p-5 space-y-4">
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 space-y-4">
       <h3 class="text-sm font-medium text-text-primary">AI 计划解析</h3>
       <p class="text-xs text-text-muted">配置 AI API 用于智能解析导入的计划文档。Key 存在浏览器本地，不会上传。</p>
 
@@ -253,7 +270,7 @@ function formatSyncTime(time: string | null): string {
         <input
           v-model="aiConfig.endpoint"
           type="text"
-          class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent"
+          class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent"
         />
       </div>
 
@@ -263,7 +280,7 @@ function formatSyncTime(time: string | null): string {
           v-model="aiConfig.apiKey"
           type="password"
           placeholder="输入你的 API Key..."
-          class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent"
+          class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent"
         />
       </div>
 
@@ -273,7 +290,7 @@ function formatSyncTime(time: string | null): string {
           v-model="aiConfig.model"
           type="text"
           placeholder="如 doubao-pro-32k"
-          class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent"
+          class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent"
         />
       </div>
 
@@ -287,7 +304,7 @@ function formatSyncTime(time: string | null): string {
     </div>
 
     <!-- 番茄钟设置 -->
-    <div class="bg-card border border-border rounded-xl p-5 space-y-4">
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 space-y-4">
       <h3 class="text-sm font-medium text-text-primary">番茄钟设置</h3>
       <p class="text-xs text-text-muted">专注与休息时长会应用到下一次计时，修改后自动保存。</p>
 
@@ -297,7 +314,7 @@ function formatSyncTime(time: string | null): string {
           <input
             v-model.number="focusConfig.focusDuration"
             type="number" min="1" max="180"
-            class="w-20 px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent"
+            class="w-20 px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent"
           />
           <input
             v-model.number="focusConfig.focusDuration"
@@ -313,7 +330,7 @@ function formatSyncTime(time: string | null): string {
           <input
             v-model.number="focusConfig.shortBreak"
             type="number" min="1" max="60"
-            class="w-20 px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent"
+            class="w-20 px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent"
           />
           <input
             v-model.number="focusConfig.shortBreak"
@@ -329,7 +346,7 @@ function formatSyncTime(time: string | null): string {
           <input
             v-model.number="focusConfig.longBreak"
             type="number" min="1" max="120"
-            class="w-20 px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent"
+            class="w-20 px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent"
           />
           <input
             v-model.number="focusConfig.longBreak"
@@ -345,7 +362,7 @@ function formatSyncTime(time: string | null): string {
           <input
             v-model.number="focusConfig.longBreakInterval"
             type="number" min="1" max="12"
-            class="w-20 px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent"
+            class="w-20 px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent"
           />
           <input
             v-model.number="focusConfig.longBreakInterval"
@@ -366,7 +383,7 @@ function formatSyncTime(time: string | null): string {
             @click="focusConfig.autoStartBreak = !focusConfig.autoStartBreak"
           >
             <span
-              class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform"
+              class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow transition-transform"
               :class="focusConfig.autoStartBreak ? 'translate-x-5' : ''"
             ></span>
           </button>
@@ -381,7 +398,7 @@ function formatSyncTime(time: string | null): string {
             @click="focusConfig.soundEnabled = !focusConfig.soundEnabled"
           >
             <span
-              class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform"
+              class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow transition-transform"
               :class="focusConfig.soundEnabled ? 'translate-x-5' : ''"
             ></span>
           </button>
@@ -390,7 +407,7 @@ function formatSyncTime(time: string | null): string {
     </div>
 
     <!-- 数据管理 -->
-    <div class="bg-card border border-border rounded-xl p-5 space-y-4">
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 space-y-4">
       <h3 class="text-sm font-medium text-text-primary">数据管理</h3>
       <p class="text-xs text-text-muted">导出备份到本地文件，或从备份恢复数据。清理功能用于修复数据不一致。API Key 不包含在导出中。</p>
 
@@ -422,12 +439,14 @@ function formatSyncTime(time: string | null): string {
       </div>
     </div>
 
-    <div class="bg-card border border-border rounded-xl p-5 space-y-3">
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 space-y-3">
       <h3 class="text-sm font-medium text-text-primary">关于</h3>
       <p class="text-xs text-text-muted leading-relaxed">
         Personal Workspace v0.1.0<br />
         一个简洁的个人工作台，帮助你管理任务、项目和笔记。
       </p>
+    </div>
+      </div>
     </div>
   </div>
 </template>

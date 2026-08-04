@@ -20,10 +20,9 @@ const resourceItems = [
         v-for="item in resourceItems"
         :key="item.path"
         :to="item.path"
-        class="bg-card border border-border rounded-xl p-5 hover:shadow-md transition-all group"
+        class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 hover:shadow-md transition-all group"
       >
         <div class="flex items-center gap-3 mb-2">
-          <span class="text-2xl">{{ item.icon }}</span>
           <h3 class="font-semibold text-text-primary group-hover:text-accent transition-colors">{{ item.label }}</h3>
         </div>
         <p class="text-xs text-text-muted">{{ item.desc }}</p>

@@ -57,20 +57,20 @@ function cancelEdit() {
     </div>
 
     <!-- 新建项目表单 -->
-    <div v-if="showCreate" class="bg-card border border-border rounded-xl p-5 space-y-3">
-      <h3 class="text-sm font-semibold text-text-primary">新建项目</h3>
+    <div v-if="showCreate" class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 space-y-3">
+      <h3 class="text-sm font-medium text-text-primary">新建项目</h3>
       <input
         v-model="newName"
         type="text"
         placeholder="项目名称"
-        class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-sm outline-none focus:border-accent"
+        class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-sm outline-none focus:border-accent"
         @keyup.enter="handleCreate"
       />
       <input
         v-model="newDesc"
         type="text"
         placeholder="项目描述（可选）"
-        class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-sm outline-none focus:border-accent"
+        class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-sm outline-none focus:border-accent"
         @keyup.enter="handleCreate"
       />
       <div class="flex items-center gap-2">
@@ -84,7 +84,7 @@ function cancelEdit() {
       <div
         v-for="p in store.sorted"
         :key="p.id"
-        class="bg-card border border-border rounded-xl p-5 hover:shadow-md transition-shadow"
+        class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 hover:shadow-md transition-shadow"
       >
         <!-- 编辑模式 -->
         <template v-if="editingId === p.id">
@@ -94,7 +94,7 @@ function cancelEdit() {
               <input
                 v-model="editName"
                 type="text"
-                class="flex-1 px-2 py-1 rounded border border-border bg-gray-50 text-sm outline-none focus:border-accent"
+                class="flex-1 px-2 py-1 rounded border border-border bg-card-hover/50 text-sm outline-none focus:border-accent"
                 @keyup.enter="saveEdit"
               />
             </div>
@@ -102,7 +102,7 @@ function cancelEdit() {
               v-model="editDesc"
               type="text"
               placeholder="描述"
-              class="w-full px-2 py-1 rounded border border-border bg-gray-50 text-xs outline-none focus:border-accent"
+              class="w-full px-2 py-1 rounded border border-border bg-card-hover/50 text-xs outline-none focus:border-accent"
             />
             <div class="flex items-center gap-2">
               <button class="px-3 py-1 rounded bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors" @click="saveEdit">保存</button>
@@ -118,8 +118,8 @@ function cancelEdit() {
               <h3 class="font-semibold text-text-primary">{{ p.name }}</h3>
             </div>
             <div class="flex items-center gap-1">
-              <button class="text-xs text-text-muted hover:text-accent px-1" @click="startEdit(p.id)" title="编辑">✏️</button>
-              <button class="text-xs text-text-muted hover:text-red-500 px-1" @click="store.remove(p.id)" title="删除">🗑️</button>
+              <button class="text-xs text-text-muted hover:text-accent px-1" @click="startEdit(p.id)" title="编辑">✎</button>
+              <button class="text-xs text-text-muted hover:text-red-500 px-1" @click="store.remove(p.id)" title="删除">✕</button>
             </div>
           </div>
           <p v-if="p.desc" class="text-xs text-text-muted">{{ p.desc }}</p>
@@ -129,7 +129,6 @@ function cancelEdit() {
     </div>
 
     <div v-else class="flex flex-col items-center justify-center py-20 text-text-muted">
-      <span class="text-4xl mb-4">📁</span>
       <p class="text-sm">暂无项目</p>
       <p class="text-xs mt-1 opacity-60">点击右上角按钮创建第一个项目</p>
     </div>

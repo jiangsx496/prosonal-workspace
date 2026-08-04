@@ -53,7 +53,7 @@ const todayReview = computed(() => interviewStore.todayReviewCount)
 </script>
 
 <template>
-  <div :class="['rounded-2xl px-5 py-4 shadow-sm border border-border/40', style.bg]">
+  <div :class="['rounded-xl px-5 py-4 shadow-sm border border-border/40', style.bg]">
     <div class="flex items-center gap-4">
       <span class="text-3xl shrink-0 select-none">{{ motivationStore.currentEmoji }}</span>
       <p :class="['text-base leading-relaxed', style.text]">{{ motivationStore.currentText }}</p>

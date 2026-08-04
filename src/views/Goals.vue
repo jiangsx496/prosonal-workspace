@@ -116,74 +116,158 @@ function confirmDelete() {
 const linkedTaskCount = computed(() =>
   deleteTarget.value ? taskStore.tasks.filter((t) => t.goalId === deleteTarget.value!.id).length : 0
 )
+
+const goalStatusSummary = computed(() => {
+  const summary = { planned: 0, active: 0, completed: 0, expired: 0 }
+  for (const goal of goalStore.goals) summary[goal.status]++
+  return summary
+})
+
+const activeGoalProgress = computed(() => {
+  const list = goalStore.activeGoals
+  if (list.length === 0) return 0
+  const sum = list.reduce((acc, g) => acc + goalStore.goalProgress(g.id), 0)
+  return Math.round(sum / list.length)
+})
 </script>
 
 <template>
   <div class="space-y-6 pb-20 md:pb-0">
-    <div class="flex items-center justify-between">
-      <div><h1 class="text-2xl font-bold text-text-primary">目标</h1><p class="text-xs text-text-muted mt-1">{{ goalStore.activeGoals.length }} 个进行中</p></div>
-      <button class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors" @click="openCreate">+ 新建目标</button>
-    </div>
+    <section class="rounded-3xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 md:p-6">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.16em] text-text-muted">Goals</p>
+          <h1 class="mt-2 text-2xl font-semibold text-text-primary">目标</h1>
+          <p class="mt-1 text-sm text-text-muted">{{ goalStore.activeGoals.length }} 个进行中</p>
+        </div>
+        <button class="inline-flex items-center justify-center rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover" @click="openCreate">+ 新建目标</button>
+      </div>
+    </section>
 
-    <div class="grid gap-4 sm:grid-cols-2">
-      <router-link v-for="goal in goalStore.goals" :key="goal.id" :to="`/goals/${goal.id}`" class="bg-card border border-border rounded-xl p-5 hover:shadow-sm transition-shadow group">
-        <div class="flex items-start justify-between mb-3">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="text-lg">{{ goalStore.goalIcon(goal.category) }}</span>
-              <h3 class="font-semibold text-text-primary truncate">{{ goal.title }}</h3>
-            </div>
-            <p class="text-xs text-text-muted line-clamp-2">{{ goal.description }}</p>
+    <section class="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+      <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+        <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
+          <span class="text-sm font-medium text-text-primary">目标雷达</span>
+        </div>
+        <div class="grid gap-3 sm:grid-cols-2">
+          <div class="rounded-xl border border-border bg-card-hover/60 px-3 py-3">
+            <p class="text-[10px] text-text-muted">进行中</p>
+            <p class="mt-1 text-xl font-semibold text-text-primary">{{ goalStatusSummary.active }}</p>
           </div>
-          <div class="flex items-center gap-1 shrink-0 ml-2">
-            <span class="text-xs px-2 py-0.5 rounded border" :class="statusBadge[goal.status]">{{ statusLabel[goal.status] }}</span>
-            <button class="w-6 h-6 rounded flex items-center justify-center text-text-muted opacity-0 group-hover:opacity-100 hover:bg-accent/10 hover:text-accent transition-all" @click.prevent.stop="openEdit(goal)" title="编辑">✎</button>
-            <button class="w-6 h-6 rounded flex items-center justify-center text-text-muted opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-500 transition-all" @click.prevent.stop="openDelete(goal)" title="删除">✕</button>
+          <div class="rounded-xl border border-border bg-card-hover/60 px-3 py-3">
+            <p class="text-[10px] text-text-muted">已完成</p>
+            <p class="mt-1 text-xl font-semibold text-text-primary">{{ goalStatusSummary.completed }}</p>
+          </div>
+          <div class="rounded-xl border border-border bg-card-hover/60 px-3 py-3">
+            <p class="text-[10px] text-text-muted">计划中</p>
+            <p class="mt-1 text-xl font-semibold text-text-primary">{{ goalStatusSummary.planned }}</p>
+          </div>
+          <div class="rounded-xl border border-border bg-card-hover/60 px-3 py-3">
+            <p class="text-[10px] text-text-muted">已过期</p>
+            <p class="mt-1 text-xl font-semibold text-text-primary">{{ goalStatusSummary.expired }}</p>
           </div>
         </div>
+        <div class="mt-3">
+          <p class="text-xs text-text-muted">平均进度</p>
+          <div class="mt-2 h-2 overflow-hidden rounded-full bg-card-hover">
+            <div class="h-full rounded-full bg-accent transition-all" :style="{ width: `${activeGoalProgress}%` }"></div>
+          </div>
+          <p class="mt-1 text-xs text-text-muted">{{ activeGoalProgress }}%</p>
+        </div>
+      </div>
 
-        <div class="space-y-3">
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs text-text-muted">进度 ({{ goalStore.goalDoneCount(goal.id) }}/{{ goalStore.goalTaskCount(goal.id) }})</span>
-              <span class="text-xs font-medium" :class="goalStore.goalProgress(goal.id)>=100?'text-green-600':'text-accent'">{{ goalStore.goalProgress(goal.id) }}%</span>
-            </div>
-            <div class="h-2 bg-card-hover rounded-full overflow-hidden">
-              <div class="h-full rounded-full transition-all duration-500" :style="{width:goalStore.goalProgress(goal.id)+'%',backgroundColor:goalStore.progressColor(goalStore.goalProgress(goal.id))}"></div>
+      <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+        <div class="mb-3 flex items-center justify-between">
+          <span class="text-sm font-medium text-text-primary">最近截止</span>
+          <span class="text-xs text-text-muted">优先级</span>
+        </div>
+        <div v-if="goalStore.sortedActiveGoals.length > 0" class="space-y-3">
+          <div v-for="goal in goalStore.sortedActiveGoals.slice(0, 3)" :key="goal.id" class="rounded-xl border border-border bg-card-hover/50 p-3">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">{{ goalStore.goalIcon(goal.category) }}</span>
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-text-primary">{{ goal.title }}</p>
+                <p class="text-xs text-text-muted">{{ goalStore.daysLeft(goal.deadline).text }}</p>
+              </div>
             </div>
           </div>
-          <div class="flex items-center justify-between text-xs">
-            <span class="text-text-muted">关联 {{ goalStore.goalTaskCount(goal.id) }} 个任务</span>
-            <span :class="goalStore.daysLeft(goal.deadline).urgent?'text-red-500 font-medium':'text-text-muted'">{{ goalStore.daysLeft(goal.deadline).text }}</span>
+        </div>
+        <div v-else class="rounded-xl border border-dashed border-border px-3 py-4 text-center text-xs text-text-muted">
+          还没有活跃目标
+        </div>
+        <button class="mt-3 w-full rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover" @click="openCreate">+ 新建目标</button>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <router-link v-for="goal in goalStore.goals" :key="goal.id" :to="`/goals/${goal.id}`" class="group block rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-md">
+        <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
+          <div class="min-w-0">
+            <div class="flex min-w-0 items-center gap-2">
+              <span class="text-lg">{{ goalStore.goalIcon(goal.category) }}</span>
+              <h3 class="min-w-0 truncate text-base font-semibold text-text-primary">{{ goal.title }}</h3>
+            </div>
+            <p class="mt-2 line-clamp-2 max-w-2xl text-sm leading-6 text-text-muted">{{ goal.description || '还没有补充目标描述' }}</p>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <span class="rounded-lg border px-2.5 py-1 text-xs font-medium" :class="statusBadge[goal.status]">{{ statusLabel[goal.status] }}</span>
+              <span class="rounded-lg border border-border bg-card-hover/40 px-2.5 py-1 text-xs text-text-muted">{{ goalStore.goalTaskCount(goal.id) }} 个任务</span>
+              <span class="rounded-lg border border-border bg-card-hover/40 px-2.5 py-1 text-xs text-text-muted">{{ goalStore.daysLeft(goal.deadline).text }}</span>
+            </div>
+          </div>
+
+          <div class="space-y-3 rounded-2xl border border-border bg-card-hover/30 p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.14em] text-text-muted">Progress</p>
+                <p class="mt-1 text-2xl font-semibold tabular-nums text-text-primary">{{ goalStore.goalProgress(goal.id) }}%</p>
+              </div>
+              <div class="flex shrink-0 items-center gap-1">
+                <button class="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-all hover:bg-accent/10 hover:text-accent sm:opacity-0 sm:group-hover:opacity-100" @click.prevent.stop="openEdit(goal)" title="编辑">✎</button>
+                <button class="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-all hover:bg-red-50 hover:text-red-500 sm:opacity-0 sm:group-hover:opacity-100" @click.prevent.stop="openDelete(goal)" title="删除">✕</button>
+              </div>
+            </div>
+            <div>
+              <div class="mb-1 flex items-center justify-between">
+                <span class="text-xs text-text-muted">进度 ({{ goalStore.goalDoneCount(goal.id) }}/{{ goalStore.goalTaskCount(goal.id) }})</span>
+                <span class="text-xs font-medium" :class="goalStore.goalProgress(goal.id)>=100?'text-green-600':'text-accent'">{{ goalStore.goalProgress(goal.id) }}%</span>
+              </div>
+              <div class="h-2 overflow-hidden rounded-full bg-card-hover">
+                <div class="h-full rounded-full transition-all duration-500" :style="{width:goalStore.goalProgress(goal.id)+'%',backgroundColor:goalStore.progressColor(goalStore.goalProgress(goal.id))}"></div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-text-muted">关联 {{ goalStore.goalTaskCount(goal.id) }} 个任务</span>
+              <span class="text-text-muted">{{ goalStore.daysLeft(goal.deadline).text }}</span>
+            </div>
           </div>
         </div>
       </router-link>
-    </div>
+    </section>
 
     <!-- Modal: 两步创建流程 -->
     <Teleport to="body">
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-start justify-center pt-[10vh]" @click.self="closeModal">
         <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
-        <div class="relative bg-white border border-border rounded-xl w-full max-w-md mx-4 shadow-2xl overflow-hidden">
+        <div class="relative bg-card border border-border/80 rounded-2xl w-full max-w-md mx-4 shadow-2xl shadow-slate-900/15 overflow-hidden">
           <!-- Step 1: 目标信息 -->
           <template v-if="step === 'form'">
             <div class="flex items-center justify-between px-5 py-4 border-b border-border">
               <h2 class="text-sm font-medium text-text-primary">{{ editingGoal ? '编辑目标' : '新建目标' }}</h2>
-              <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="closeModal">✕</button>
+              <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-card-hover transition-colors" @click="closeModal">✕</button>
             </div>
             <div class="p-5 space-y-4">
-              <div><label class="block text-xs font-medium text-text-secondary mb-1.5">目标名称 *</label><input v-model="form.title" type="text" placeholder="例如：准备实习" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent" @keyup.enter="submit" /></div>
-              <div><label class="block text-xs font-medium text-text-secondary mb-1.5">描述</label><textarea v-model="form.description" rows="2" placeholder="目标描述（可选）" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent resize-none"></textarea></div>
+              <div><label class="block text-xs font-medium text-text-secondary mb-1.5">目标名称 *</label><input v-model="form.title" type="text" placeholder="例如：准备实习" class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent focus:bg-card transition-colors" @keyup.enter="submit" /></div>
+              <div><label class="block text-xs font-medium text-text-secondary mb-1.5">描述</label><textarea v-model="form.description" rows="2" placeholder="目标描述（可选）" class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent focus:bg-card transition-colors resize-none"></textarea></div>
               <div class="grid grid-cols-2 gap-4">
-                <div><label class="block text-xs font-medium text-text-secondary mb-1.5">分类</label><select v-model="form.category" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent"><option v-for="c in goalStore.goalCategories" :key="c" :value="c">{{ goalStore.goalIcon(c) }} {{ c }}</option></select></div>
-                <div><label class="block text-xs font-medium text-text-secondary mb-1.5">截止日期</label><input v-model="form.deadline" type="date" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent" /></div>
+                <div><label class="block text-xs font-medium text-text-secondary mb-1.5">分类</label><select v-model="form.category" class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent"><option v-for="c in goalStore.goalCategories" :key="c" :value="c">{{ goalStore.goalIcon(c) }} {{ c }}</option></select></div>
+                <div><label class="block text-xs font-medium text-text-secondary mb-1.5">截止日期</label><input v-model="form.deadline" type="date" class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent" /></div>
               </div>
               <div><label class="block text-xs font-medium text-text-secondary mb-1.5">优先级</label><div class="flex gap-2">
-                <button v-for="p in [{v:'high',l:'高'},{v:'medium',l:'中'},{v:'low',l:'低'}]" :key="p.v" type="button" class="flex-1 px-3 py-2 rounded-lg border text-sm transition-colors" :class="form.priority===p.v?'border-accent bg-accent/10 text-accent font-medium':'border-border bg-gray-50 text-text-secondary hover:bg-gray-100'" @click="form.priority=p.v as Goal['priority']">{{ p.l }}</button>
+                <button v-for="p in [{v:'high',l:'高'},{v:'medium',l:'中'},{v:'low',l:'低'}]" :key="p.v" type="button" class="flex-1 px-3 py-2 rounded-lg border text-sm transition-colors" :class="form.priority===p.v?'border-accent bg-accent/10 text-accent font-medium':'border-border bg-card-hover/50 text-text-secondary hover:bg-card-hover'" @click="form.priority=p.v as Goal['priority']">{{ p.l }}</button>
               </div></div>
             </div>
-            <div class="flex justify-end gap-2 px-5 py-4 border-t border-border bg-gray-50/50">
-              <button class="px-4 py-2 rounded-lg text-sm text-text-secondary hover:bg-gray-100 transition-colors" @click="closeModal">取消</button>
+            <div class="flex justify-end gap-2 px-5 py-4 border-t border-border bg-card-hover/30">
+              <button class="px-4 py-2 rounded-lg text-sm text-text-secondary hover:bg-card-hover transition-colors" @click="closeModal">取消</button>
               <button class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50" :disabled="!form.title.trim()" @click="submit">{{ editingGoal ? '保存' : '下一步：添加任务 →' }}</button>
             </div>
           </template>
@@ -195,17 +279,17 @@ const linkedTaskCount = computed(() =>
                 <h2 class="text-sm font-medium text-text-primary">添加关联任务</h2>
                 <p class="text-xs text-text-muted mt-0.5">为目标「{{ form.title }}」拆解子任务</p>
               </div>
-              <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="finishCreate">✕</button>
+              <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-card-hover transition-colors" @click="finishCreate">✕</button>
             </div>
             <div class="p-5 space-y-3">
               <!-- 输入区 -->
               <div class="flex gap-2">
-                <input v-model="taskInput" type="text" placeholder="例如：完善简历，按回车添加" class="flex-1 px-3 py-2 rounded-lg border border-border bg-gray-50 text-text-primary text-sm outline-none focus:border-accent focus:bg-white transition-colors" @keyup.enter="addTaskItem" />
+                <input v-model="taskInput" type="text" placeholder="例如：完善简历，按回车添加" class="flex-1 px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-text-primary text-sm outline-none focus:border-accent focus:bg-card transition-colors" @keyup.enter="addTaskItem" />
                 <button class="px-3 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50" :disabled="!taskInput.trim()" @click="addTaskItem">+ 添加</button>
               </div>
               <!-- 已添加的任务列表 -->
               <div v-if="pendingTasks.length > 0" class="space-y-1.5 pt-2">
-                <div v-for="(t, idx) in pendingTasks" :key="idx" class="flex items-center gap-3 py-2 px-3 rounded-lg bg-gray-50">
+                <div v-for="(t, idx) in pendingTasks" :key="idx" class="flex items-center gap-3 py-2 px-3 rounded-lg bg-card-hover/50">
                   <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
                   <span class="flex-1 min-w-0 text-sm text-text-primary">{{ t.title }}</span>
                   <button class="w-5 h-5 rounded flex items-center justify-center text-text-muted hover:bg-red-50 hover:text-red-500 transition-colors text-xs" @click="removeTaskItem(idx)">✕</button>
@@ -216,8 +300,8 @@ const linkedTaskCount = computed(() =>
                 <span class="text-xs mt-1 opacity-60">输入任务名称并按回车快速添加</span>
               </div>
             </div>
-            <div class="flex justify-end gap-2 px-5 py-4 border-t border-border bg-gray-50/50">
-              <button class="px-4 py-2 rounded-lg text-sm text-text-secondary hover:bg-gray-100 transition-colors" @click="finishCreate">{{ pendingTasks.length > 0 ? `完成（${pendingTasks.length} 个任务）` : '跳过，稍后添加' }}</button>
+            <div class="flex justify-end gap-2 px-5 py-4 border-t border-border bg-card-hover/30">
+              <button class="px-4 py-2 rounded-lg text-sm text-text-secondary hover:bg-card-hover transition-colors" @click="finishCreate">{{ pendingTasks.length > 0 ? `完成（${pendingTasks.length} 个任务）` : '跳过，稍后添加' }}</button>
             </div>
           </template>
         </div>
@@ -227,7 +311,7 @@ const linkedTaskCount = computed(() =>
     <Teleport to="body">
       <div v-if="deleteModal" class="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]" @click.self="deleteModal=false">
         <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
-        <div class="relative bg-white border border-border rounded-xl w-full max-w-sm mx-4 shadow-2xl overflow-hidden">
+        <div class="relative bg-card border border-border/80 rounded-2xl w-full max-w-sm mx-4 shadow-2xl shadow-slate-900/15 overflow-hidden">
           <div class="px-5 py-4 border-b border-border">
             <h2 class="text-sm font-medium text-text-primary">删除目标</h2>
           </div>
@@ -251,8 +335,8 @@ const linkedTaskCount = computed(() =>
               </label>
             </div>
           </div>
-          <div class="flex justify-end gap-2 px-5 py-4 border-t border-border bg-gray-50/50">
-            <button class="px-4 py-2 rounded-lg text-sm text-text-secondary hover:bg-gray-100 transition-colors" @click="deleteModal=false">取消</button>
+          <div class="flex justify-end gap-2 px-5 py-4 border-t border-border bg-card-hover/30">
+            <button class="px-4 py-2 rounded-lg text-sm text-text-secondary hover:bg-card-hover transition-colors" @click="deleteModal=false">取消</button>
             <button class="px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors" @click="confirmDelete">删除</button>
           </div>
         </div>

@@ -27,7 +27,7 @@ function submit() {
     </div>
 
     <div v-if="store.activeHabits.length > 0" class="grid gap-4 sm:grid-cols-2">
-      <div v-for="h in store.activeHabits" :key="h.id" class="bg-card border border-border rounded-xl p-5 hover:shadow-sm transition-shadow group">
+      <div v-for="h in store.activeHabits" :key="h.id" class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 hover:shadow-sm transition-shadow group">
         <div class="flex items-start justify-between mb-3">
           <div class="flex items-center gap-3">
             <span class="text-2xl">{{ store.habitCategoryMeta[h.category]?.icon || '✅' }}</span>
@@ -49,13 +49,13 @@ function submit() {
           </div>
           <div class="flex items-center justify-between">
             <span class="text-xs text-text-muted">连续天数</span>
-            <span class="text-sm font-bold text-amber-500">{{ h.streak }} 🔥</span>
+            <span class="text-sm font-bold text-amber-500">{{ h.streak }}</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-xs text-text-muted">今日</span>
             <button class="px-4 py-1.5 rounded-lg text-xs font-medium transition-colors"
               :class="store.isDone(h)?'bg-green-100 text-green-700':'bg-accent/10 text-accent hover:bg-accent/20'"
-              @click="store.toggle(h.id)">{{ store.isDone(h)?'✅ 已完成':'打卡' }}</button>
+              @click="store.toggle(h.id)">{{ store.isDone(h)?'已完成':'打卡' }}</button>
           </div>
 
           <!-- 月度打卡热力图 -->
@@ -80,27 +80,27 @@ function submit() {
     </div>
 
     <div v-else class="flex flex-col items-center justify-center py-20 text-text-muted">
-      <span class="text-4xl mb-4">🔥</span><p class="text-sm">还没有习惯</p><p class="text-xs mt-1 opacity-60">创建一个习惯开始追踪吧</p>
+      <p class="text-sm">还没有习惯</p><p class="text-xs mt-1 opacity-60">创建一个习惯开始追踪吧</p>
     </div>
 
     <Teleport to="body">
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-start justify-center pt-[10vh]" @click.self="showModal=false">
         <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
-        <div class="relative bg-white border border-border rounded-2xl w-full max-w-md mx-4 shadow-2xl overflow-hidden">
+        <div class="relative bg-card border border-border rounded-xl w-full max-w-md mx-4 shadow-2xl overflow-hidden">
           <div class="flex items-center justify-between px-5 py-4 border-b border-border">
-            <h2 class="text-sm font-semibold text-text-primary">{{ editing?'编辑习惯':'新建习惯' }}</h2>
-            <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="showModal=false">✕</button>
+            <h2 class="text-sm font-medium text-text-primary">{{ editing?'编辑习惯':'新建习惯' }}</h2>
+            <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-card-hover transition-colors" @click="showModal=false">✕</button>
           </div>
           <div class="p-5 space-y-4">
-            <div><label class="block text-xs font-medium text-text-secondary mb-1.5">习惯名称 *</label><input v-model="form.name" type="text" placeholder="如：运动 30 分钟" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-sm outline-none focus:border-accent" @keyup.enter="submit" /></div>
+            <div><label class="block text-xs font-medium text-text-secondary mb-1.5">习惯名称 *</label><input v-model="form.name" type="text" placeholder="如：运动 30 分钟" class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-sm outline-none focus:border-accent" @keyup.enter="submit" /></div>
             <div class="grid grid-cols-2 gap-4">
-              <div><label class="block text-xs font-medium text-text-secondary mb-1.5">分类</label><select v-model="form.category" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-sm outline-none focus:border-accent"><option v-for="(v, k) in store.habitCategoryMeta" :key="k" :value="k">{{ v.icon }} {{ v.label }}</option></select></div>
-              <div><label class="block text-xs font-medium text-text-secondary mb-1.5">频率</label><select v-model="form.frequency" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-sm outline-none focus:border-accent"><option value="daily">每天</option><option value="weekly">每周</option></select></div>
+              <div><label class="block text-xs font-medium text-text-secondary mb-1.5">分类</label><select v-model="form.category" class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-sm outline-none focus:border-accent"><option v-for="(v, k) in store.habitCategoryMeta" :key="k" :value="k">{{ v.icon }} {{ v.label }}</option></select></div>
+              <div><label class="block text-xs font-medium text-text-secondary mb-1.5">频率</label><select v-model="form.frequency" class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-sm outline-none focus:border-accent"><option value="daily">每天</option><option value="weekly">每周</option></select></div>
             </div>
-            <div><label class="block text-xs font-medium text-text-secondary mb-1.5">目标量</label><input v-model="form.target" type="text" placeholder="如：30 分钟 / 20 页" class="w-full px-3 py-2 rounded-lg border border-border bg-gray-50 text-sm outline-none focus:border-accent" /></div>
+            <div><label class="block text-xs font-medium text-text-secondary mb-1.5">目标量</label><input v-model="form.target" type="text" placeholder="如：30 分钟 / 20 页" class="w-full px-3 py-2 rounded-lg border border-border bg-card-hover/50 text-sm outline-none focus:border-accent" /></div>
           </div>
-          <div class="flex justify-end gap-2 px-5 py-4 border-t border-border bg-gray-50/50">
-            <button class="px-4 py-2 rounded-lg text-sm text-text-secondary hover:bg-gray-100 transition-colors" @click="showModal=false">取消</button>
+          <div class="flex justify-end gap-2 px-5 py-4 border-t border-border bg-card-hover/50">
+            <button class="px-4 py-2 rounded-lg text-sm text-text-secondary hover:bg-card-hover transition-colors" @click="showModal=false">取消</button>
             <button class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50" :disabled="!form.name.trim()" @click="submit">{{ editing?'保存':'创建' }}</button>
           </div>
         </div>

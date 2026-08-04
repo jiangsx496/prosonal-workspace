@@ -29,9 +29,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex h-screen overflow-hidden bg-[--color-bg]">
+  <div class="flex h-dvh overflow-hidden bg-bg text-text-primary">
     <Sidebar />
-    <main class="flex-1 overflow-y-auto p-4 md:p-8">
+    <main class="h-dvh flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6">
       <router-view />
     </main>
     <MobileNav />

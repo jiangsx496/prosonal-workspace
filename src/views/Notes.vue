@@ -73,8 +73,8 @@ function handleDelete() {
 
       <!-- 右侧编辑器 -->
       <div v-if="store.activeNote" class="flex-1 min-w-0">
-        <div class="bg-card border border-border rounded-xl overflow-hidden">
-          <div class="flex items-center gap-2 px-4 py-2 border-b border-border bg-slate-100">
+        <div class="rounded-2xl border border-border bg-card shadow-sm shadow-slate-900/3 overflow-hidden">
+          <div class="flex items-center gap-2 px-4 py-2 border-b border-border bg-card-hover/50">
             <span class="w-3 h-3 rounded-full bg-red-400"></span>
             <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
             <span class="w-3 h-3 rounded-full bg-green-400"></span>

@@ -153,11 +153,11 @@ function addTaskForDate() { showCreate.value = true }
     </div>
 
     <!-- 月视图 -->
-    <div v-if="viewMode === 'month'" class="bg-card border border-border rounded-xl p-4">
+    <div v-if="viewMode === 'month'" class="rounded-2xl border border-border bg-card p-4 shadow-sm shadow-slate-900/3">
       <div class="flex items-center justify-between mb-3">
-        <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="prevMonth">←</button>
+        <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-card-hover transition-colors" @click="prevMonth">←</button>
         <span class="text-sm font-medium text-text-primary">{{ monthLabel }}</span>
-        <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="nextMonth">→</button>
+        <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-card-hover transition-colors" @click="nextMonth">→</button>
       </div>
 
       <div class="grid grid-cols-7 gap-0.5 mb-1">
@@ -200,13 +200,13 @@ function addTaskForDate() { showCreate.value = true }
     </div>
 
     <!-- 周视图 -->
-    <div v-if="viewMode === 'week'" class="bg-card border border-border rounded-xl p-4">
+    <div v-if="viewMode === 'week'" class="rounded-2xl border border-border bg-card p-4 shadow-sm shadow-slate-900/3">
       <div class="flex items-center justify-between mb-4">
-        <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="prevWeek">←</button>
+        <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-card-hover transition-colors" @click="prevWeek">←</button>
         <span class="text-sm font-medium text-text-primary">{{ weekDays[0]?.month }}月{{ weekDays[0]?.day }}日 - {{ weekDays[6]?.month }}月{{ weekDays[6]?.day }}日</span>
         <div class="flex items-center gap-1">
           <button class="text-xs text-accent hover:underline" @click="goThisWeek">本周</button>
-          <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-gray-100 transition-colors" @click="nextWeek">→</button>
+          <button class="w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:bg-card-hover transition-colors" @click="nextWeek">→</button>
         </div>
       </div>
 
@@ -242,7 +242,7 @@ function addTaskForDate() { showCreate.value = true }
     </div>
 
     <!-- 日期详情（固定结构） -->
-    <div class="bg-card border border-border rounded-xl p-5">
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
       <!-- 标题 -->
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-sm font-medium text-text-primary">{{ selectedLabel }}</h3>
@@ -251,15 +251,15 @@ function addTaskForDate() { showCreate.value = true }
 
       <!-- 统一统计卡 -->
       <div class="grid grid-cols-3 gap-3 mb-5">
-        <div class="text-center bg-gray-50 rounded-xl py-3">
+        <div class="text-center bg-card-hover/50 rounded-xl py-3">
           <p class="text-2xl font-bold text-text-primary">{{ selectedDoneTasks.length }}<span class="text-sm text-text-muted">/{{ selectedTasks.length }}</span></p>
           <p class="text-xs text-text-muted mt-0.5">任务完成</p>
         </div>
-        <div class="text-center bg-gray-50 rounded-xl py-3">
+        <div class="text-center bg-card-hover/50 rounded-xl py-3">
           <p class="text-2xl font-bold text-text-primary">{{ selectedHabits.length }}</p>
           <p class="text-xs text-text-muted mt-0.5">习惯完成</p>
         </div>
-        <div class="text-center bg-gray-50 rounded-xl py-3">
+        <div class="text-center bg-card-hover/50 rounded-xl py-3">
           <p class="text-2xl font-bold text-text-primary">{{ selectedFocusMin }}<span class="text-sm text-text-muted">m</span></p>
           <p class="text-xs text-text-muted mt-0.5">专注时间</p>
         </div>
@@ -284,7 +284,7 @@ function addTaskForDate() { showCreate.value = true }
         </div>
         <div v-if="selectedJournal">
           <p class="text-xs text-text-muted mb-2">日志总结</p>
-          <p class="text-xs text-text-secondary whitespace-pre-wrap bg-gray-50 rounded-lg p-3">{{ selectedJournal.content }}</p>
+          <p class="text-xs text-text-secondary whitespace-pre-wrap bg-card-hover/50 rounded-lg p-3">{{ selectedJournal.content }}</p>
         </div>
         <div v-if="!selectedTasks.length && !selectedHabits.length && selectedFocusMin === 0 && !selectedJournal" class="text-center py-6 text-text-muted text-sm">
           <span>当天没有记录</span>

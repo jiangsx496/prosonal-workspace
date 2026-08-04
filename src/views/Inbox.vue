@@ -115,14 +115,29 @@ function clearDraft() {
 </script>
 
 <template>
-  <div class="space-y-6 pb-20 md:pb-0 max-w-2xl">
-    <div>
-      <h1 class="text-2xl font-bold text-text-primary">收件箱</h1>
-      <p class="text-xs text-text-muted mt-1">快速捕获想法和计划，稍后整理</p>
+  <div class="space-y-6 pb-20 md:pb-0">
+    <div class="rounded-3xl border border-border bg-card px-5 py-5 shadow-sm shadow-slate-900/3 md:px-6">
+      <p class="text-xs font-medium uppercase tracking-[0.18em] text-text-muted">Inbox</p>
+      <div class="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 class="text-2xl font-semibold text-text-primary">收件箱</h1>
+          <p class="mt-1 text-sm text-text-muted">先捕获，再整理成目标、任务和日程。</p>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-center sm:w-56">
+          <div class="rounded-2xl border border-border bg-card-hover/60 px-3 py-2">
+            <p class="text-lg font-semibold tabular-nums text-text-primary">{{ inbox.pending.length }}</p>
+            <p class="text-[11px] text-text-muted">待处理</p>
+          </div>
+          <div class="rounded-2xl border border-border bg-card-hover/60 px-3 py-2">
+            <p class="text-lg font-semibold tabular-nums text-text-primary">{{ inbox.processed.length }}</p>
+            <p class="text-[11px] text-text-muted">已归档</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 统一入口：AI 智能规划 -->
-    <div class="bg-gradient-to-br from-accent/5 to-blue-50/30 border border-accent/15 rounded-xl p-6">
+    <div class="rounded-3xl border border-accent/15 bg-card p-5 shadow-sm shadow-slate-900/3 md:p-6">
       <div class="flex items-center gap-2 mb-4">
         <div>
           <p class="text-base font-medium text-text-primary">AI 智能规划</p>
@@ -134,17 +149,17 @@ function clearDraft() {
         v-model="userInput"
         rows="3"
         placeholder="输入你的目标或需求... 例如：&#10;• 我要准备前端实习面试，2周时间&#10;• 学习 Vue3，7天掌握核心用法&#10;• 准备字节跳动一面，重点复习JS和算法"
-        class="w-full px-3 py-2.5 rounded-lg border border-border bg-white text-text-primary text-sm outline-none focus:border-accent resize-none placeholder-text-muted/50 transition-colors"
+        class="w-full px-3 py-2.5 rounded-lg border border-border bg-card text-text-primary text-sm outline-none focus:border-accent resize-none placeholder-text-muted/50 transition-colors"
       ></textarea>
 
-      <div class="flex items-center gap-3 mt-3">
+      <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
         <input ref="fileInput" type="file" multiple accept=".md,.txt,.docx,.pdf,.png,.jpg" class="hidden" @change="handleFile" />
         <button
           class="px-3 py-2 rounded-lg border-2 border-dashed border-border text-xs text-text-secondary hover:border-accent hover:text-accent transition-colors"
           @click="fileInput?.click()"
         >上传文件</button>
         <span v-if="uploadedFilename" class="text-xs text-text-muted truncate min-w-0">{{ uploadedFilename }}</span>
-        <div class="flex-1"></div>
+        <div class="hidden flex-1 sm:block"></div>
         <button
           class="px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50"
           :disabled="!userInput.trim() || analyzing"
@@ -155,7 +170,7 @@ function clearDraft() {
     </div>
 
     <!-- PlanDraft 层级预览 -->
-    <div v-if="draftStore.currentDraft" class="bg-card border border-border rounded-xl p-5 space-y-4">
+    <div v-if="draftStore.currentDraft" class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 space-y-4">
       <!-- 目标 -->
       <div class="flex items-center gap-2 pb-3 border-b border-border">
         <div class="flex-1">
@@ -177,7 +192,7 @@ function clearDraft() {
           class="border border-border rounded-xl overflow-hidden"
         >
           <!-- Day 头部 -->
-          <div class="flex items-center gap-2 px-3 py-2 bg-gray-50 flex-wrap">
+          <div class="flex items-center gap-2 px-3 py-2 bg-card-hover/50 flex-wrap">
             <span class="text-xs font-bold text-accent">Day{{ day.day }}</span>
             <span class="text-xs text-text-muted">{{ day.date }}</span>
             <span class="text-xs text-text-secondary ml-1 truncate min-w-0">{{ day.title.replace(/^Day\d+[：:]?\s*/, '') }}</span>
@@ -200,7 +215,7 @@ function clearDraft() {
             <div
               v-for="task in block.tasks"
               :key="task.id"
-              class="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-gray-50 group"
+              class="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-card-hover/50 group"
             >
               <input
                 type="checkbox"
@@ -215,7 +230,7 @@ function clearDraft() {
               <span v-if="task.category !== 'task'" class="text-xs text-text-muted italic">{{ task.category === 'note' ? '说明' : '复盘' }}</span>
               <select
                 v-model="task.priority"
-                class="text-xs px-1 py-0.5 rounded border border-border bg-white text-text-secondary outline-none"
+                class="text-xs px-1 py-0.5 rounded border border-border bg-card text-text-secondary outline-none"
               >
                 <option value="high">高</option>
                 <option value="medium">中</option>
@@ -238,20 +253,20 @@ function clearDraft() {
           @click="draftStore.confirmCreate()"
         >✓ 确认创建计划</button>
         <button
-          class="px-4 py-2.5 rounded-lg text-sm text-text-secondary hover:bg-gray-100 transition-colors"
+          class="px-4 py-2.5 rounded-lg text-sm text-text-secondary hover:bg-card-hover transition-colors"
           @click="clearDraft"
         >取消</button>
       </div>
     </div>
 
     <!-- 历史收件项 -->
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2">
       <button class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors" :class="tab==='pending'?'bg-accent/10 text-accent':'text-text-muted hover:text-text-secondary'" @click="tab='pending'">待处理 ({{ inbox.pending.length }})</button>
       <button class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors" :class="tab==='processed'?'bg-accent/10 text-accent':'text-text-muted hover:text-text-secondary'" @click="tab='processed'">已处理 ({{ inbox.processed.length }})</button>
     </div>
 
-    <div v-if="(tab==='pending'?inbox.pending:inbox.processed).length>0" class="space-y-2">
-      <div v-for="item in tab==='pending'?inbox.pending:inbox.processed" :key="item.id" class="bg-card border border-border rounded-xl p-4 flex items-start justify-between gap-4 group">
+    <div v-if="(tab==='pending'?inbox.pending:inbox.processed).length>0" class="grid grid-cols-[minmax(0,1fr)] gap-3 xl:grid-cols-2">
+      <div v-for="item in tab==='pending'?inbox.pending:inbox.processed" :key="item.id" class="rounded-2xl border border-border bg-card p-4 shadow-sm shadow-slate-900/3 flex items-start justify-between gap-4 group">
         <div class="flex-1 min-w-0">
           <p class="text-sm text-text-primary" :class="item.processed?'line-through text-text-muted':''">{{ item.content }}</p>
           <p class="text-xs text-text-muted mt-1">{{ item.source }} · {{ item.createdAt }}</p>

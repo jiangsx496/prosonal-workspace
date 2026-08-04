@@ -130,7 +130,7 @@ export function collectLocalData(): Record<string, any[]> {
     'pw-interview-custom': 'interview_custom',
   }
 
-  for (const [lsKey, tableName] of Object.entries(keyMap)) {
+  for (const [lsKey, table] of Object.entries(keyMap)) {
     try {
       const raw = localStorage.getItem(lsKey)
       if (raw) {

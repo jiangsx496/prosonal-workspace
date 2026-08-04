@@ -39,39 +39,43 @@ const isActive = computed(() => (name: string) => route.name === name)
 
 <template>
   <aside
-    class="hidden md:flex flex-col h-screen bg-sidebar border-r border-border shrink-0 transition-all duration-200"
+    class="hidden md:flex flex-col h-dvh bg-sidebar/95 backdrop-blur border-r border-border/80 shrink-0 transition-all duration-200"
     :class="store.sidebarCollapsed ? 'w-16' : 'w-56'"
   >
-    <div class="flex items-center h-14 border-b border-border" :class="store.sidebarCollapsed ? 'justify-center px-2' : 'px-4'">
-      <span class="text-sm font-bold text-text-primary tracking-tight">
-        <template v-if="!store.sidebarCollapsed">Workspace</template>
-        <template v-else>W</template>
-      </span>
+    <div class="flex items-center h-16 border-b border-border/80" :class="store.sidebarCollapsed ? 'justify-center px-2' : 'px-4'">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-accent text-white text-sm font-semibold shadow-sm">W</span>
+        <div v-if="!store.sidebarCollapsed" class="min-w-0">
+          <p class="text-sm font-semibold text-text-primary tracking-tight truncate">Workspace</p>
+          <p class="text-[11px] text-text-muted truncate">Personal command center</p>
+        </div>
+      </div>
     </div>
 
     <!-- 全局搜索 -->
-    <div class="pb-1" :class="store.sidebarCollapsed ? 'px-2' : 'px-2'">
+    <div class="px-2 pt-3 pb-1">
       <button
-        class="w-full flex items-center rounded-lg text-sm text-text-muted hover:bg-card-hover hover:text-text-primary transition-colors"
-        :class="store.sidebarCollapsed ? 'justify-center py-2' : 'gap-2.5 px-3 py-2'"
+        class="w-full flex items-center rounded-xl text-sm text-text-muted hover:bg-card-hover hover:text-text-primary transition-colors border border-transparent hover:border-border/70"
+        :class="store.sidebarCollapsed ? 'justify-center py-2.5' : 'gap-2.5 px-3 py-2.5'"
+        title="搜索"
         @click="showSearch = true"
       >
         <Icon name="search" :size="18" />
         <span v-if="!store.sidebarCollapsed" class="truncate">搜索...</span>
-        <kbd v-if="!store.sidebarCollapsed" class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-card-hover border border-border text-text-muted">⌘K</kbd>
+        <kbd v-if="!store.sidebarCollapsed" class="ml-auto text-[10px] px-1.5 py-0.5 rounded-md bg-card-hover border border-border/70 text-text-muted">⌘K</kbd>
       </button>
     </div>
 
-    <nav class="flex-1 py-3 px-2 space-y-0.5">
+    <nav class="flex-1 py-3 px-2 space-y-1">
       <router-link
         v-for="item in navItems"
         :key="item.name"
         :to="item.path"
-        class="flex items-center rounded-lg text-sm transition-colors"
+        class="flex items-center rounded-xl text-sm transition-all border border-transparent"
         :class="[
-          store.sidebarCollapsed ? 'justify-center py-2' : 'gap-2.5 px-3 py-2',
+          store.sidebarCollapsed ? 'justify-center py-2.5' : 'gap-2.5 px-3 py-2.5',
           isActive(item.name)
-            ? 'bg-accent/8 text-accent font-medium'
+            ? 'bg-accent/10 text-accent font-medium shadow-sm'
             : 'text-text-secondary hover:bg-card-hover hover:text-text-primary'
         ]"
       >
@@ -82,7 +86,7 @@ const isActive = computed(() => (name: string) => route.name === name)
 
     <div class="px-2 pb-4">
       <button
-        class="w-full flex items-center justify-center p-2 rounded-lg text-text-muted hover:bg-card-hover hover:text-text-primary transition-colors"
+        class="w-full flex items-center justify-center p-2.5 rounded-xl text-text-muted hover:bg-card-hover hover:text-text-primary transition-colors border border-border/70"
         @click="store.toggleSidebar()"
       >
         <Icon :name="store.sidebarCollapsed ? 'chevronRight' : 'chevronLeft'" :size="16" />

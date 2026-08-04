@@ -81,7 +81,7 @@ const weekMax = computed(() => {
     </div>
 
     <!-- 昨天复盘卡片 -->
-    <div class="bg-card border border-border rounded-xl p-5 space-y-4">
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 space-y-4">
       <div class="flex items-center gap-2 pb-3 border-b border-border">
         <p class="text-sm font-medium text-text-primary">昨天复盘 · {{ yesterday }}</p>
       </div>
@@ -129,7 +129,7 @@ const weekMax = computed(() => {
     </div>
 
     <!-- 本周趋势图 -->
-    <div class="bg-card border border-border rounded-xl p-5">
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
       <div class="flex items-center gap-2 pb-3 border-b border-border mb-4">
         <p class="text-sm font-medium text-text-primary">本周趋势</p>
       </div>
@@ -163,7 +163,7 @@ const weekMax = computed(() => {
         <span class="text-sm font-medium text-text-primary">延期任务（{{ taskStore.deferredTasks.length }}）</span>
       </div>
       <div class="space-y-3">
-        <div v-for="t in taskStore.deferredTasks" :key="t.id" class="bg-card border border-border rounded-xl p-4">
+        <div v-for="t in taskStore.deferredTasks" :key="t.id" class="rounded-2xl border border-border bg-card p-4 shadow-sm shadow-slate-900/3">
           <div class="flex items-start justify-between gap-4">
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-text-primary mb-1">{{ t.title }}</p>
@@ -179,7 +179,7 @@ const weekMax = computed(() => {
           </div>
           <div class="flex items-center gap-2 mt-3 pt-3 border-t border-border flex-wrap">
             <input type="date" :value="editDateMap[t.id] || today" @input="editDateMap[t.id] = ($event.target as HTMLInputElement).value"
-              class="px-2 py-1 rounded border border-border text-xs bg-gray-50 outline-none focus:border-accent" />
+              class="px-2 py-1 rounded border border-border text-xs bg-card-hover/50 outline-none focus:border-accent" />
             <button class="px-3 py-1 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors" @click="reschedule(t.id)">重新安排</button>
             <button class="px-3 py-1 rounded-lg bg-green-50 text-green-700 text-xs font-medium hover:bg-green-100 transition-colors" @click="taskStore.completeTask(t.id)">标记完成</button>
             <button class="px-3 py-1 rounded-lg bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors ml-auto" @click="taskStore.removeTask(t.id)">取消</button>

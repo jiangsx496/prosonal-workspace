@@ -18,17 +18,17 @@ const isActive = computed(() => (name: string) => route.name === name)
 
 <template>
   <nav
-    class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border safe-area-bottom"
+    class="md:hidden fixed bottom-0 left-0 right-0 z-50 px-2 pb-2 safe-area-bottom"
   >
-    <div class="flex justify-around items-center h-14 px-2">
+    <div class="flex justify-around items-center h-16 rounded-2xl bg-card/95 backdrop-blur border border-border/80 shadow-lg shadow-slate-900/5 px-2">
       <router-link
         v-for="item in navItems"
         :key="item.name"
         :to="item.path"
-        class="flex flex-col items-center justify-center gap-0.5 min-w-0 flex-1 py-1 rounded-lg text-[10px] transition-colors"
+        class="flex flex-col items-center justify-center gap-0.5 min-w-0 flex-1 py-1.5 rounded-xl text-[10px] transition-colors"
         :class="
           isActive(item.name)
-            ? 'text-accent'
+            ? 'text-accent bg-accent/10'
             : 'text-text-muted hover:text-text-secondary'
         "
       >

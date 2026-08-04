@@ -76,15 +76,15 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
 <template>
   <Teleport to="body">
-    <div v-if="visible" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gray-950/75 backdrop-blur-md">
+    <div v-if="visible" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md">
       <!-- 右上角：关联任务名 + 关闭 -->
       <div class="absolute top-4 right-4 md:top-8 md:right-8 flex items-center gap-2 md:gap-3">
         <span
           v-if="activeTaskName"
-          class="max-w-[140px] md:max-w-xs truncate px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs md:text-sm text-white/80"
+          class="max-w-[140px] md:max-w-xs truncate px-3 py-1.5 rounded-full bg-card/10 border border-white/15 text-xs md:text-sm text-white/80"
         >{{ activeTaskName }}</span>
         <button
-          class="px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 text-xs font-medium transition-colors"
+          class="px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-lg bg-card/10 hover:bg-card/20 text-white/80 text-xs font-medium transition-colors"
           @click="emit('close')"
         >✕ 关闭</button>
       </div>
@@ -119,12 +119,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
       <div class="mt-8 md:mt-12 flex items-center gap-2 md:gap-4 flex-wrap justify-center px-4">
         <button
           v-if="focusStore.running"
-          class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors"
+          class="px-5 py-2.5 rounded-xl bg-card/10 hover:bg-card/20 text-white text-sm font-medium transition-colors"
           @click="focusStore.pauseFocus()"
         >暂停</button>
         <button
           v-else
-          class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors"
+          class="px-5 py-2.5 rounded-xl bg-card/10 hover:bg-card/20 text-white text-sm font-medium transition-colors"
           @click="focusStore.resumeFocus()"
         >继续</button>
         <button
