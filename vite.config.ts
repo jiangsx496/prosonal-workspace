@@ -6,6 +6,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
+  // 相对路径：Electron 以 file:// 协议加载 dist 必需；对 Vercel/GitHub Pages 部署同样兼容
+  base: './',
   test: {
     environment: 'node',
     exclude: ['node_modules/**', 'dist/**', '.rivet/**'],

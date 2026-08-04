@@ -1,7 +1,13 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
+
+// Electron 桌面版（app:// 自定义协议）下 history API 不可用（pushState 仅限 http(s)），
+// 自动降级为 hash 模式；浏览器/线上部署保持 history 模式
+const history = window.location.protocol.startsWith('http')
+  ? createWebHistory()
+  : createWebHashHistory()
 
 const router = createRouter({
-  history: createWebHistory(),
+  history,
   routes: [
     // === 一级导航 ===
     { path: '/', name: 'execute', component: () => import('@/views/Execute.vue'), meta: { title: '今天' } },
