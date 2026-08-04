@@ -326,7 +326,7 @@ onUnmounted(() => {
     <MotivationBanner />
 
     <section class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,0.7fr)]">
-      <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 flex flex-col min-h-0">
+      <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 flex flex-col min-h-0 overflow-hidden">
         <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-2">
             <Icon name="list" :size="16" class="text-text-muted" />
