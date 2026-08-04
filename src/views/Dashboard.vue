@@ -166,8 +166,7 @@ const masteredPercent = computed(() => {
       </div>
     </section>
 
-    <div class="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(0,0.95fr)]">
-      <div class="space-y-4">
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div class="cursor-pointer rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md" @click="router.push('/tasks')">
           <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
             <Icon name="list" :size="16" class="text-text-muted" />
@@ -259,9 +258,7 @@ const masteredPercent = computed(() => {
           </div>
           </div>
         </div>
-      </div>
 
-      <div class="space-y-4">
         <div class="cursor-pointer rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md" @click="router.push('/habits')">
           <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
             <Icon name="flame" :size="16" class="text-text-muted" />
@@ -351,7 +348,6 @@ const masteredPercent = computed(() => {
           <p class="mt-1 text-[10px] text-text-muted">已掌握 {{ masteredPercent }}%</p>
           </div>
         </div>
-      </div>
     </div>
   </div>
 </template>
