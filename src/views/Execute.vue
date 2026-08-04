@@ -413,7 +413,7 @@ onUnmounted(() => {
 
         <section class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
           <div class="flex items-center justify-between mb-3">
-            <h3 class="text-sm font-medium text-text-primary">时间入口</h3>
+            <h3 class="text-sm font-medium text-text-primary">3. 时间入口</h3>
             <span class="text-xs text-text-muted">日历</span>
           </div>
           <CalendarWidget />
