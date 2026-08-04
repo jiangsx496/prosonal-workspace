@@ -143,6 +143,9 @@ async function handleAuth() {
     } else {
       await signIn(loginEmail.value, loginPassword.value)
       authMsg.value = '登录成功'
+      // 登录后立即拉取云端数据（useSync 的 onMounted 只在进入页面时执行一次，
+      // 登录前挂载会跳过拉取，这里补上）
+      await syncNow()
     }
     loginEmail.value = ''
     loginPassword.value = ''
