@@ -263,10 +263,9 @@ function onHotkeySearch() {
 
 // ---- 今日任务盒子高度与右侧列同步（xl 双列布局下底部对齐）----
 // grid 容器高度 auto 时，行高 = max-content（内容撑开），overflow-hidden 无法阻止。
-// 解法：今日任务盒子高度由 JS 实测右侧列内容高度 + 增量（延期按钮区 + 余量）：
-// 行高 = max(今日盒子, 右侧内容) 收敛于今日盒子，右侧列 stretch 同高、时间入口 mt-auto 贴底，
-// 底部保持对齐，任务列表在盒内滚动查看全部。
-const TASK_BOX_EXTRA = 100 // 延期按钮区（约 55px）+ 余量，让任务列表可视区多约 2 条
+// 解法：右侧列 self-start（高度=内容），今日任务盒子高度由 JS 实测右侧列内容高度，
+// 行高 = max(今日盒子, 右侧内容) 收敛于右侧列，时间入口紧贴专注盒子下方（无空隙），
+// 底部对齐，任务列表在盒内滚动查看全部。
 const rightColRef = ref<HTMLElement | null>(null)
 const taskBoxHeight = ref<number | null>(null)
 const XL_MEDIA = '(min-width: 1280px)' // Tailwind xl 断点
@@ -281,7 +280,7 @@ function syncTaskBoxHeight() {
   // 测量右侧列内容高度（各 section 之和 + gap），不含 stretch 拉伸
   const sections = [...rightColRef.value.querySelectorAll<HTMLElement>(':scope > section')]
   const contentH = sections.reduce((sum, s) => sum + s.offsetHeight, 0) + (sections.length - 1) * 16
-  taskBoxHeight.value = contentH + TASK_BOX_EXTRA
+  taskBoxHeight.value = contentH
 }
 
 onMounted(() => {
@@ -386,7 +385,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <div ref="rightColRef" class="flex flex-col gap-4 xl:sticky xl:top-4">
+      <div ref="rightColRef" class="space-y-4 xl:self-start xl:sticky xl:top-4">
         <section class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-2">
@@ -412,7 +411,7 @@ onUnmounted(() => {
           ><Icon name="play" :size="14" /> {{ focusStore.isIdle ? '开始专注' : '打开专注屏幕' }}</button>
         </section>
 
-        <section class="mt-auto rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+        <section class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-medium text-text-primary">时间入口</h3>
             <span class="text-xs text-text-muted">日历</span>
