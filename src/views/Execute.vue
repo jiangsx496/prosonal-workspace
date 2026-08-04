@@ -335,7 +335,7 @@ onUnmounted(() => {
     <MotivationBanner />
 
     <section class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,0.7fr)]">
-      <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 flex flex-col">
+      <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 flex flex-col min-h-0">
         <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-2">
             <Icon name="list" :size="16" class="text-text-muted" />
@@ -343,7 +343,7 @@ onUnmounted(() => {
           </div>
           <span class="text-xs text-text-muted">{{ todayDone }}/{{ todayTotal }}</span>
         </div>
-        <div class="mt-4" :class="{ 'max-h-96 overflow-y-auto': showAllTasks }">
+        <div class="mt-4" :class="{ 'flex-1 min-h-0 overflow-y-auto': showAllTasks }">
           <div v-if="todayTasks.length > 0" class="space-y-1">
             <div v-for="t in visibleTasks" :key="t.id" class="group flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-card-hover" @click="toggleAndTrack(t.id)">
               <span class="h-2 w-2 shrink-0 rounded-full" :class="priorityDot[t.priority]"></span>
