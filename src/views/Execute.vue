@@ -374,7 +374,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <div class="space-y-4">
+      <div class="space-y-4 xl:sticky xl:top-4">
         <section class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-2">
