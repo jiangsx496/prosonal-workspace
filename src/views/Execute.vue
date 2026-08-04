@@ -261,11 +261,38 @@ function onHotkeySearch() {
   if (btn) btn.click()
 }
 
+// ---- 今日任务盒子高度与右侧列同步（xl 双列布局下底部对齐）----
+// grid 容器高度 auto 时，行高 = max-content（内容撑开），overflow-hidden 无法阻止。
+// 解法：今日任务盒子高度由 JS 实测右侧列内容高度 + 增量（延期按钮区 + 余量）：
+// 行高 = max(今日盒子, 右侧内容) 收敛于今日盒子，右侧列 stretch 同高、时间入口 mt-auto 贴底，
+// 底部保持对齐，任务列表在盒内滚动查看全部。
+const TASK_BOX_EXTRA = 100 // 延期按钮区（约 55px）+ 余量，让任务列表可视区多约 2 条
+const rightColRef = ref<HTMLElement | null>(null)
+const taskBoxHeight = ref<number | null>(null)
+const XL_MEDIA = '(min-width: 1280px)' // Tailwind xl 断点
+let taskBoxResizeObserver: ResizeObserver | null = null
+
+function syncTaskBoxHeight() {
+  if (!rightColRef.value) return
+  if (!window.matchMedia(XL_MEDIA).matches) {
+    taskBoxHeight.value = null
+    return
+  }
+  // 测量右侧列内容高度（各 section 之和 + gap），不含 stretch 拉伸
+  const sections = [...rightColRef.value.querySelectorAll<HTMLElement>(':scope > section')]
+  const contentH = sections.reduce((sum, s) => sum + s.offsetHeight, 0) + (sections.length - 1) * 16
+  taskBoxHeight.value = contentH + TASK_BOX_EXTRA
+}
+
 onMounted(() => {
   window.addEventListener('hotkey-focus', onHotkeyFocus)
   window.addEventListener('hotkey-new-task', onHotkeyNewTask)
   window.addEventListener('hotkey-toggle-first', onHotkeyToggleFirst)
   window.addEventListener('hotkey-search', onHotkeySearch)
+  syncTaskBoxHeight()
+  taskBoxResizeObserver = new ResizeObserver(syncTaskBoxHeight)
+  if (rightColRef.value) taskBoxResizeObserver.observe(rightColRef.value)
+  window.matchMedia(XL_MEDIA).addEventListener('change', syncTaskBoxHeight)
 })
 
 onUnmounted(() => {
@@ -273,6 +300,8 @@ onUnmounted(() => {
   window.removeEventListener('hotkey-new-task', onHotkeyNewTask)
   window.removeEventListener('hotkey-toggle-first', onHotkeyToggleFirst)
   window.removeEventListener('hotkey-search', onHotkeySearch)
+  taskBoxResizeObserver?.disconnect()
+  window.matchMedia(XL_MEDIA).removeEventListener('change', syncTaskBoxHeight)
 })
 </script>
 
@@ -326,7 +355,7 @@ onUnmounted(() => {
     <MotivationBanner />
 
     <section class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,0.7fr)]">
-      <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 flex flex-col min-h-0 overflow-hidden">
+      <div :style="taskBoxHeight ? { height: taskBoxHeight + 'px' } : undefined" class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 flex flex-col min-h-0 overflow-hidden">
         <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-2">
             <Icon name="list" :size="16" class="text-text-muted" />
@@ -357,7 +386,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <div class="space-y-4 xl:sticky xl:top-4">
+      <div ref="rightColRef" class="flex flex-col gap-4 xl:sticky xl:top-4">
         <section class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-2">
@@ -383,7 +412,7 @@ onUnmounted(() => {
           ><Icon name="play" :size="14" /> {{ focusStore.isIdle ? '开始专注' : '打开专注屏幕' }}</button>
         </section>
 
-        <section class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
+        <section class="mt-auto rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-medium text-text-primary">时间入口</h3>
             <span class="text-xs text-text-muted">日历</span>
