@@ -19,6 +19,7 @@ const interviewStore = useInterviewStore()
 const collapsed = reactive({
   tasks: false,
   goals: false,
+  goalList: false,
   trend: false,
   habits: false,
   focus: false,
@@ -204,7 +205,7 @@ const masteredPercent = computed(() => {
             <span v-if="!collapsed.goals" class="text-xs text-accent">查看 →</span>
           </div>
           <div v-show="!collapsed.goals">
-          <div class="grid grid-cols-2 gap-2 text-center mb-4">
+          <div class="grid grid-cols-2 gap-2 text-center mb-3">
             <div>
               <p class="text-2xl font-bold text-text-primary">{{ activeGoalCount }}</p>
               <p class="mt-1 text-xs text-text-muted">活跃目标</p>
@@ -214,6 +215,15 @@ const masteredPercent = computed(() => {
               <p class="mt-1 text-xs text-text-muted">平均进度</p>
             </div>
           </div>
+          <button
+            v-if="nearestDeadlineGoal"
+            class="mb-2 flex w-full items-center justify-between rounded-lg px-2 py-1 text-xs text-text-muted transition-colors hover:bg-card-hover hover:text-text-primary"
+            @click.stop="collapsed.goalList = !collapsed.goalList"
+          >
+            <span>{{ collapsed.goalList ? '展开目标详情 ▸' : '收起目标详情 ▾' }}</span>
+            <span class="text-[10px]">{{ goalStore.activeGoals.length }} 个目标</span>
+          </button>
+          <div v-show="!collapsed.goalList">
           <div v-if="nearestDeadlineGoal" class="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 transition-colors hover:bg-card-hover" @click.stop="router.push(`/goals/${nearestDeadlineGoal.id}`)">
             <span class="text-lg">{{ goalStore.goalIcon(nearestDeadlineGoal.category) }}</span>
             <div class="min-w-0">
@@ -224,6 +234,7 @@ const masteredPercent = computed(() => {
             </div>
           </div>
           <p v-else class="border-t border-border pt-3 text-xs text-text-muted/60">暂无活跃目标</p>
+          </div>
           </div>
         </div>
 
