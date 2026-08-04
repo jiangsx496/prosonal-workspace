@@ -343,7 +343,7 @@ onUnmounted(() => {
           </div>
           <span class="text-xs text-text-muted">{{ todayDone }}/{{ todayTotal }}</span>
         </div>
-        <div class="mt-4" :class="{ 'flex-1 min-h-0 overflow-y-auto': showAllTasks }">
+        <div class="mt-4" :class="{ 'max-h-96 overflow-y-auto': showAllTasks }">
           <div v-if="todayTasks.length > 0" class="space-y-1">
             <div v-for="t in visibleTasks" :key="t.id" class="group flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-card-hover" @click="toggleAndTrack(t.id)">
               <span class="h-2 w-2 shrink-0 rounded-full" :class="priorityDot[t.priority]"></span>
