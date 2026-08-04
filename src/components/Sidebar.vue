@@ -39,10 +39,10 @@ const isActive = computed(() => (name: string) => route.name === name)
 
 <template>
   <aside
-    class="hidden md:flex flex-col w-56 h-screen bg-sidebar border-r border-border shrink-0 transition-all duration-200"
-    :class="{ 'w-16': store.sidebarCollapsed }"
+    class="hidden md:flex flex-col h-screen bg-sidebar border-r border-border shrink-0 transition-all duration-200"
+    :class="store.sidebarCollapsed ? 'w-16' : 'w-56'"
   >
-    <div class="flex items-center h-14 px-4 border-b border-border">
+    <div class="flex items-center h-14 border-b border-border" :class="store.sidebarCollapsed ? 'justify-center px-2' : 'px-4'">
       <span class="text-sm font-bold text-text-primary tracking-tight">
         <template v-if="!store.sidebarCollapsed">Workspace</template>
         <template v-else>W</template>
@@ -50,9 +50,10 @@ const isActive = computed(() => (name: string) => route.name === name)
     </div>
 
     <!-- 全局搜索 -->
-    <div class="px-2 pb-1">
+    <div class="pb-1" :class="store.sidebarCollapsed ? 'px-2' : 'px-2'">
       <button
-        class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-text-muted hover:bg-card-hover hover:text-text-primary transition-colors"
+        class="w-full flex items-center rounded-lg text-sm text-text-muted hover:bg-card-hover hover:text-text-primary transition-colors"
+        :class="store.sidebarCollapsed ? 'justify-center py-2' : 'gap-2.5 px-3 py-2'"
         @click="showSearch = true"
       >
         <Icon name="search" :size="18" />
@@ -66,19 +67,20 @@ const isActive = computed(() => (name: string) => route.name === name)
         v-for="item in navItems"
         :key="item.name"
         :to="item.path"
-        class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors"
-        :class="
+        class="flex items-center rounded-lg text-sm transition-colors"
+        :class="[
+          store.sidebarCollapsed ? 'justify-center py-2' : 'gap-2.5 px-3 py-2',
           isActive(item.name)
             ? 'bg-accent/8 text-accent font-medium'
             : 'text-text-secondary hover:bg-card-hover hover:text-text-primary'
-        "
+        ]"
       >
         <Icon :name="item.icon" :size="18" />
         <span v-if="!store.sidebarCollapsed" class="truncate">{{ item.label }}</span>
       </router-link>
     </nav>
 
-    <div class="px-3 pb-4">
+    <div class="px-2 pb-4">
       <button
         class="w-full flex items-center justify-center p-2 rounded-lg text-text-muted hover:bg-card-hover hover:text-text-primary transition-colors"
         @click="store.toggleSidebar()"
