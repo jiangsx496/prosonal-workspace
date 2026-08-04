@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { todayLocal, localDateStr, localDateFromISO } from '@/utils/date'
 import { useTaskStore } from '@/stores/tasks'
@@ -15,6 +15,15 @@ const habitStore = useHabitStore()
 const focusStore = useFocusStore()
 const goalStore = useGoalStore()
 const interviewStore = useInterviewStore()
+
+const collapsed = reactive({
+  tasks: false,
+  goals: false,
+  trend: false,
+  habits: false,
+  focus: false,
+  interview: false,
+})
 
 const today = todayLocal()
 
@@ -163,8 +172,12 @@ const masteredPercent = computed(() => {
           <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
             <Icon name="list" :size="16" class="text-text-muted" />
             <p class="text-sm font-medium text-text-primary">任务总览</p>
-            <span class="ml-auto text-xs text-accent">查看 →</span>
+            <button class="ml-auto flex h-6 w-6 items-center justify-center rounded text-text-muted transition-colors hover:bg-card-hover hover:text-text-primary" @click.stop="collapsed.tasks = !collapsed.tasks" :title="collapsed.tasks ? '展开' : '折叠'">
+              <span class="text-xs transition-transform" :class="collapsed.tasks ? '' : 'rotate-90'">▸</span>
+            </button>
+            <span v-if="!collapsed.tasks" class="text-xs text-accent">查看 →</span>
           </div>
+          <div v-show="!collapsed.tasks">
           <div class="grid grid-cols-3 gap-2 text-center">
             <div>
               <p class="text-2xl font-bold text-text-primary">{{ weekCompletedTasks }}</p>
@@ -179,14 +192,19 @@ const masteredPercent = computed(() => {
               <p class="mt-1 text-xs text-text-muted">今日待处理</p>
             </div>
           </div>
+          </div>
         </div>
 
         <div class="cursor-pointer rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md" @click="router.push('/goals')">
           <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
             <Icon name="target" :size="16" class="text-text-muted" />
             <p class="text-sm font-medium text-text-primary">目标进度</p>
-            <span class="ml-auto text-xs text-accent">查看 →</span>
+            <button class="ml-auto flex h-6 w-6 items-center justify-center rounded text-text-muted transition-colors hover:bg-card-hover hover:text-text-primary" @click.stop="collapsed.goals = !collapsed.goals" :title="collapsed.goals ? '展开' : '折叠'">
+              <span class="text-xs transition-transform" :class="collapsed.goals ? '' : 'rotate-90'">▸</span>
+            </button>
+            <span v-if="!collapsed.goals" class="text-xs text-accent">查看 →</span>
           </div>
+          <div v-show="!collapsed.goals">
           <div class="grid grid-cols-2 gap-2 text-center mb-4">
             <div>
               <p class="text-2xl font-bold text-text-primary">{{ activeGoalCount }}</p>
@@ -207,13 +225,18 @@ const masteredPercent = computed(() => {
             </div>
           </div>
           <p v-else class="border-t border-border pt-3 text-xs text-text-muted/60">暂无活跃目标</p>
+          </div>
         </div>
 
         <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
           <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
             <Icon name="chart" :size="16" class="text-text-muted" />
             <p class="text-sm font-medium text-text-primary">每周趋势</p>
+            <button class="ml-auto flex h-6 w-6 items-center justify-center rounded text-text-muted transition-colors hover:bg-card-hover hover:text-text-primary" @click="collapsed.trend = !collapsed.trend" :title="collapsed.trend ? '展开' : '折叠'">
+              <span class="text-xs transition-transform" :class="collapsed.trend ? '' : 'rotate-90'">▸</span>
+            </button>
           </div>
+          <div v-show="!collapsed.trend">
           <div class="mb-3 flex h-36 items-end justify-around gap-1">
             <div
               v-for="s in weekStats"
@@ -234,6 +257,7 @@ const masteredPercent = computed(() => {
             <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-sm bg-red-400"></span>专注</span>
             <span class="w-full sm:ml-auto sm:w-auto">单位：任务(个)·习惯(个)·专注(25m番茄)</span>
           </div>
+          </div>
         </div>
       </div>
 
@@ -242,8 +266,12 @@ const masteredPercent = computed(() => {
           <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
             <Icon name="flame" :size="16" class="text-text-muted" />
             <p class="text-sm font-medium text-text-primary">习惯坚持</p>
-            <span class="ml-auto text-xs text-accent">查看 →</span>
+            <button class="ml-auto flex h-6 w-6 items-center justify-center rounded text-text-muted transition-colors hover:bg-card-hover hover:text-text-primary" @click.stop="collapsed.habits = !collapsed.habits" :title="collapsed.habits ? '展开' : '折叠'">
+              <span class="text-xs transition-transform" :class="collapsed.habits ? '' : 'rotate-90'">▸</span>
+            </button>
+            <span v-if="!collapsed.habits" class="text-xs text-accent">查看 →</span>
           </div>
+          <div v-show="!collapsed.habits">
           <div class="mb-4 grid grid-cols-2 gap-2 text-center">
             <div>
               <p class="text-2xl font-bold text-text-primary">{{ todayHabitRate }}%</p>
@@ -264,13 +292,18 @@ const masteredPercent = computed(() => {
               :title="`${weekDays[i].label} ${v} 个习惯`"
             ></div>
           </div>
+          </div>
         </div>
 
         <div class="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3">
           <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
             <Icon name="clock" :size="16" class="text-text-muted" />
             <p class="text-sm font-medium text-text-primary">专注统计</p>
+            <button class="ml-auto flex h-6 w-6 items-center justify-center rounded text-text-muted transition-colors hover:bg-card-hover hover:text-text-primary" @click="collapsed.focus = !collapsed.focus" :title="collapsed.focus ? '展开' : '折叠'">
+              <span class="text-xs transition-transform" :class="collapsed.focus ? '' : 'rotate-90'">▸</span>
+            </button>
           </div>
+          <div v-show="!collapsed.focus">
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <span class="text-xs text-text-secondary">今日专注</span>
@@ -285,14 +318,19 @@ const masteredPercent = computed(() => {
               <span class="text-base font-bold text-red-500">{{ totalFocusText }}</span>
             </div>
           </div>
+          </div>
         </div>
 
         <div class="cursor-pointer rounded-2xl border border-border bg-card p-5 shadow-sm shadow-slate-900/3 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md" @click="router.push('/interview')">
           <div class="mb-4 flex items-center gap-2 border-b border-border pb-3">
             <Icon name="book" :size="16" class="text-text-muted" />
             <p class="text-sm font-medium text-text-primary">面试题掌握度</p>
-            <span class="ml-auto text-xs text-accent">查看 →</span>
+            <button class="ml-auto flex h-6 w-6 items-center justify-center rounded text-text-muted transition-colors hover:bg-card-hover hover:text-text-primary" @click.stop="collapsed.interview = !collapsed.interview" :title="collapsed.interview ? '展开' : '折叠'">
+              <span class="text-xs transition-transform" :class="collapsed.interview ? '' : 'rotate-90'">▸</span>
+            </button>
+            <span v-if="!collapsed.interview" class="text-xs text-accent">查看 →</span>
           </div>
+          <div v-show="!collapsed.interview">
           <div class="mb-4 grid grid-cols-3 gap-2 text-center">
             <div>
               <p class="text-2xl font-bold text-text-primary">{{ totalQuestions }}</p>
@@ -311,6 +349,7 @@ const masteredPercent = computed(() => {
             <div class="h-full rounded-full bg-green-500 transition-all" :style="{ width: masteredPercent + '%' }"></div>
           </div>
           <p class="mt-1 text-[10px] text-text-muted">已掌握 {{ masteredPercent }}%</p>
+          </div>
         </div>
       </div>
     </div>
