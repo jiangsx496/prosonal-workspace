@@ -13,7 +13,7 @@ function load(): DailyPlan[] {
     if (raw) {
       const data = JSON.parse(raw) as any[]
       // 数据规范化：旧版本数据可能缺字段，补齐默认值避免消费方（删除/清理）崩溃
-      return data.map((p) => ({
+      const migrated = data.map((p) => ({
         // 旧数据无 id：云端同步推送需要稳定主键，自动补齐
         id: p.id || generateId(),
         date: p.date,
@@ -22,6 +22,12 @@ function load(): DailyPlan[] {
         summary: typeof p.summary === 'string' ? p.summary : '',
         createdAt: p.createdAt || new Date().toISOString(),
       }))
+      // 迁移结果写回 localStorage：推送（collectLocalData）读的是 localStorage，
+      // 只补内存 id 的话旧数据推送时仍是 null
+      if (migrated.some((p, i) => p.id !== data[i]?.id)) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated))
+      }
+      return migrated
     }
   } catch { /* ignore */ }
   return [...mockDailyPlans]

@@ -37,4 +37,14 @@ describe('DailyPlan id 完整性（云端同步推送需要稳定主键）', () 
     const daily = useDailyStore()
     expect(daily.plans[0].id).toBeTruthy()
   })
+
+  it('旧数据迁移的 id 必须写回 localStorage（推送读 localStorage，只改内存不够）', () => {
+    localStorage.setItem(
+      'pw-daily',
+      JSON.stringify([{ date: '2025-01-01', taskIds: [], habitIds: [], summary: '', createdAt: '2025-01-01' }])
+    )
+    useDailyStore()
+    const stored = JSON.parse(localStorage.getItem('pw-daily')!)
+    expect(stored[0].id).toBeTruthy()
+  })
 })
