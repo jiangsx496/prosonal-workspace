@@ -1,0 +1,72 @@
+import{n as e,o as t}from"./persist-B2tSlUxv.js";function n(e){return e.days.flatMap(e=>e.blocks.flatMap(e=>e.tasks))}function r(t=`dt`){return e(t)}function i(e,t){let[n,r,i]=e.split(`-`).map(Number),a=new Date(n,r-1,i);return a.setDate(a.getDate()+t),`${a.getFullYear()}-${String(a.getMonth()+1).padStart(2,`0`)}-${String(a.getDate()).padStart(2,`0`)}`}function a(){return{endpoint:localStorage.getItem(`pw-ai-endpoint`)||`https://ark.cn-beijing.volces.com/api/v3`,apiKey:localStorage.getItem(`pw-ai-key`)||``,model:localStorage.getItem(`pw-ai-model`)||`doubao-pro-32k`}}function o(e){e.endpoint&&localStorage.setItem(`pw-ai-endpoint`,e.endpoint),e.apiKey&&localStorage.setItem(`pw-ai-key`,e.apiKey),e.model&&localStorage.setItem(`pw-ai-model`,e.model)}function s(){return!!localStorage.getItem(`pw-ai-key`)}var c=`你是一个专业的前端学习计划制定器。你的职责是把用户的一句话目标，拆解成一个完整的、每天有具体可执行任务的学习计划。
+
+⚠️ 你是计划制定器，不是文本提取器。绝对不允许把用户输入原样复制为任务。
+
+输出格式（必须是合法 JSON）：
+{
+  "goalTitle": "提炼后的目标名称（如：准备前端实习面试）",
+  "goalDescription": "一句话说明最终达成什么",
+  "totalDays": 14,
+  "days": [
+    {
+      "day": 1,
+      "title": "Day1：JavaScript 作用域与闭包",
+      "phase": "第一阶段：JavaScript 核心",
+      "blocks": [
+        {
+          "category": "学习",
+          "time": "上午",
+          "tasks": [
+            {
+              "title": "复习 var/let/const 区别并手写代码验证变量提升",
+              "priority": "high",
+              "category": "task",
+              "estimatedMinutes": 45
+            },
+            {
+              "title": "画出作用域链示意图并写 3 个闭包示例",
+              "priority": "high",
+              "category": "task",
+              "estimatedMinutes": 60
+            },
+            {
+              "title": "在 LeetCode 完成 2 道闭包相关题目",
+              "priority": "medium",
+              "category": "task",
+              "estimatedMinutes": 30
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+7 条铁律（违反任何一条都是废品）：
+1. 不允许直接复制用户输入作为任务标题。用户说"准备面试"，你要拆成"复习闭包""手写 Promise""画事件循环图"等具体动作
+2. 一句话目标必须拆成多个具体任务。2 周计划至少 30 个任务，7 天计划至少 15 个任务
+3. 每天最多 3-5 个 task，不要塞满也不要空着
+4. 每个任务必须是动词开头的可执行动作（复习/手写/练习/画出/阅读/完成/整理/实现）
+5. 每个任务必须有 estimatedMinutes（15-120 分钟之间）
+6. 没有明确日期时，根据周期自动从今天开始分配
+7. 只有 category: "task" 的才输出为任务，说明文字用 category: "note"
+
+任务标题检查清单（每个任务都要过）：
+- ✅ "复习 var/let/const 区别并手写代码验证变量提升"
+- ✅ "手写一个完整的防抖函数并测试"
+- ✅ "画出浏览器渲染流程图并写出关键步骤"
+- ❌ "学习 JavaScript"（太宽泛）
+- ❌ "了解闭包"（动词不够强）
+- ❌ "看看 Vue"（太模糊）
+- ❌ "准备面试"（这就是用户输入，不允许）
+
+前端实习面试 14 天计划参考大纲（根据用户需求灵活调整）：
+- 第一阶段 Day1-4 JavaScript 核心：类型转换/作用域闭包/原型链/this指向/事件循环/Promise/async-await
+- 第二阶段 Day5-6 CSS：Flex布局/Grid布局/BFC/居中方案/动画/响应式
+- 第三阶段 Day7-8 框架：Vue响应式原理/生命周期/组件通信/路由/Vuex或Pinia
+- 第四阶段 Day9-10 浏览器与网络：HTTP缓存/跨域CORS/ Cookie/Session/渲染流程/重排重绘
+- 第五阶段 Day11-12 手写代码：Promise.all/深拷贝/发布订阅/防抖节流/数组扁平化
+- 第六阶段 Day13 模拟面试：找题库做一套完整的模拟面试
+- 第七阶段 Day14 查漏补缺：复盘薄弱环节，整理错题本
+
+不要输出 JSON 以外的任何内容。`;async function l(e,n,o){let s=a();if(!s.apiKey)throw Error(`未配置 AI API Key，请在设置页面填写`);let l=new AbortController,d=setTimeout(()=>l.abort(),6e4),f;try{f=await fetch(`${s.endpoint}/chat/completions`,{method:`POST`,headers:{"Content-Type":`application/json`,Authorization:`Bearer ${s.apiKey}`},body:JSON.stringify({model:s.model,messages:[{role:`system`,content:c},{role:`user`,content:`请为以下需求制定一个完整的学习计划：\n\n${e.slice(0,8e3)}`}],temperature:.4,response_format:{type:`json_object`}}),signal:l.signal})}catch(e){throw e.name===`AbortError`?Error(`AI 规划超时（60秒），请检查网络或稍后重试`):Error(`网络请求失败：${e.message||`未知错误`}`)}finally{clearTimeout(d)}if(!f.ok){let e=await f.text();throw Error(`AI API 错误 ${f.status}: ${e.slice(0,200)}`)}let p=((await f.json()).choices?.[0]?.message?.content||``).match(/\{[\s\S]*\}/);if(!p)throw Error(`AI 返回内容无法解析为 JSON`);let m=p[0].replace(/```json\s*/gi,``).replace(/```\s*/g,``).replace(/[""]/g,`"`).replace(/['']/g,`'`).replace(/：/g,`:`).replace(/^[^{]*/,``),h;try{h=JSON.parse(m)}catch(e){try{let e=m.replace(/,\s*([}\]])/g,`$1`);h=JSON.parse(e)}catch{let t=m.lastIndexOf(`}`);if(t>0)try{h=JSON.parse(m.slice(0,t+1))}catch(e){throw Error(`AI 返回的 JSON 格式有误，无法解析：${e.message}。请更换模型或简化需求后重试`)}else throw Error(`AI 返回的 JSON 格式有误，无法解析：${e.message}。请更换模型或简化需求后重试`)}}let g=t(),_=h.totalDays||1,v=(h.days||[]).map(e=>{let t=typeof e.day==`number`&&e.day>=1?e.day:1,n=i(g,t-1),a=(e.blocks||[]).map(e=>{let t=(e.tasks||[]).map(e=>({id:r(),title:String(e.title||``).slice(0,100),priority:[`high`,`medium`,`low`].includes(e.priority)?e.priority:`medium`,selected:!0,category:[`task`,`note`,`review`].includes(e.category)?e.category:`task`,estimatedMinutes:typeof e.estimatedMinutes==`number`?e.estimatedMinutes:void 0}));return{id:r(`blk`),category:String(e.category||`学习`),time:e.time||void 0,tasks:t}});return{id:r(`day`),day:t,date:n,title:String(e.title||`Day${t}`),blocks:a}});if(v.length===0&&h.tasks)return u(h,g,o,e);let y=v.reduce((e,t)=>e+t.blocks.reduce((e,t)=>e+t.tasks.filter(e=>e.category===`task`).length,0),0);if(v.length<2)throw Error(`AI 生成的计划天数不足。请更详细描述需求，如"我要准备前端实习面试，重点复习 JS 和 Vue，2 周时间"`);if(y<6)throw Error(`AI 只生成了 ${y} 个任务，远不够一个完整计划。请更详细描述需求后重试`);let b=e.trim();if(b.length>10&&v.some(e=>e.blocks.some(e=>e.tasks.some(e=>e.title===b))))throw Error(`AI 把你的需求原样复制成了任务，没有拆解。请更详细描述需求后重试`);return{id:o,source:`text`,goal:{title:h.goalTitle||`新计划`,description:h.goalDescription||``},days:v,startDate:g,totalDays:_,createdAt:new Date().toISOString()}}function u(e,t,n,a){let o={};for(let t of e.tasks||[]){let e=t.day||1;o[e]||(o[e]=[]),o[e].push({id:r(),title:String(t.title||``).slice(0,100),priority:[`high`,`medium`,`low`].includes(t.priority)?t.priority:`medium`,selected:!0,category:`task`})}let s=Object.keys(o).map(Number).sort((e,t)=>e-t).map(e=>({id:r(`day`),day:e,date:i(t,e-1),title:`Day${e}`,blocks:[{id:r(`blk`),category:`学习`,tasks:o[e]}]})),c=s.length>0?Math.max(...s.map(e=>e.day)):1;return{id:n,source:`text`,goal:{title:e.goalTitle||`新计划`,description:e.goalDescription||``},days:s,startDate:t,totalDays:c,createdAt:new Date().toISOString()}}export{i as a,o as i,a as n,n as o,s as r,r as s,l as t};
