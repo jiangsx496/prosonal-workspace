@@ -11,6 +11,9 @@ const navItems = [
   { path: '/goals', name: 'goals', label: '目标', icon: 'target' },
   { path: '/resources', name: 'resources', label: '资源', icon: 'folder' },
   { path: '/review', name: 'review', label: '复盘', icon: 'refresh' },
+  { path: '/dashboard', name: 'dashboard', label: '看板', icon: 'chart' },
+  { path: '/interview', name: 'interview', label: '题库', icon: 'book' },
+  { path: '/calendar', name: 'calendar', label: '日历', icon: 'calendar' },
 ]
 
 const isActive = computed(() => (name: string) => route.name === name)
