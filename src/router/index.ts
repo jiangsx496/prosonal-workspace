@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
+// 首页静态导入：慢网络下首屏不等待懒加载 chunk，布局与内容一次渲染
+import Execute from '@/views/Execute.vue'
 
 // Electron 桌面版（app:// 自定义协议）下 history API 不可用（pushState 仅限 http(s)），
 // 自动降级为 hash 模式；浏览器/线上部署保持 history 模式
@@ -10,7 +12,7 @@ const router = createRouter({
   history,
   routes: [
     // === 一级导航 ===
-    { path: '/', name: 'execute', component: () => import('@/views/Execute.vue'), meta: { title: '今天' } },
+    { path: '/', name: 'execute', component: Execute, meta: { title: '今天' } },
     { path: '/inbox', name: 'inbox', component: () => import('@/views/Inbox.vue'), meta: { title: '收集' } },
     { path: '/goals/:id', name: 'goal-detail', component: () => import('@/views/GoalDetail.vue'), meta: { title: '目标详情' } },    { path: '/goals', name: 'goals', component: () => import('@/views/Goals.vue'), meta: { title: '目标' } },
     { path: '/resources', name: 'resources', component: () => import('@/views/Resources.vue'), meta: { title: '资源' } },
