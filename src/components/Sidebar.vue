@@ -1,27 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
-import SearchModal from '@/components/SearchModal.vue'
 import Icon from '@/components/Icon.vue'
 
 const store = useAppStore()
 const route = useRoute()
-const showSearch = ref(false)
-
-function onKeydown(e: KeyboardEvent) {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-    e.preventDefault()
-    showSearch.value = true
-  }
-  if (e.key === 'Escape' && showSearch.value) {
-    showSearch.value = false
-  }
-}
-
-onMounted(() => window.addEventListener('keydown', onKeydown))
-onUnmounted(() => window.removeEventListener('keydown', onKeydown))
+const emit = defineEmits<{ search: [] }>()
 
 const navItems = [
   { path: '/', name: 'execute', label: '今天', icon: 'today' },
@@ -60,7 +45,7 @@ const isActive = computed(() => (name: string) => route.name === name)
         class="w-full flex items-center rounded-xl text-sm text-text-muted hover:bg-card-hover hover:text-text-primary transition-colors border border-transparent hover:border-border/70"
         :class="store.sidebarCollapsed ? 'justify-center py-2.5' : 'gap-2.5 px-3 py-2.5'"
         title="搜索"
-        @click="showSearch = true"
+        @click="emit('search')"
       >
         <Icon name="search" :size="18" />
         <span v-if="!store.sidebarCollapsed" class="truncate">搜索...</span>
@@ -94,7 +79,5 @@ const isActive = computed(() => (name: string) => route.name === name)
         <Icon :name="store.sidebarCollapsed ? 'chevronRight' : 'chevronLeft'" :size="16" />
       </button>
     </div>
-
-    <SearchModal v-if="showSearch" @close="showSearch = false" />
   </aside>
 </template>
