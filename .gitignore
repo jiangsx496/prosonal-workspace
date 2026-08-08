@@ -31,3 +31,6 @@ dist-ssr
 .env.*
 # Electron 打包产物
 release/
+
+# 本地调试残留（页面快照/日志）
+.playwright-cli/
